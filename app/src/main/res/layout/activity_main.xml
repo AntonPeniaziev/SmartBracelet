@@ -32,23 +32,32 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/buttonWeb"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:text="Update Web" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/info"
-            android:textStyle="bold|italic"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textStyle="bold|italic" />
+
         <ListView
             android:id="@+id/pairedlist"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="413dp"
+            android:layout_weight="2.22" />
 
         <LinearLayout
             android:id="@+id/inputpane"
@@ -60,22 +69,23 @@
             <EditText
                 android:id="@+id/input"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
+
             <Button
                 android:id="@+id/send"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sent"/>
+                android:text="Sent" />
+
             <Button
                 android:id="@+id/clear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Clear"/>
+                android:text="Clear" />
 
         </LinearLayout>
 
     </LinearLayout>
-
 
 
 </LinearLayout>

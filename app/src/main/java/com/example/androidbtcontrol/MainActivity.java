@@ -30,6 +30,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.androidbtcontrol.Patient;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listViewPairedDevice;
     LinearLayout inputPane;
     EditText inputField;
-    Button btnSend, btnClear;
+    Button btnSend, btnClear, btnWeb;
 
     ArrayAdapter<BluetoothDevice> pairedDeviceAdapter;
     private UUID myUUID;
@@ -119,6 +123,35 @@ public class MainActivity extends AppCompatActivity {
         String stInfo = bluetoothAdapter.getName() + "\n" +
                 bluetoothAdapter.getAddress();
         textInfo.setText(stInfo);
+
+        btnWeb = (Button) findViewById(R.id.buttonWeb);
+
+        Parse.initialize(new Parse.Configuration.Builder(this)
+                .applicationId("bracelet")
+                .server("https://my-bracelet-app.herokuapp.com/parse")
+                .clientKey("alon")
+                .build()
+        );
+
+        btnWeb.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+
+                ParseObject testObject = new ParseObject("Objects");
+                testObject.put("name", "Agent Smith");
+                testObject.put("number", 5325);
+                testObject.put("injury", "Leg");
+                testObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null)
+                            e.printStackTrace();
+                    }
+                });
+            }
+        });
+
     }
 
     @Override
