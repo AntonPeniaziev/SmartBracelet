@@ -16,6 +16,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.androidbtcontrol.Patient;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -55,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout inputPane;
     EditText inputField;
     Button btnSend, btnClear, btnWeb;
+
+    static boolean parseExist = false;
 
     ArrayAdapter<BluetoothDevice> pairedDeviceAdapter;
     private UUID myUUID;
@@ -126,19 +136,26 @@ public class MainActivity extends AppCompatActivity {
 
         btnWeb = (Button) findViewById(R.id.buttonWeb);
 
-        Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId("bracelet")
-                .server("https://my-bracelet-app.herokuapp.com/parse")
-                .clientKey("alon")
-                .build()
-        );
+        /*if(parseExist == false) {
+            Parse.initialize(new Parse.Configuration.Builder(this)
+                    .applicationId("bracelet")
+                    .server("https://my-bracelet-app.herokuapp.com/parse")
+                    .clientKey("alon")
+                    .build()
+            );
+            parseExist = true;
+        }*/
+
 
         btnWeb.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
+                String test = "Alon";
 
-                ParseObject testObject = new ParseObject("Objects");
+                new SendToMongodbTask().execute(test);
+
+                /*ParseObject testObject = new ParseObject("Soldiers");
                 testObject.put("name", "Agent Smith");
                 testObject.put("number", 5325);
                 testObject.put("injury", "Leg");
@@ -148,10 +165,32 @@ public class MainActivity extends AppCompatActivity {
                         if (e != null)
                             e.printStackTrace();
                     }
-                });
+                });*/
             }
         });
 
+    }
+// mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
+    private class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String... strings) {
+
+            Log.e(MainActivity.class.getName(), "SendToMongodbTask");
+            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
+            MongoClient mongoClient = new MongoClient(mongoUri);
+            MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
+            MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
+
+            BasicDBObject document = new BasicDBObject();
+            document.put("name", strings[0]);
+            document.put("number", 7789);
+
+            dbCollection.insertOne(document);
+            //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
+            //dbCollection.insertOne(jsonData);
+            return null;
+        }
     }
 
     @Override
@@ -378,12 +417,13 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable(){
                             @Override
                             public void run() {
-                                textStatus.append("XXX" + strReceived + "YYY");
+                                textStatus.setText(JsonMessage);
+                                /*textStatus.append("XXX" + strReceived + "YYY");
                                 textStatus.append(JsonMessage);
 
                                 textStatus.append(tent.getAllIds());
 
-                                textByteCnt.append(strByteCnt);
+                                textByteCnt.append(strByteCnt);*/
                             }});
                     }
                     else {
