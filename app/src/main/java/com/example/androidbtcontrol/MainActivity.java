@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     ThreadConnected myThreadConnected;
 
     Tent tent = new Tent();
+    LinkedHashMap<String, Patient> activitiesTable = new LinkedHashMap<String, Patient>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -418,12 +420,12 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 textStatus.setText(JsonMessage);
-                                /*textStatus.append("XXX" + strReceived + "YYY");
+                                textStatus.append("XXX" + strReceived + "YYY");
                                 textStatus.append(JsonMessage);
 
                                 textStatus.append(tent.getAllIds());
 
-                                textByteCnt.append(strByteCnt);*/
+                                textByteCnt.append(strByteCnt);
                             }});
                     }
                     else {
