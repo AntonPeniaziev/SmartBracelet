@@ -14,7 +14,10 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
 
     BluetoothAdapter bluetoothAdapter;
+    ArrayList<BluetoothDevice> pairedDevices = new ArrayList<BluetoothDevice>();
 
     ArrayList<BluetoothDevice> pairedDeviceArrayList;
 
@@ -76,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
     ThreadConnected myThreadConnected;
 
     Tent tent = new Tent();
-    LinkedHashMap<String, Patient> activitiesTable = new LinkedHashMap<String, Patient>();
+    LinkedHashMap<String, String> activitiesTable = new LinkedHashMap<String, String>();
+    String JsonMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,11 +189,12 @@ public class MainActivity extends AppCompatActivity {
             MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
             MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
 
-            BasicDBObject document = new BasicDBObject();
-            document.put("name", strings[0]);
-            document.put("number", 7789);
+         //   BasicDBObject document = new BasicDBObject();
 
-            dbCollection.insertOne(document);
+            //document.put("name", strings[0]);
+          //  document.put("number", 7789);
+
+            dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
             //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
             //dbCollection.insertOne(jsonData);
             return null;
@@ -204,12 +210,66 @@ public class MainActivity extends AppCompatActivity {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        registerReceiver(mReceiver, filter);
+        bluetoothAdapter.startDiscovery();
 
-        setup();
+  //      setup();
     }
 
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            //Finding devices
+            if (BluetoothDevice.ACTION_FOUND.equals(action))
+            {
+                // Get the BluetoothDevice object from the Intent
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                pairedDevices.add(device);
+
+                Toast.makeText(MainActivity.this,
+                        "Found device " + device.getName(),
+                        Toast.LENGTH_LONG).show();
+                // Add the name and address to an array adapter to show in a ListView
+               // mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+            }
+            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                Toast.makeText(MainActivity.this,
+                        "Scanned devices number = " + pairedDevices.size(),
+                        Toast.LENGTH_LONG).show();
+                setup();
+            }
+            else if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
+                try {
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    int pin=intent.getIntExtra("android.bluetooth.device.extra.PAIRING_KEY", 1234);
+                    //the pin in case you need to accept for an specific pin
+                    //Log.d(TAG, "Start Auto Pairing. PIN = " + intent.getIntExtra("android.bluetooth.device.extra.PAIRING_KEY",1234));
+                    byte[] pinBytes;
+                    pinBytes = (""+pin).getBytes("UTF-8");
+                    device.setPin(pinBytes);
+                    //setPairing confirmation if neeeded
+                    device.setPairingConfirmation(true);
+                } catch (Exception e) {
+                   // Log.e(TAG, "Error occurs when trying to auto pair");
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+
+
+
     private void setup() {
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        //BluetoothDevice.createBond();
+
+
+        //Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             pairedDeviceArrayList = new ArrayList<BluetoothDevice>();
 
@@ -247,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        unregisterReceiver(mReceiver);
         if(myThreadConnectBTdevice!=null){
             myThreadConnectBTdevice.cancel();
         }
@@ -289,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
             bluetoothDevice = device;
 
             try {
-                bluetoothSocket = device.createRfcommSocketToServiceRecord(myUUID);
+                bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
                 textStatus.setText("bluetoothSocket: \n" + bluetoothSocket);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -376,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         private final InputStream connectedInputStream;
         private final OutputStream connectedOutputStream;
         private final BluetoothDevice device;
-        private String JsonMessage;
+
 
         public ThreadConnected(BluetoothSocket socket, BluetoothDevice btDevice) {
             connectedBluetoothSocket = socket;
