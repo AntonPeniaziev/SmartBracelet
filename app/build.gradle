@@ -21,8 +21,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/mongo-java-driver-3.4.0-SNAPSHOT.jar')
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'org.json:json:20160212'
     compile 'com.parse:parse-android:1.13.1'
-    compile files('libs/mongo-java-driver-3.4.0-SNAPSHOT.jar')
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:design:22.2.1'
 }

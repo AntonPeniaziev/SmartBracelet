@@ -55,6 +55,12 @@
             android:layout_height="84dp"
             android:text="Update Web" />
 
+        <Button
+            android:id="@+id/buttonTent"
+            android:layout_width="wrap_content"
+            android:layout_height="84dp"
+            android:text="go to tent" />
+
         <LinearLayout
             android:id="@+id/inputpane"
             android:layout_width="match_parent"
