@@ -20,10 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.Collections.synchronizedList;
 
 /**
  * Created by apeniazi on 11-Apr-17.
@@ -223,7 +221,7 @@ public class BTservice implements BTserviceInterface {
 
                     if (strReceived.contains("#")) {
                         JsonMessage += strReceived;
-                        JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 1);
+                        JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
                         //tent.AddPatient(JsonMessage, device.getAddress());
 
 

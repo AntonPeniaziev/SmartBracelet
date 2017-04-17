@@ -1,9 +1,6 @@
 package BTservice;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -17,4 +14,6 @@ public interface BTserviceInterface {
     ConcurrentHashMap<String, List<String>> getMacToJsonList();
 
     void clearBtBuffers();
+    //need to be called in onDestory()
+    void destroy();
 }
