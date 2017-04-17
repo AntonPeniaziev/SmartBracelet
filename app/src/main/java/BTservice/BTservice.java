@@ -18,9 +18,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Collections.synchronizedList;
 
 /**
  * Created by apeniazi on 11-Apr-17.
@@ -29,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BTservice implements BTserviceInterface {
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter bluetoothAdapter;
-    ConcurrentHashMap<String, Vector<String>> _macToJsonList;
+    ConcurrentHashMap<String, List<String>> _macToJsonList;
     TextView _textInfo;
     Context _context;
     Handler handler;
@@ -67,7 +70,7 @@ public class BTservice implements BTserviceInterface {
 
         handler = new Handler(context.getMainLooper());
         discoveredDevices = new ArrayList<BluetoothDevice>();
-        _macToJsonList = new ConcurrentHashMap<String, Vector<String>>();
+        _macToJsonList = new ConcurrentHashMap<String, List<String>>();
     }
 
 
@@ -217,20 +220,22 @@ public class BTservice implements BTserviceInterface {
                     final String strReceived = new String(buffer, 0, bytes);
                     final String strByteCnt = String.valueOf(bytes) + " bytes received.\n";
 
-                    if (strReceived.substring(strReceived.length() - 1).equals("#")) {
+
+                    if (strReceived.contains("#")) {
                         JsonMessage += strReceived;
                         JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 1);
                         //tent.AddPatient(JsonMessage, device.getAddress());
 
 
 
-                        runOnUiThread(new Runnable(){
-                            @Override
-                            public void run() {
-                                _textInfo.setText(JsonMessage);
-
-                                _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
-                            }});
+//                        runOnUiThread(new Runnable(){
+//                            @Override
+//                            public void run() {
+//                                _textInfo.setText(JsonMessage);
+//
+//
+//                            }});
+                        _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
                     }
                     else {
                         JsonMessage += strReceived;
@@ -339,13 +344,24 @@ public class BTservice implements BTserviceInterface {
                         "got HC-06 ",
                         Toast.LENGTH_SHORT).show();
                 myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
-                _macToJsonList.putIfAbsent(device.getAddress().toString(), new Vector<String>());
+                _macToJsonList.putIfAbsent(device.getAddress().toString(), Collections.synchronizedList(new ArrayList<String>()));
                 myThreadConnectBTdevice.start();
             }
         }
     }
 
-    public ConcurrentHashMap<String, Vector<String>> getMacToJsonList() {
+    public void destroy() {
+        myThreadConnectBTdevice.cancel();
+        _context.unregisterReceiver(mReceiver);
+    }
+
+    public ConcurrentHashMap<String, List<String>> getMacToJsonList() {
         return _macToJsonList;// TODO : consider deep copy
+    }
+
+    public void clearBtBuffers() {
+        for (Map.Entry<String, List<String>> it : _macToJsonList.entrySet()) {
+            it.getValue().clear();
+        }
     }
 }

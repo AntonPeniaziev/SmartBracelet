@@ -1,6 +1,7 @@
 package com.example.androidbtcontrol;
 
 
+import android.util.Log;
 
 public class Patient {
     Bracelet _bracelet;
@@ -26,6 +27,10 @@ public class Patient {
     }
 
     public void AddActions(String additionalActions) {
-        return;//TBD
+        Log.d("T1","Additional action:\n");
+        Log.d("T1",additionalActions);
+
+        _bracelet.AddActionsToBracelet(additionalActions);
+
     }
 }
