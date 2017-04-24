@@ -41,6 +41,17 @@ public class Tent {
         return res;
     }
 
+    public String[] getDataBase(){
+        int _size = _patients.size();
+        String[] userNames = new String[_size];
+        int index = 0;
+        for(String name : _patients.keySet()){
+            userNames[index] = name;
+            index++;
+        }
+        return userNames;
+    }
+
     public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList) {
         for (Map.Entry<String, List<String>> it : macToJsonList.entrySet()) {
             synchronized(it.getValue()) {

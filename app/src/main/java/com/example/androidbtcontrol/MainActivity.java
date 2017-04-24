@@ -11,6 +11,7 @@ http://android-er.blogspot.com/2014/12/bluetooth-communication-between-android.h
 package com.example.androidbtcontrol;
 
 
+import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -33,7 +35,7 @@ import com.mongodb.client.MongoDatabase;
 import java.util.LinkedHashMap;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
 
 
@@ -50,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+        updateListView();
         btbTent = (Button)findViewById(R.id.buttonTent);
         btbTent.setOnClickListener(new View.OnClickListener(){
 
@@ -73,6 +74,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    void updateListView(){
+        ListView listview = (ListView) findViewById(android.R.id.list);
+        listview.setAdapter(new CostumAdapter(this, new String[] { "patient1",
+                "patient2" }));
+
+    }
+
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
     private class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
 
