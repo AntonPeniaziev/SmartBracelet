@@ -35,6 +35,7 @@ import com.mongodb.client.MongoDatabase;
 import java.util.LinkedHashMap;
 
 
+
 public class MainActivity extends AppCompatActivity{
 
 
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        updateListView();
         btbTent = (Button)findViewById(R.id.buttonTent);
         btbTent.setOnClickListener(new View.OnClickListener(){
 
@@ -75,12 +75,7 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    void updateListView(){
-        ListView listview = (ListView) findViewById(android.R.id.list);
-        listview.setAdapter(new CostumAdapter(this, new String[] { "patient1",
-                "patient2" }));
 
-    }
 
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
     private class SendToMongodbTask extends AsyncTask<String, Integer, Long> {

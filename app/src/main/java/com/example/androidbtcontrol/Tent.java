@@ -41,6 +41,11 @@ public class Tent {
         return res;
     }
 
+
+    /**
+     *
+     * @return an array of Mac addresses of the bracelets
+     */
     public String[] getDataBase(){
         int _size = _patients.size();
         String[] userNames = new String[_size];
