@@ -3,6 +3,7 @@ package com.example.androidbtcontrol;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ListView;
 import android.widget.TextView;
 import BTservice.BTservice;
 
@@ -58,9 +59,10 @@ public class TentActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textInfo2.setText(_tent.getAllIds());
+                        runOnUI();
                     }
                 });
+
                 //release for UI
                 try {
                     Thread.sleep(1000);
@@ -73,6 +75,20 @@ public class TentActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * updates the List View on Tent Avtivity.
+     * @param listView
+     */
+    void updateListView(String[] listView){
+        ListView listview = (ListView) findViewById(android.R.id.list);
+        listview.setAdapter(new CostumAdapter(this, listView));
+
+    }
+
+    void runOnUI() {
+       // textInfo2.setText(_tent.getAllIds());
+        updateListView(_tent.getDataBase());
+    }
 
 }
 
