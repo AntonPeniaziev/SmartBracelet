@@ -56,6 +56,12 @@
             android:text="Update Web" />
 
         <Button
+            android:id="@+id/myTestBtn"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:text="My Test Btn" />
+
+        <Button
             android:id="@+id/buttonTent"
             android:layout_width="wrap_content"
             android:layout_height="84dp"
