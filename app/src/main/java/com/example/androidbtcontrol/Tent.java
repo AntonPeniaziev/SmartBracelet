@@ -12,10 +12,10 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Tent {
-    LinkedHashMap<String, Patient> _patients;//TODO: sync
+    ConcurrentHashMap<String, Patient> _patients;//TODO: sync
 
     public Tent() {
-        _patients = new LinkedHashMap<String, Patient>();
+        _patients = new ConcurrentHashMap<String, Patient>();
     }
 
     private void AddPatientInfo(String infoFromBracelet, String bt_mac) {
@@ -29,11 +29,11 @@ public class Tent {
     }
 
     public String getAllIds() {
-        String res = "QQQ";
+        String res = "All Patients:\n";
         for (Map.Entry<String, Patient> pt : _patients.entrySet()
              ) {
 
-            res += "\nJSON: ";
+            res += "\nJSON from BT: " + pt.getKey().toString() + "\n";
             res += pt.getValue().getJson();
             res += "\n";
         }

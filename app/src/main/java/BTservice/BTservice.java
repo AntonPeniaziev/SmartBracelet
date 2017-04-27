@@ -29,11 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BTservice implements BTserviceInterface {
     private static final int REQUEST_ENABLE_BT = 1;
-    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothAdapter _bluetoothAdapter;
     ConcurrentHashMap<String, List<String>> _macToJsonList;
     TextView _textInfo;
     Context _context;
-    Handler handler;
+    Handler _handler;
     private UUID myUUID;
     private final String UUID_STRING_WELL_KNOWN_SPP =
             "00001101-0000-1000-8000-00805F9B34FB";
@@ -47,16 +47,16 @@ public class BTservice implements BTserviceInterface {
 
         _context = context;
         _textInfo = info;
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter == null) {
+        _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (_bluetoothAdapter == null) {
             Toast.makeText(_context,
                     "Bluetooth is not supported on this hardware platform",
                     Toast.LENGTH_LONG).show();
             return;
         }
 
-        String stInfo = bluetoothAdapter.getName() + "\n" +
-                bluetoothAdapter.getAddress();
+        String stInfo = _bluetoothAdapter.getName() + "\n" +
+                _bluetoothAdapter.getAddress();
         _textInfo.setText(stInfo);
 
         Toast.makeText(_context,
@@ -66,14 +66,14 @@ public class BTservice implements BTserviceInterface {
         myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
 
 
-        handler = new Handler(context.getMainLooper());
+        _handler = new Handler(context.getMainLooper());
         discoveredDevices = new ArrayList<BluetoothDevice>();
         _macToJsonList = new ConcurrentHashMap<String, List<String>>();
     }
 
 
     private void runOnUiThread(Runnable r) {
-        handler.post(r);
+        _handler.post(r);
     }
     //Called in ThreadConnectBTdevice once connect successed
     //to start ThreadConnected
@@ -286,7 +286,7 @@ public class BTservice implements BTserviceInterface {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         _context.registerReceiver(mReceiver, filter);
-        bluetoothAdapter.startDiscovery();
+        _bluetoothAdapter.startDiscovery();
 
 
         //_textInfo.setText("in start");
@@ -337,9 +337,11 @@ public class BTservice implements BTserviceInterface {
     private void setup() {
 
         for (BluetoothDevice device : discoveredDevices) {
-            if (device.getName().toString().equals("HC-06")) {
+            if (device.getName().toString().equals("HC-06") ||
+                    device.getName().toString().equals("HC-05") ||
+                    device.getName().toString().equals("gun1")) {
                 Toast.makeText(_context,
-                        "got HC-06 ",
+                        "got bracelet bluetooth " + device.getAddress().toString(),
                         Toast.LENGTH_SHORT).show();
                 myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
                 _macToJsonList.putIfAbsent(device.getAddress().toString(), Collections.synchronizedList(new ArrayList<String>()));

@@ -11,7 +11,7 @@ public class TentActivity extends AppCompatActivity {
     TextView textInfo2;
     BTservice _bTservice;
     Tent _tent;
-    UpdateData updateData;
+    UpdateData _updateData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +33,15 @@ public class TentActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         _bTservice.startBT();
-        updateData = new UpdateData();
-        updateData.start();
+        _updateData = new UpdateData();
+        _updateData.start();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         _bTservice.destroy();
-        if(updateData!=null){
+        if(_updateData!=null){
           //  updateData.cancel();
         }
     }
@@ -58,7 +58,7 @@ public class TentActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        runOnUI();
+                        textInfo2.setText(_tent.getAllIds());
                     }
                 });
                 //release for UI
@@ -73,9 +73,6 @@ public class TentActivity extends AppCompatActivity {
         }
     }
 
-    void runOnUI() {
-        textInfo2.setText(_tent.getAllIds());
-    }
 
 }
 
