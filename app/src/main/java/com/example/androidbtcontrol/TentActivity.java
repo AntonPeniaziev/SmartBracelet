@@ -87,7 +87,9 @@ public class TentActivity extends AppCompatActivity {
 
     void runOnUI() {
        // textInfo2.setText(_tent.getAllIds());
-        updateListView(_tent.getDataBase());
+        //updateListView(_tent.getDataBase());
+        String[] arr = {"patient1", "patient2", "patient3", "patient3","patient3", "patient3" };
+        updateListView(arr);
     }
 
 }
