@@ -25,6 +25,7 @@
             android:layout_height="0dp"
             android:lines="40"
             android:gravity = "center"
+            android:visibility="invisible"
             android:text="@string/some_str"/>
         </ScrollView>
 

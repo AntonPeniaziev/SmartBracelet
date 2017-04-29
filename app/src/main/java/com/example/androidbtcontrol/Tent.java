@@ -12,7 +12,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Tent {
-    ConcurrentHashMap<String, Patient> _patients;//TODO: sync
+    ConcurrentHashMap<String, Patient> _patients;
 
     public Tent() {
         _patients = new ConcurrentHashMap<String, Patient>();
@@ -68,6 +68,10 @@ public class Tent {
             }
 
         }
+    }
+
+    public ArrayList<Patient> getPatientsArray() {
+        return new ArrayList<Patient>(_patients.values());
     }
 
 }
