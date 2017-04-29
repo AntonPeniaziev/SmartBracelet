@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //new updateActivitiesTable().execute(); //TODO Alon - remove later
         tTable = new TreatmentsTable();
 
         btbTent = (Button)findViewById(R.id.buttonTent);
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
 
-        btnWeb = (Button)findViewById(R.id.buttonWeb);
+        btnWeb = (Button)findViewById(R.id.buttonWeb);// a button to test updates to the web
         btnWeb.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -97,23 +96,15 @@ public class MainActivity extends AppCompatActivity{
         final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
-        //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, 0, /*(LocationListener)*/ locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
 
-        btnTst = (Button)findViewById(R.id.myTestBtn);
+        btnTst = (Button)findViewById(R.id.myTestBtn);//a button to test location
         btnTst.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
-                    String key = entry.getKey();
-                    Treatment value = entry.getValue();
-
-                    Log.e(MainActivity.class.getName(), key);
-                    Log.e(MainActivity.class.getName(), value.getName());
-                    Log.e(MainActivity.class.getName(), value.getType());
-                }*/
                 Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
-        /*if(tempLocation == null)
-            tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);*/
+                if(tempLocation == null)
+                    tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
 
                 if(tempLocation != null) {
                     String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
@@ -128,67 +119,6 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
-
-    /*private class updateActivitiesTable extends AsyncTask<String, Integer, Long> {
-
-        @Override
-        protected Long doInBackground(String... strings) {
-            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
-            MongoClient mongoClient = new MongoClient(mongoUri);
-            MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-            MongoCollection<BasicDBObject> dbCollection = db.getCollection("treatments", BasicDBObject.class);
-
-            FindIterable<BasicDBObject> treatments = dbCollection.find();
-            if (treatments == null) {
-                return null;
-            }
-            for(BasicDBObject doc : treatments) {
-                //access documents e.g. doc.get()
-                Object number = doc.get("number");
-                Object name = doc.get("name");
-
-                activitiesTable.put(number.toString(), name.toString());
-
-                //Log.e(MainActivity.class.getName(), number.toString());
-                //Log.e(MainActivity.class.getName(), name.toString());
-            }
-            //activitiesTable
-            for (LinkedHashMap.Entry<String, String> entry : activitiesTable.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-
-                Log.e(MainActivity.class.getName(), key);
-                Log.e(MainActivity.class.getName(), value);
-            }
-
-
-            return null;
-        }
-    }*/
-
-// mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-/*public class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
-
-        @Override
-        protected Long doInBackground(String... strings) {
-
-            Log.e(MainActivity.class.getName(), "SendToMongodbTask");
-            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
-            MongoClient mongoClient = new MongoClient(mongoUri);
-            MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-            MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
-
-         //   BasicDBObject document = new BasicDBObject();
-
-            //document.put("name", strings[0]);
-          //  document.put("number", 7789);
-
-           // dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
-            //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
-            //dbCollection.insertOne(jsonData);
-            return null;
-        }
-    }*/
 
     @Override
     protected void onStart() {
