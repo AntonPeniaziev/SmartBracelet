@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import BTservice.BTservice;
 
 public class TentActivity extends AppCompatActivity {
@@ -13,6 +16,8 @@ public class TentActivity extends AppCompatActivity {
     BTservice _bTservice;
     Tent _tent;
     UpdateData _updateData;
+    CostumAdapter _adapter;
+    ListView _listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,10 @@ public class TentActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         _bTservice = new BTservice(textInfo2, this);
 
+        _listView = (ListView) findViewById(android.R.id.list);
+
+        _adapter = new CostumAdapter(this);
+        _listView.setAdapter(_adapter);
 
     }
 
@@ -77,19 +86,34 @@ public class TentActivity extends AppCompatActivity {
 
     /**
      * updates the List View on Tent Avtivity.
-     * @param listView
+     * @param data
      */
-    void updateListView(String[] listView){
-        ListView listview = (ListView) findViewById(android.R.id.list);
-        listview.setAdapter(new CostumAdapter(this, listView));
+    void updateListView(ArrayList<Patient> data){
+        _adapter.setData(data);
+        _adapter.notifyDataSetChanged();
+
+        //_listView.setAdapter(_adapter);
+
+
 
     }
 
     void runOnUI() {
        // textInfo2.setText(_tent.getAllIds());
-        //updateListView(_tent.getDataBase());
-        String[] arr = {"patient1", "patient2", "patient3", "patient3","patient3", "patient3" };
-        updateListView(arr);
+        updateListView(_tent.getPatientsArray());
+        String[] arr = {"patient1", "patient2", "patient3", "patient4", "patient5", "patient6" };
+
+//        String[] arr_odd =  {"patient1", "patient2", "patient3"};
+//        String[] arr_even =  {"patient1", "patient2"};
+//
+//        if ((System.currentTimeMillis() / 1000 % 2 == 0)) {
+//            updateListView(arr_even);
+//        }
+//        else {
+//            updateListView(arr_odd);
+//        }
+
+       // updateListView(arr);
     }
 
 }

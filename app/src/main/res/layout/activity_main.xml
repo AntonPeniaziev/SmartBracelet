@@ -95,6 +95,8 @@
                 android:layout_height="wrap_content"
                 android:text="Clear" />
 
+
+
         </LinearLayout>
 
     </GridLayout>

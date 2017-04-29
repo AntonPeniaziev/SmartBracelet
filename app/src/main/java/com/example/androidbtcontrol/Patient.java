@@ -2,6 +2,7 @@ package com.example.androidbtcontrol;
 
 
 import android.util.Log;
+import java.util.Random;
 
 public class Patient {
     Bracelet _bracelet;
@@ -18,8 +19,30 @@ public class Patient {
         id = braceletMac;
     }
 
-    public String getId() {
+    public String getBtMac() {
         return id;
+    }
+
+    public String getHeartRate() {
+        Random rand = new Random();
+        return Integer.toString(rand.nextInt(200) + 40);
+    }
+
+    public String getBloodPressure() {
+        Random rand = new Random();
+        int sys = rand.nextInt(200) + 90;
+        int dia = rand.nextInt(80) + 30;
+        return Integer.toString(sys) + "/" + Integer.toString(dia);
+    }
+
+    public String getBreatheRate() {
+        Random rand = new Random();
+        return Integer.toString(rand.nextInt(120) + 10);
+    }
+
+    public String getBodyTemp() {
+        Random rand = new Random();
+        return Double.toString(33 + (42 - 33) * rand.nextDouble()).substring(0,4) + " ºC";
     }
 
     public String getJson() {
@@ -27,9 +50,6 @@ public class Patient {
     }
 
     public void AddActions(String additionalActions) {
-        Log.d("T1","Additional action:\n");
-        Log.d("T1",additionalActions);
-
         _bracelet.AddActionsToBracelet(additionalActions);
 
     }
