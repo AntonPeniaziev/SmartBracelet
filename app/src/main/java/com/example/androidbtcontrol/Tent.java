@@ -17,8 +17,8 @@ public class Tent {
     public Tent() {
         _patients = new ConcurrentHashMap<String, Patient>();
     }
-
-    private void AddPatientInfo(String infoFromBracelet, String bt_mac) {
+//TODO must be Private! for debug only
+    public void AddPatientInfo(String infoFromBracelet, String bt_mac) {
 
         if (_patients.containsKey(bt_mac)) {
             _patients.get(bt_mac).AddActions(infoFromBracelet);

@@ -99,21 +99,17 @@ public class TentActivity extends AppCompatActivity {
     }
 
     void runOnUI() {
-       // textInfo2.setText(_tent.getAllIds());
+
+        /**
+         * Uncomment the code below to test without physical Bluetooth devices
+         * AddPatientInfo should be changed back to be private before release
+         */
+//        _tent.AddPatientInfo("[{\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"},{\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"}, {\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"}]#", "mac1");
+//        _tent.AddPatientInfo("[{\"uid\": \"22\",\"ts\": \"0\",\"tsid\": \"0\"},{\"uid\": \"22 1\",\"ts\": \"1\",\"tsid\": \"1\"}]#", "MAC2");
+
+        /**************************************************************************/
         updateListView(_tent.getPatientsArray());
-        String[] arr = {"patient1", "patient2", "patient3", "patient4", "patient5", "patient6" };
 
-//        String[] arr_odd =  {"patient1", "patient2", "patient3"};
-//        String[] arr_even =  {"patient1", "patient2"};
-//
-//        if ((System.currentTimeMillis() / 1000 % 2 == 0)) {
-//            updateListView(arr_even);
-//        }
-//        else {
-//            updateListView(arr_odd);
-//        }
-
-       // updateListView(arr);
     }
 
 }
