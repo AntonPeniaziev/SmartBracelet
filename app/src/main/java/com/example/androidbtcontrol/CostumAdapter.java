@@ -1,10 +1,14 @@
 package com.example.androidbtcontrol;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,9 +38,9 @@ public class CostumAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Patient getItem(int position) {
         // TODO Auto-generated method stub
-        return (data == null) ? 0 : data.size();
+        return (data == null) ? null : data.get(position);
     }
 
     @Override
@@ -64,10 +68,17 @@ public class CostumAdapter extends BaseAdapter {
             bloodPressure.setText(data.get(position).getBloodPressure());
             json.setText(data.get(position).getJson());
         }
+
         return vi;
     }
 
     public void setData(ArrayList<Patient> data) {
         this.data = data;
+    }
+
+    @Override
+    public boolean isEnabled(int position)
+    {
+        return true;
     }
 }

@@ -31,6 +31,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.androidbtcontrol.MainActivity" />
         </activity>
+        <activity android:name=".PatientInfoActivity"></activity>
     </application>
 
 </manifest>

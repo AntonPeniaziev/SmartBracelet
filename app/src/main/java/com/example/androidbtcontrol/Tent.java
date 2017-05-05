@@ -70,6 +70,15 @@ public class Tent {
         }
     }
 
+    public void updatePatientInfoTest(){
+        int numOfPatientTest = 5;
+        for(int i=0; i< numOfPatientTest ; ++i){
+            String num = new Integer(i).toString();
+            AddPatientInfo("", num);
+        }
+
+    }
+
     public ArrayList<Patient> getPatientsArray() {
         return new ArrayList<Patient>(_patients.values());
     }
