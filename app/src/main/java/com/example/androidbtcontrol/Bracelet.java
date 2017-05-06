@@ -13,21 +13,36 @@ import java.util.List;
 
 public class Bracelet {
     String _mac_address;
-    List<JSONArray> JsonArrList;
+    List<JSONObject> JsonArrList;
     String jsonAsStr;
+    String jsonArray;
 
     public Bracelet(String jsonStr, String macAddress) {
-        try {
-            JsonArrList = Collections.synchronizedList(new ArrayList<JSONArray>());
-            JsonArrList.add(new JSONArray(jsonStr));
-        }
-        catch (org.json.JSONException e) {
-            e.printStackTrace();
-        }
+
+        JsonArrList = Collections.synchronizedList(new ArrayList<JSONObject>());
+        JsonArrList.add(ArduinoFormatToJson(jsonStr));
 
         _mac_address = macAddress;
         jsonAsStr = new String();
+        jsonArray = new String();
 
+        jsonArray = "[" + ArduinoFormatToJson(jsonStr).toString() + "]";
+        //jsonAsStr = jsonStr;
+
+        //JsonArrList = new List<JSONArray>();
+
+    }
+
+    private JSONObject ArduinoFormatToJson(String mes) {
+        String JsonString = "{\"uid\": \"" + mes + "\",\"ts\": \"0\",\"tsid\": \"0\"}";
+        JSONObject JsonResult = null;
+        try {
+            JsonResult = new JSONObject(JsonString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return JsonResult;
     }
 
     public String getJsonAsStr () {
@@ -40,19 +55,20 @@ public class Bracelet {
 //            }
 //
 //        }
-        return jsonAsStr;
+        return jsonArray;
     }
 
     public void AddActionsToBracelet(String jsonStr) {
-        Log.d("AddActionsToBracelet",jsonStr);
+
+        jsonAsStr += jsonStr;
+        StringBuilder ArrayResult = new StringBuilder(jsonArray);
+        ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
+        jsonArray = ArrayResult.toString();
 
         synchronized(JsonArrList) {
-            jsonAsStr += jsonStr;
-            try {
-                JsonArrList.add(new JSONArray(jsonStr));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
+                JsonArrList.add(ArduinoFormatToJson(jsonStr));
+
         }
 
     }

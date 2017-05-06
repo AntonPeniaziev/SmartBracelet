@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,6 +32,7 @@ public class BTservice implements BTserviceInterface {
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter _bluetoothAdapter;
     ConcurrentHashMap<String, List<String>> _macToJsonList;
+    ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
     TextView _textInfo;
     Context _context;
     Handler _handler;
@@ -69,6 +71,7 @@ public class BTservice implements BTserviceInterface {
         _handler = new Handler(context.getMainLooper());
         discoveredDevices = new ArrayList<BluetoothDevice>();
         _macToJsonList = new ConcurrentHashMap<String, List<String>>();
+        _macToDataForBracelet = new ConcurrentHashMap<String, List<String>>();
     }
 
 
@@ -147,11 +150,12 @@ public class BTservice implements BTserviceInterface {
 
                 startThreadConnected(bluetoothSocket, bluetoothDevice);
 
-                String startChar = "j";
-                byte[] bytesToSend = startChar.getBytes();
-                myThreadConnected.write(bytesToSend);
-                byte[] NewLine = "\n".getBytes();
-                myThreadConnected.write(NewLine);
+                //String startChar = "<1," + _bluetoothAdapter.getAddress().toString() + ">";
+//                String startChar = "<1,23456789>\n";
+//                byte[] bytesToSend = startChar.getBytes();
+//                myThreadConnected.write(bytesToSend);
+                //byte[] NewLine = "\n".getBytes();
+                //myThreadConnected.write(NewLine);
 
             }else{
                 //fail
@@ -212,16 +216,27 @@ public class BTservice implements BTserviceInterface {
             int bytes;
             String strRx = "";
 
+            String startChar = "<1,234>\n";
+            byte[] bytesToSend = startChar.getBytes();
+            myThreadConnected.write(bytesToSend);
+
             while (true) {
+
                 try {
+
                     bytes = connectedInputStream.read(buffer);
                     final String strReceived = new String(buffer, 0, bytes);
                     final String strByteCnt = String.valueOf(bytes) + " bytes received.\n";
 
+//                    if (strReceived.length() > 0) {
+//                        Toast.makeText(_context,
+//                                strReceived,
+//                                Toast.LENGTH_SHORT).show();
+//                    }
 
-                    if (strReceived.contains("#")) {
+                    if (strReceived.contains(">")) {
                         JsonMessage += strReceived;
-                        JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
+                        //JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
                         //tent.AddPatient(JsonMessage, device.getAddress());
 
 
@@ -234,6 +249,7 @@ public class BTservice implements BTserviceInterface {
 //
 //                            }});
                         _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
+                        JsonMessage = "";
                     }
                     else {
                         JsonMessage += strReceived;
@@ -256,7 +272,7 @@ public class BTservice implements BTserviceInterface {
             }
         }
 
-        public void write(byte[] buffer) {
+        private void write(byte[] buffer) {
             try {
                 connectedOutputStream.write(buffer);
             } catch (IOException e) {
@@ -356,7 +372,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public ConcurrentHashMap<String, List<String>> getMacToJsonList() {
-        return _macToJsonList;// TODO : consider deep copy
+        return _macToJsonList;
     }
 
     public void clearBtBuffers() {
@@ -364,4 +380,37 @@ public class BTservice implements BTserviceInterface {
             it.getValue().clear();
         }
     }
+
+    public void addDataToBeSentByMac(String mac, String data) {
+        _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
+        _macToDataForBracelet.get(mac).add(data);
+        writeToMac(mac);
+    }
+
+    private void writeToMac(String mac) {
+        //TODO perfomance
+        if (_macToDataForBracelet.size() > 0) {
+            if (_macToDataForBracelet.containsKey(mac)) {
+                synchronized (_macToDataForBracelet.get(mac)) {
+                    Iterator i = _macToDataForBracelet.get(mac).iterator();
+                    while (i.hasNext()) {
+                        byte[] toMac = i.next().toString().getBytes();
+                        myThreadConnected.write(toMac);
+                    }
+                    _macToDataForBracelet.get(mac).clear();
+                }
+            }
+        }
+    }
+
+//    private long macAddressToInt (String macAddress) {
+//        String[] macAddressParts = macAddress.split(":");
+//
+//        // convert hex string to byte values
+//        Byte[] macAddressBytes = new Byte[6];
+//        for(int i=0; i<6; i++){
+//            Integer hex = Integer.parseInt(macAddressParts[i], 16);
+//            macAddressBytes[i] = hex.byteValue();
+//        }
+//    }
 }

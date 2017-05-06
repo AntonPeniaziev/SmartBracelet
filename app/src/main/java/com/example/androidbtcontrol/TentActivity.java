@@ -3,14 +3,17 @@ package com.example.androidbtcontrol;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import BTservice.BTservice;
 
-public class TentActivity extends AppCompatActivity {
+public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     TextView textInfo2;
     BTservice _bTservice;
@@ -36,7 +39,17 @@ public class TentActivity extends AppCompatActivity {
 
         _adapter = new CostumAdapter(this);
         _listView.setAdapter(_adapter);
+        _listView.setOnItemClickListener(this);
 
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Patient item = _adapter.getItem(position);
+        Toast.makeText(this,
+               "beep sent to " + item.getBtMac().toString(),
+                Toast.LENGTH_SHORT).show();
+        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
     }
 
     @Override

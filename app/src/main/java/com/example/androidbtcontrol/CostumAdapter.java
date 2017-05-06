@@ -34,9 +34,9 @@ public class CostumAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public Patient getItem(int position) {
         // TODO Auto-generated method stub
-        return (data == null) ? 0 : data.size();
+        return (data == null) ? null : data.get(position);
     }
 
     @Override
