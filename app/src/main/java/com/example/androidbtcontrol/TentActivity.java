@@ -1,21 +1,19 @@
 package com.example.androidbtcontrol;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 
 import BTservice.BTservice;
 
-
-
-public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
     TextView textInfo2;
     BTservice _bTservice;
@@ -39,11 +37,19 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         _listView = (ListView) findViewById(android.R.id.list);
 
-        _adapter = new CostumAdapter(this, R.layout.list_row);
+        _adapter = new CostumAdapter(this);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
 
+    }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Patient item = _adapter.getItem(position);
+        Toast.makeText(this,
+               "beep sent to " + item.getBtMac().toString(),
+                Toast.LENGTH_SHORT).show();
+        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
     }
 
     @Override
@@ -63,23 +69,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        Patient item = _adapter.getItem(position);
-        Intent intent = new Intent(TentActivity.this,PatientInfoActivity.class);
-        //based on item add info to intent
-        intent.putExtra("EXTRA_PATIENT_ID", item.id);
-        startActivity(intent);
-    }
-
     private class UpdateData extends Thread {
 
         @Override
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                //_tent.updatePatientInfoFromBT(_bTservice.getMacToJsonList());
-                //_bTservice.clearBtBuffers();
+                _tent.updatePatientInfoFromBT(_bTservice.getMacToJsonList());
+                _bTservice.clearBtBuffers();
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -124,7 +121,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 //        _tent.AddPatientInfo("[{\"uid\": \"22\",\"ts\": \"0\",\"tsid\": \"0\"},{\"uid\": \"22 1\",\"ts\": \"1\",\"tsid\": \"1\"}]#", "MAC2");
 
         /**************************************************************************/
-        _tent.updatePatientInfoTest();
         updateListView(_tent.getPatientsArray());
 
     }
