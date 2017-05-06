@@ -2,6 +2,7 @@ package com.example.androidbtcontrol;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +24,14 @@ public class CostumAdapter extends BaseAdapter {
     Context context;
     ArrayList<Patient> data;
     private static LayoutInflater inflater = null;
+    int _listRow;
 
-    public CostumAdapter(Context context) {
+    public CostumAdapter(Context context, int layoutId) {
         // TODO Auto-generated constructor stub
         this.context = context;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        _listRow=layoutId;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class CostumAdapter extends BaseAdapter {
         // TODO Auto-generated method stub
         View vi = convertView;
         if (vi == null) {
-            vi = inflater.inflate(R.layout.list_row, null);
+            vi = inflater.inflate(_listRow, null);
         }
 
         TextView text = (TextView) vi.findViewById(R.id.braceletMAC);
