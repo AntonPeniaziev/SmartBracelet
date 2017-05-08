@@ -9,7 +9,7 @@ import android.util.Log;
  * Created by avizel on 22/4/2017.
  */
 
-public class MyCurrentLoctionListener implements LocationListener {
+public class MyCurrentLocationListener implements LocationListener {
 
     public void onLocationChanged(Location location) {
         location.getLatitude();

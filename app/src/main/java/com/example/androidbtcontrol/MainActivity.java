@@ -11,31 +11,18 @@ http://android-er.blogspot.com/2014/12/bluetooth-communication-between-android.h
 package com.example.androidbtcontrol;
 
 
-import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+
 import java.util.LinkedHashMap;
 
 import static android.location.LocationManager.GPS_PROVIDER;
@@ -94,7 +81,7 @@ public class MainActivity extends AppCompatActivity{
         });
 
         final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
+        MyCurrentLocationListener locationListener = new MyCurrentLocationListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
         locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
 
@@ -109,8 +96,20 @@ public class MainActivity extends AppCompatActivity{
                 if(tempLocation != null) {
                     String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
 
+                    Toast.makeText(MainActivity.this, myLocation, Toast.LENGTH_LONG).show();
                     //I make a log to see the results
                     Log.e("MY CURRENT LOCATION", myLocation);
+                }
+                for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
+                    String key = entry.getKey();
+                    Treatment value = entry.getValue();
+
+                    String treatment = "Treatment: " + key + " is " + value.getName() + " of type - " + value.getType();
+                    Toast.makeText(MainActivity.this, treatment, Toast.LENGTH_LONG).show();
+
+                    Log.e(MainActivity.class.getName(), key);
+                    Log.e(MainActivity.class.getName(), value.getName());
+                    Log.e(MainActivity.class.getName(), value.getType());
                 }
             }
 
