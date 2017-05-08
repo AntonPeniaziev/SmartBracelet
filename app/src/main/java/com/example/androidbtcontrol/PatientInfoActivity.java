@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class PatientInfoActivity extends AppCompatActivity {
 
-    CostumAdapter _patientsAdapter;
+    PatientInfoAdapter _patientsAdapter;
     ListView _listView;
 
     @Override
@@ -20,8 +21,11 @@ public class PatientInfoActivity extends AppCompatActivity {
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
         _listView = (ListView) findViewById(android.R.id.list);
 
-        _patientsAdapter = new CostumAdapter(this, R.layout.patient_info_list_row);
+        _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _listView.setAdapter(_patientsAdapter);
 
+        String patientID = getIntent().getStringExtra("EXTRA_PATIENT_ID");
+        TextView text = (TextView) findViewById(R.id.braceletID);
+        text.setText(patientID);
     }
 }

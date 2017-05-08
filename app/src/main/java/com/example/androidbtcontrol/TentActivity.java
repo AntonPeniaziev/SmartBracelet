@@ -68,6 +68,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         Patient item = _adapter.getItem(position);
         Intent intent = new Intent(TentActivity.this,PatientInfoActivity.class);
         //based on item add info to intent
+        intent.putExtra("EXTRA_PATIENT_ID", item.id);
         startActivity(intent);
     }
 
