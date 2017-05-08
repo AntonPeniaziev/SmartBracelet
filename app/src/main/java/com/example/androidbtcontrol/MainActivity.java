@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity{
 
     BluetoothAdapter bluetoothAdapter;
 
-    Button  btbTent;
+    ImageButton  btbTent;
 
 
 
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btbTent = (Button)findViewById(R.id.buttonTent);
+        btbTent = (ImageButton)findViewById(R.id.buttonTent);
         btbTent.setOnClickListener(new View.OnClickListener(){
 
             @Override
