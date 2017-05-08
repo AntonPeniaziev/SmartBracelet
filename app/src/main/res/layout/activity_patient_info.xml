@@ -9,6 +9,7 @@
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:theme="@android:style/Theme.Holo.NoActionBar"
+    android:layout_weight="1"
     >
 
     <LinearLayout
@@ -58,6 +59,8 @@
         </LinearLayout>
     </LinearLayout>
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -66,17 +69,27 @@
         android:scrollbars="vertical"
         android:layout_alignParentStart="true"
         android:layout_weight="1"
-        android:layout_below="@+id/linearLayout">
-        <ListView
-            android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_column="0"
-            android:layout_row="0"
-            android:divider="@android:color/white"
-            android:dividerHeight="10.0sp"
-            android:layout_weight="1"/>
+        android:layout_below="@+id/linearLayout"
+        android:id="@+id/linearLayout2">
+
     </LinearLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:layout_gravity="bottom"
+        android:divider="@android:color/white"
+        android:dividerHeight="10.0sp"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:id="@+id/layout">
+        </LinearLayout>
+
 </RelativeLayout>
