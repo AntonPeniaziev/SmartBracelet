@@ -37,7 +37,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         _listView = (ListView) findViewById(android.R.id.list);
 
-        _adapter = new CostumAdapter(this);
+        _adapter = new CostumAdapter(this, R.layout.list_row);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
 

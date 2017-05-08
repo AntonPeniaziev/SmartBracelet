@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     /*
     final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
+        //locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ //locationListener);
     //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, 0, /*(LocationListener)*/ locationListener);
     /*
     btnTst = (Button)findViewById(R.id.myTestBtn);
