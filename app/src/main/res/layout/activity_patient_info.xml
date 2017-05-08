@@ -63,15 +63,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:scrollbars="vertical"
-        android:layout_alignParentStart="true"
         android:layout_weight="1"
+        android:id="@+id/linearLayout2"
         android:layout_below="@+id/linearLayout"
-        android:id="@+id/linearLayout2">
+        android:layout_alignParentStart="true"
+        android:weightSum="1">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.85" />
     </LinearLayout>
 
     <ListView
@@ -81,8 +85,9 @@
         android:layout_gravity="bottom"
         android:divider="@android:color/white"
         android:dividerHeight="10.0sp"
-        android:layout_below="@+id/linearLayout2"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="138dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
