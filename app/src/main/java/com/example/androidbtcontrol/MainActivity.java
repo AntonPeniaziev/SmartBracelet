@@ -34,14 +34,14 @@ import com.mongodb.client.MongoDatabase;
 import java.util.LinkedHashMap;
 
 
+
 public class MainActivity extends AppCompatActivity {
 
 
 
     BluetoothAdapter bluetoothAdapter;
 
-    ImageButton  btbTent;
-
+    ImageButton  btbTent, testBtn;
 
 
     //LinkedHashMap<String, String> activitiesTable = new LinkedHashMap<String, String>();
@@ -63,6 +63,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(TentIntent);
             }});
 
+        testBtn = (ImageButton)findViewById(R.id.testButton);
+        testBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent newIntent = new Intent(MainActivity.this, TestActivity.class);
+
+                startActivity(newIntent);
+            }});
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
