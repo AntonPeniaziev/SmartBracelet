@@ -51,8 +51,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 //               "beep sent to " + item.getBtMac().toString(),
 //                Toast.LENGTH_SHORT).show();
 //        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
-        Intent intent = new Intent(getBaseContext(), PatientInfoActivity.class);
-        intent.putExtra("PATIENT_ID", item.getBtMac().toString());
+        Intent intent = new Intent(TentActivity.this, PatientInfoActivity.class);
+        //intent.putExtra("PATIENT_ID", item.getBtMac().toString());
         startActivity(intent);
 
     }

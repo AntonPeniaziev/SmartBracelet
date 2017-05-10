@@ -19,13 +19,15 @@ public class PatientInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient_info);
         getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-        _listView = (ListView) findViewById(android.R.id.list);
+        _listView = (ListView) findViewById(R.id.listView);
 
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _listView.setAdapter(_patientsAdapter);
 
-        String patientID = getIntent().getStringExtra("PATIENT_ID");
+        //_listView.setAdapter(_patientsAdapter);
+
+        //String patientID = getIntent().getStringExtra("PATIENT_ID");
         TextView text = (TextView) findViewById(R.id.braceletID);
-        text.setText(patientID);
+        //text.setText(patientID);
     }
 }
