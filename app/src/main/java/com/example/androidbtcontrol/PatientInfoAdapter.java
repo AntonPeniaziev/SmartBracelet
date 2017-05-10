@@ -56,7 +56,7 @@ public class PatientInfoAdapter extends BaseAdapter {
         }
 
         TextView braceletID = (TextView) vi.findViewById(R.id.braceletID);
-        //braceletID.setText(_patientInfo.getID());
+       // braceletID.setText(_patientInfo.getID());
         return vi;
     }
 }
