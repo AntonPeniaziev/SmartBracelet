@@ -17,11 +17,8 @@ public class Bracelet {
     String jsonAsStr;
     String jsonArray;
 
-    TreatmentsTable tTable; //hash table to translate codes to treatments name and types
-
     public Bracelet(String jsonStr, String macAddress) {
 
-        tTable = new TreatmentsTable();
         JsonArrList = Collections.synchronizedList(new ArrayList<JSONObject>());
         JsonArrList.add(ArduinoFormatToJson(jsonStr));
 

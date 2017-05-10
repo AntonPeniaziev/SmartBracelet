@@ -1,5 +1,6 @@
 package com.example.androidbtcontrol;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,18 +27,18 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         _tent = new Tent();
         textInfo2 = (TextView)findViewById(R.id.myView);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         _bTservice = new BTservice(textInfo2, this);
 
         _listView = (ListView) findViewById(android.R.id.list);
 
-        _adapter = new CostumAdapter(this);
+        _adapter = new CostumAdapter(this, R.layout.list_row);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
 
@@ -45,11 +46,15 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Patient item = _adapter.getItem(position);
-        Toast.makeText(this,
-               "beep sent to " + item.getBtMac().toString(),
-                Toast.LENGTH_SHORT).show();
-        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
+              Patient item = _adapter.getItem(position);
+//        Toast.makeText(this,
+//               "beep sent to " + item.getBtMac().toString(),
+//                Toast.LENGTH_SHORT).show();
+//        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
+        Intent intent = new Intent(getBaseContext(), PatientInfoActivity.class);
+        intent.putExtra("PATIENT_ID", item.getBtMac().toString());
+        startActivity(intent);
+
     }
 
     @Override
@@ -123,6 +128,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         /**************************************************************************/
         updateListView(_tent.getPatientsArray());
 
+    }
+
+    BTservice getBt(){
+        return _bTservice;
     }
 
 }

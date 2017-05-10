@@ -12,36 +12,39 @@ package com.example.androidbtcontrol;
 
 
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import java.util.LinkedHashMap;
 
-import static android.location.LocationManager.GPS_PROVIDER;
-import static android.location.LocationManager.NETWORK_PROVIDER;
 
 
-
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
 
 
     BluetoothAdapter bluetoothAdapter;
 
-    Button  btbTent, btnWeb, btnTst;
+    ImageButton  btbTent, testBtn;
 
-    TreatmentsTable tTable;
+
     //LinkedHashMap<String, String> activitiesTable = new LinkedHashMap<String, String>();
-
-    static final float minDistance = 500; // the minimum distance for GPS updates
 
 
     @Override
@@ -49,9 +52,8 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tTable = new TreatmentsTable();
 
-        btbTent = (Button)findViewById(R.id.buttonTent);
+        btbTent = (ImageButton)findViewById(R.id.buttonTent);
         btbTent.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -61,6 +63,15 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(TentIntent);
             }});
 
+        testBtn = (ImageButton)findViewById(R.id.testButton);
+        testBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent newIntent = new Intent(MainActivity.this, TestActivity.class);
+
+                startActivity(newIntent);
+            }});
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -71,53 +82,43 @@ public class MainActivity extends AppCompatActivity{
             return;
         }
 
-        btnWeb = (Button)findViewById(R.id.buttonWeb);// a button to test updates to the web
-        btnWeb.setOnClickListener(new View.OnClickListener(){
+    }
 
-            @Override
-            public void onClick(View v) {
-                new SendToMongodbTask().execute();
-            }
-        });
 
-        final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        MyCurrentLocationListener locationListener = new MyCurrentLocationListener();
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
-        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistance, /*(LocationListener)*/ locationListener);
-
-        btnTst = (Button)findViewById(R.id.myTestBtn);//a button to test location
+    /**
+     *
+     */
+    /*
+    final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
+        //locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ //locationListener);
+    //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, 0, /*(LocationListener)*/ locationListener);
+    /*
+    btnTst = (Button)findViewById(R.id.myTestBtn);
         btnTst.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
-                if(tempLocation == null)
-                    tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
-
-                if(tempLocation != null) {
-                    String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
-
-                    Toast.makeText(MainActivity.this, myLocation, Toast.LENGTH_LONG).show();
-                    //I make a log to see the results
-                    Log.e("MY CURRENT LOCATION", myLocation);
-                }
-                for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
+        @Override
+        public void onClick(View v) {
+                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
                     String key = entry.getKey();
                     Treatment value = entry.getValue();
-
-                    String treatment = "Treatment: " + key + " is " + value.getName() + " of type - " + value.getType();
-                    Toast.makeText(MainActivity.this, treatment, Toast.LENGTH_LONG).show();
 
                     Log.e(MainActivity.class.getName(), key);
                     Log.e(MainActivity.class.getName(), value.getName());
                     Log.e(MainActivity.class.getName(), value.getType());
-                }
+                }*/
+           /* Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        /*if(tempLocation == null)
+            tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);*/
+
+           /* if(tempLocation != null) {
+                String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
+
+                //I make a log to see the results
+                Log.e("MY CURRENT LOCATION", myLocation);
             }
+        }
 
-        });
-
-
-
-    }
+    });*/
 
     @Override
     protected void onStart() {

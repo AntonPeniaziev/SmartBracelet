@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
     android:orientation="vertical"
-    android:padding="5dip">
+    android:padding="5dip"
+    android:id="@+id/row"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false">
 
     <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout
@@ -14,7 +19,11 @@
         android:layout_alignParentLeft="true"
         android:layout_marginRight="5dip"
         android:orientation="vertical"
-        android:padding="3dip">
+        android:padding="3dip"
+        android:clickable="false"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="false"
+        android:focusableInTouchMode="false">
 
 
     </LinearLayout>
@@ -30,20 +39,24 @@
         android:textColor="#040404"
         android:textSize="25sp"
         android:textStyle="bold"
-        android:typeface="sans" />
+        android:typeface="sans"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
 
     <TextView
         android:id="@+id/json"
         android:layout_width="fill_parent"
         android:layout_height="100dp"
-        android:layout_alignTop="@+id/thumbnail"
-        android:layout_below="@id/braceletMAC"
-        android:layout_marginTop="25dip"
-        android:layout_toRightOf="@+id/thumbnail"
         android:text="json stuff"
         android:textColor="#000000"
-        android:textSize="8dip" />
+        android:textSize="8dip"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:layout_above="@+id/bodyTemp"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/bodyTemp"
@@ -54,7 +67,10 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:text="36.6 ºC"
         android:textColor="#000000"
-        android:textSize="15dip" />
+        android:textSize="15dip"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
 
     <TextView
         android:id="@+id/bloodPressure"
@@ -66,7 +82,18 @@
         android:text="120/80"
 
         android:textSize="15dip"
-        android:textColor="#000000" />
-
+        android:textColor="#000000"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/beepBracelet"
+        android:layout_above="@+id/json"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:text="Beep"/>
 
 </RelativeLayout>
