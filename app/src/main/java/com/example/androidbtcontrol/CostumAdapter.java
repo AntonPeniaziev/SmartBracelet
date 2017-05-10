@@ -1,5 +1,6 @@
 package com.example.androidbtcontrol;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Layout;
@@ -8,12 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+
+import BTservice.BTservice;
 
 /**
  * Created by Sapir Eltanani on 24/04/2017.
@@ -53,7 +58,7 @@ public class CostumAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         View vi = convertView;
         if (vi == null) {
@@ -72,7 +77,24 @@ public class CostumAdapter extends BaseAdapter {
             json.setText(data.get(position).getJson());
         }
 
+        Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
+        setOnClick(beepButton, (TentActivity)context, position);
+
         return vi;
+    }
+
+    private void setOnClick(final Button btn, final TentActivity currActivity,final int position){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String patientBMac= data.get(position).getBtMac().toString();
+                Toast.makeText(currActivity,
+                        "beep sent to " + patientBMac,
+                        Toast.LENGTH_SHORT).show();
+                currActivity.getBt().addDataToBeSentByMac(patientBMac,"<6,0>");
+
+            }
+        });
     }
 
     public void setData(ArrayList<Patient> data) {

@@ -24,7 +24,7 @@ public class PatientInfoActivity extends AppCompatActivity {
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _listView.setAdapter(_patientsAdapter);
 
-        String patientID = getIntent().getStringExtra("EXTRA_PATIENT_ID");
+        String patientID = getIntent().getStringExtra("PATIENT_ID");
         TextView text = (TextView) findViewById(R.id.braceletID);
         text.setText(patientID);
     }
