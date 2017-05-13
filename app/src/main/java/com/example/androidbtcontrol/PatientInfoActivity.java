@@ -1,5 +1,6 @@
 package com.example.androidbtcontrol;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,5 +30,6 @@ public class PatientInfoActivity extends AppCompatActivity {
         //String patientID = getIntent().getStringExtra("PATIENT_ID");
         TextView text = (TextView) findViewById(R.id.braceletID);
         //text.setText(patientID);
+
     }
 }

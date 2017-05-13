@@ -53,6 +53,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 //        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
         Intent intent = new Intent(TentActivity.this, PatientInfoActivity.class);
         //intent.putExtra("PATIENT_ID", item.getBtMac().toString());
+
         startActivity(intent);
 
     }
@@ -72,6 +73,17 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         if(_updateData!=null){
           //  updateData.cancel();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //_updateData.run();
     }
 
     private class UpdateData extends Thread {

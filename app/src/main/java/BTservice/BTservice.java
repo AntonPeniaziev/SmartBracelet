@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class BTservice implements BTserviceInterface {
     private BluetoothAdapter _bluetoothAdapter;
     ConcurrentHashMap<String, List<String>> _macToJsonList;
     ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
+    HashMap<String, ThreadConnected> _ConnectionThreadsByMac;
     TextView _textInfo;
     Context _context;
     Handler _handler;
@@ -41,7 +43,6 @@ public class BTservice implements BTserviceInterface {
             "00001101-0000-1000-8000-00805F9B34FB";
 
     ThreadConnectBTdevice myThreadConnectBTdevice;
-    ThreadConnected myThreadConnected;
     String JsonMessage;
     ArrayList<BluetoothDevice> discoveredDevices;
 
@@ -72,6 +73,7 @@ public class BTservice implements BTserviceInterface {
         discoveredDevices = new ArrayList<BluetoothDevice>();
         _macToJsonList = new ConcurrentHashMap<String, List<String>>();
         _macToDataForBracelet = new ConcurrentHashMap<String, List<String>>();
+        _ConnectionThreadsByMac = new HashMap<String, ThreadConnected>();
     }
 
 
@@ -81,9 +83,8 @@ public class BTservice implements BTserviceInterface {
     //Called in ThreadConnectBTdevice once connect successed
     //to start ThreadConnected
     private void startThreadConnected(BluetoothSocket socket, BluetoothDevice device){
-
-        myThreadConnected = new ThreadConnected(socket, device);
-        myThreadConnected.start();
+        _ConnectionThreadsByMac.put(device.getAddress().toString(), new ThreadConnected(socket, device));
+        _ConnectionThreadsByMac.get(device.getAddress().toString()).start();
     }
 
     private class ThreadConnectBTdevice extends Thread {
@@ -218,7 +219,7 @@ public class BTservice implements BTserviceInterface {
 
             String startChar = "<1,234>\n";
             byte[] bytesToSend = startChar.getBytes();
-            myThreadConnected.write(bytesToSend);
+            _ConnectionThreadsByMac.get(device.getAddress().toString()).write(bytesToSend);
 
             while (true) {
 
@@ -355,7 +356,8 @@ public class BTservice implements BTserviceInterface {
         for (BluetoothDevice device : discoveredDevices) {
             if (device.getName().toString().equals("HC-06") ||
                     device.getName().toString().equals("HC-05") ||
-                    device.getName().toString().equals("gun1")) {
+                    device.getName().toString().equals("gun1") ||
+                    device.getName().toString().equals("11")) {
                 Toast.makeText(_context,
                         "got bracelet bluetooth " + device.getAddress().toString(),
                         Toast.LENGTH_SHORT).show();
@@ -395,7 +397,7 @@ public class BTservice implements BTserviceInterface {
                     Iterator i = _macToDataForBracelet.get(mac).iterator();
                     while (i.hasNext()) {
                         byte[] toMac = i.next().toString().getBytes();
-                        myThreadConnected.write(toMac);
+                        _ConnectionThreadsByMac.get(mac).write(toMac);
                     }
                     _macToDataForBracelet.get(mac).clear();
                 }
