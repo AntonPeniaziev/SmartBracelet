@@ -1,11 +1,15 @@
 package com.example.androidbtcontrol;
 
-public class Treatment {
-    String name,type;
+import java.util.ArrayList;
 
-    public Treatment(String name, String type) {
+public class Treatment {
+    String name,type,lastTime;
+    ArrayList<String> _history;
+
+    public Treatment(String name, String type, String time) {
         this.name = name;
         this.type = type;
+        this.lastTime = time;
     }
 
     public String getName() {
