@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +27,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        Toast.makeText(this,
+//               "Tent onCreate" ,
+//                Toast.LENGTH_SHORT).show();
         setContentView(R.layout.activity_tent);
 
         _tent = new Tent();
@@ -37,6 +42,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _adapter = new CostumAdapter(this, R.layout.list_row);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
+
+        _bTservice.startBT();
+        _updateData = new UpdateData();
+        _updateData.start();
 
         /** Will be updated from the web**/
         TreatmensUidToName = new ConcurrentHashMap<>();
@@ -64,14 +73,20 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     protected void onStart() {
+//        Toast.makeText(this,
+//                "Tent onStart" ,
+//                Toast.LENGTH_SHORT).show();
         super.onStart();
-        _bTservice.startBT();
-        _updateData = new UpdateData();
-        _updateData.start();
+
+
+
     }
 
     @Override
     protected void onDestroy() {
+//        Toast.makeText(this,
+//                "Tent onDestroy" ,
+//                Toast.LENGTH_SHORT).show();
         super.onDestroy();
         _bTservice.destroy();
         if(_updateData!=null){
@@ -81,11 +96,17 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     protected void onPause() {
+//        Toast.makeText(this,
+//                "Tent onPause" ,
+//                Toast.LENGTH_SHORT).show();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
+//        Toast.makeText(this,
+//                "Tent onResume" ,
+//                Toast.LENGTH_SHORT).show();
         super.onResume();
         //_updateData.run();
     }

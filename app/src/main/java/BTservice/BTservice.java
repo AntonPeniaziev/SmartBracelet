@@ -216,7 +216,7 @@ public class BTservice implements BTserviceInterface {
             byte[] buffer = new byte[1024];
             int bytes;
             String strRx = "";
-
+            boolean receivedOldData = false;
             String startChar = "<1,234>\n";
             byte[] bytesToSend = startChar.getBytes();
             _ConnectionThreadsByMac.get(device.getAddress().toString()).write(bytesToSend);
@@ -235,7 +235,11 @@ public class BTservice implements BTserviceInterface {
 //                                Toast.LENGTH_SHORT).show();
 //                    }
 
-                    if (strReceived.contains(">")) {
+//                    if (((false == receivedOldData) && strReceived.contains("]")) ||
+//                            ((true == receivedOldData) && strReceived.contains(">"))) {
+
+                        if (strReceived.contains(">")) {
+                        receivedOldData = true;
                         JsonMessage += strReceived;
                         //JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
                         //tent.AddPatient(JsonMessage, device.getAddress());
