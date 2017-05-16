@@ -19,4 +19,6 @@ public class Treatment {
     public String getType() {
         return type;
     }
+
+    public String getLastTime() { return lastTime; }
 }

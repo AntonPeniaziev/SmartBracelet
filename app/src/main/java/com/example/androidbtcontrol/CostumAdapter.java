@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import BTservice.BTservice;
@@ -105,8 +106,8 @@ public class CostumAdapter extends BaseAdapter {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
-               // new SendToMongodbTask().execute((Runnable) patientTreatments);
+                List<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
+                new SendToMongodbTask().execute(patientTreatments);
             }
         });
 
