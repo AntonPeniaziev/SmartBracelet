@@ -235,11 +235,11 @@ public class BTservice implements BTserviceInterface {
 //                                Toast.LENGTH_SHORT).show();
 //                    }
 
-//                    if (((false == receivedOldData) && strReceived.contains("]")) ||
-//                            ((true == receivedOldData) && strReceived.contains(">"))) {
+                    if (((false == receivedOldData) && strReceived.contains("]")) ||
+                            ((true == receivedOldData) && strReceived.contains(">"))) {
 
-                        if (strReceived.contains(">")) {
-                        receivedOldData = true;
+                       // if (strReceived.contains(">")) {
+
                         JsonMessage += strReceived;
                         //JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
                         //tent.AddPatient(JsonMessage, device.getAddress());
@@ -255,6 +255,7 @@ public class BTservice implements BTserviceInterface {
 //                            }});
                         _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
                         JsonMessage = "";
+                        receivedOldData = true;
                     }
                     else {
                         JsonMessage += strReceived;
@@ -373,7 +374,9 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void destroy() {
-        myThreadConnectBTdevice.cancel();
+        if (myThreadConnectBTdevice != null) {
+            myThreadConnectBTdevice.cancel();
+        }
         _context.unregisterReceiver(mReceiver);
     }
 

@@ -63,8 +63,21 @@ public class Bracelet {
 
     public void AddActionsToBracelet(String jsonStr) {
 
+        if (jsonStr.contains("[") || jsonStr.contains("]")) {
+            String[] firstData = jsonStr.split("<");
+            for (int i = 1; i < firstData.length; i++) {
+                String toAdd = "<" + firstData[i];
+
+                _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
+                        new Treatment(getMessageTreatmentName(toAdd),
+                                "A", getMessageTime(jsonStr)));
+            }
+
+            return;
+        }
+
         //TODO different types of messages and origins
-        if (!getMessageType(jsonStr).equals("0")) {
+        if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
             return;
         }
         jsonAsStr += jsonStr;
@@ -98,6 +111,9 @@ public class Bracelet {
     }
 
     private String getMessageTreatmentName(String mes) {
+        if (false == TentActivity.TreatmensUidToName.containsKey(getMessageUID(mes))) {
+            return "Unknown";
+        }
         return TentActivity.TreatmensUidToName.get(getMessageUID(mes));
     }
 
