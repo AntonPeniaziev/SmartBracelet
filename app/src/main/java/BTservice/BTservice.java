@@ -361,7 +361,6 @@ public class BTservice implements BTserviceInterface {
         for (BluetoothDevice device : discoveredDevices) {
             if (device.getName().toString().equals("HC-06") ||
                     device.getName().toString().equals("HC-05") ||
-                    device.getName().toString().equals("gun1") ||
                     device.getName().toString().equals("11")) {
                 Toast.makeText(_context,
                         "got bracelet bluetooth " + device.getAddress().toString(),

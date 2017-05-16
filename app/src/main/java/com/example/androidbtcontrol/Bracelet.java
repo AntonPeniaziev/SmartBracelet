@@ -33,6 +33,7 @@ public class Bracelet {
         //jsonAsStr = jsonStr;
 
         //JsonArrList = new List<JSONArray>();
+        AddActionsToBracelet(jsonStr);
 
     }
 
@@ -61,39 +62,39 @@ public class Bracelet {
         return jsonArray;
     }
 
-    public void AddActionsToBracelet(String jsonStr) {
+        public void AddActionsToBracelet(String jsonStr) {
 
-        if (jsonStr.contains("[") || jsonStr.contains("]")) {
-            String[] firstData = jsonStr.split("<");
-            for (int i = 1; i < firstData.length; i++) {
-                String toAdd = "<" + firstData[i];
+            if (jsonStr.contains("[") || jsonStr.contains("]")) {
+                String[] firstData = jsonStr.split("<");
+                for (int i = 1; i < firstData.length; i++) {
+                    String toAdd = "<" + firstData[i];
 
-                _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
-                        new Treatment(getMessageTreatmentName(toAdd),
-                                "A", getMessageTime(jsonStr)));
+                    _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
+                            new Treatment(getMessageTreatmentName(toAdd),
+                                    "A", getMessageTime(jsonStr)));
+                }
+
+                return;
             }
 
-            return;
-        }
+            //TODO different types of messages and origins
+            if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
+                return;
+            }
+            jsonAsStr += jsonStr;
+            StringBuilder ArrayResult = new StringBuilder(jsonArray);
+            ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
+            jsonArray = ArrayResult.toString();
 
-        //TODO different types of messages and origins
-        if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
-            return;
-        }
-        jsonAsStr += jsonStr;
-        StringBuilder ArrayResult = new StringBuilder(jsonArray);
-        ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
-        jsonArray = ArrayResult.toString();
+            _treatments.put(getMessageTime(jsonStr) + "|" + getMessageTsID(jsonStr),
+                    new Treatment(getMessageTreatmentName(jsonStr),
+                            "A", getMessageTime(jsonStr)));
 
-        _treatments.put(getMessageTime(jsonStr) + "|" + getMessageTsID(jsonStr),
-                new Treatment(getMessageTreatmentName(jsonStr),
-                        "A", getMessageTime(jsonStr)));
+            synchronized(JsonArrList) {
 
-        synchronized(JsonArrList) {
+                    JsonArrList.add(ArduinoFormatToJson(jsonStr));
 
-                JsonArrList.add(ArduinoFormatToJson(jsonStr));
-
-        }
+            }
 
     }
 
