@@ -37,7 +37,7 @@ public class TestActivity extends AppCompatActivity {
                 if (tempLocation != null) {
                     String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
 
-                    new SendToMongodbTask().execute(myLocation);
+                   // new SendToMongodbTask().execute(myLocation);
                     //Add a function to test
                 }
             }

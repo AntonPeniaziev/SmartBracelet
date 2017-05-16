@@ -105,8 +105,8 @@ public class CostumAdapter extends BaseAdapter {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String patientBJason = data.get(position).getJson();
-                new SendToMongodbTask().execute(patientBJason);
+                ArrayList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
+               // new SendToMongodbTask().execute((Runnable) patientTreatments);
             }
         });
 

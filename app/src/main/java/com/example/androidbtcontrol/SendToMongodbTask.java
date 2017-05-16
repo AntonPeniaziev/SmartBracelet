@@ -15,9 +15,9 @@ import com.mongodb.client.MongoDatabase;
 
 
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-public class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
+public class SendToMongodbTask extends AsyncTask<Treatment, Integer, Long> {
     @Override
-    protected Long doInBackground(String... patients) {
+    protected Long doInBackground(Treatment... treatments) {
 
         //Log.e(MainActivity.class.getName(), "SendToMongodbTask");
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
@@ -27,7 +27,7 @@ public class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
 
         BasicDBObject document = new BasicDBObject();
 
-        document.put("jason", patients[0]);
+        document.put("jason", treatments[0]);
 
         dbCollection.insertOne(document);
 
