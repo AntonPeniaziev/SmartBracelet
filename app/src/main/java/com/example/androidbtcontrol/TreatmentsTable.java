@@ -51,8 +51,8 @@ public class TreatmentsTable {
                 Object number = doc.get("number");
                 Object name = doc.get("name");
                 Object type = doc.get("type");
-
-                Treatment t = new Treatment(name.toString(), type.toString());
+                //TODO add time
+                Treatment t = new Treatment(name.toString(), type.toString(),"");
                 treatmentsTable.put(number.toString(), t);
 
                 //Log.e(MainActivity.class.getName(), number.toString());

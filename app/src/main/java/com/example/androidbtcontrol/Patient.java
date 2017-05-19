@@ -2,13 +2,14 @@ package com.example.androidbtcontrol;
 
 
 import android.util.Log;
+
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Patient {
     Bracelet _bracelet;
     // Bracelet MAC + patient registration time
     String id;
-    boolean _issueBeep;
     /**
      * id: depends on bracelet reusability + ability to identify soldier in the tent
      * StateDescription : text, voice, image
@@ -18,7 +19,6 @@ public class Patient {
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
-        _issueBeep = false;
     }
 
     public String getBtMac() {
@@ -56,7 +56,8 @@ public class Patient {
 
     }
 
-    public void beepBracelet() {
-        _issueBeep = true;
+    public ArrayList<Treatment> getTreatmentsArray() {
+        return _bracelet.getTreatmentsArray();
     }
+
 }

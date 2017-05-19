@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PatientInfoActivity"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:theme="@android:style/Theme.Holo.NoActionBar"
+    android:layout_weight="1"
+    >
+
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbars="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_weight="1"
+        android:background="#375E7D"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentEnd="true">
+
+
+        <LinearLayout
+            android:id="@+id/thumbnail"
+            android:layout_width="239dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal"
+            android:background="#375E7D"
+            android:weightSum="1"
+            android:layout_gravity="center_horizontal"
+            android:scrollbars="vertical">
+
+
+            <TextView
+                android:id="@+id/tumb"
+                android:layout_width="91dp"
+                android:layout_height="wrap_content"
+                android:background="#375E7D"
+                android:drawableLeft="@drawable/image"
+                android:drawablePadding="5dp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/braceletID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#375E7D"
+                android:gravity="center"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="550dp"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
+        android:id="@+id/linearLayout1"
+        android:weightSum="1"
+        android:layout_marginTop="34dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignStart="@+id/listView"
+        android:background="#F2F2F2">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="0.63"
+            android:src="@drawable/information"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/infoText"
+            android:orientation="vertical"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout4"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/linearLayout6"
+                android:layout_marginEnd="53dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/temperature"
+                    android:gravity="center"
+                    android:text="@string/degree"
+                    android:textColor="#000000">
+                </TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout6"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/linearLayout7"
+                android:layout_marginEnd="43dp">
+
+                <TextView
+                    android:id="@+id/air"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="16"
+                    android:textColor="#000000"></TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout7"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="93dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/oxygen"
+                    android:text="92%"
+                    android:textColor="#000000"
+                    android:gravity="center">
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="32dp"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/linearLayout4">
+
+                <TextView
+                    android:id="@+id/bloodPressure"
+                    android:layout_width="60dp"
+                    android:layout_height="50dp"
+                    android:text="128/95"
+                    android:textColor="#000000"
+                    android:gravity="center">
+
+                </TextView>
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout5"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="72dp">
+
+            <TextView
+                android:id="@+id/heartRate"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="76"
+                android:textColor="#000000"
+                android:gravity="center">
+
+            </TextView>
+        </LinearLayout>
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="550dp"
+        android:layout_height="100dp"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
+        android:id="@+id/RelativeLayout1"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp">
+
+            <LinearLayout
+                android:layout_width="260dp"
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout8"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true">
+
+                <Button
+                    android:id="@+id/button4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Urgent Evacuation"
+                    android:textStyle="bold"
+                    android:textSize="30dp"
+                    android:background="#FF232B"
+                    android:fontFamily="sans-serif-light"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="260dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/saveFile"
+                    android:background="#375E7D"
+                    android:text="Save File"
+                    android:textStyle="bold"
+                    android:textSize="30dp"
+                    android:fontFamily="sans-serif-light"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="550dp"
+        android:layout_height="524dp"
+        android:layout_gravity="bottom"
+        android:divider="@android:color/white"
+        android:dividerHeight="10.0sp"
+        android:layout_marginTop="39dp"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_alignStart="@+id/RelativeLayout1" />
+
+
+
+
+</RelativeLayout>

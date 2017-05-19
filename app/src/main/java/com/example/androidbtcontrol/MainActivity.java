@@ -11,7 +11,6 @@ http://android-er.blogspot.com/2014/12/bluetooth-communication-between-android.h
 package com.example.androidbtcontrol;
 
 
-import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -20,9 +19,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -36,24 +35,25 @@ import java.util.LinkedHashMap;
 
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
 
 
-    //BluetoothAdapter bluetoothAdapter;
+    BluetoothAdapter bluetoothAdapter;
 
-    Button  btbTent;
+    ImageButton  btbTent, testBtn;
 
 
-
-    LinkedHashMap<String, String> activitiesTable = new LinkedHashMap<String, String>();
+    //LinkedHashMap<String, String> activitiesTable = new LinkedHashMap<String, String>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btbTent = (Button)findViewById(R.id.buttonTent);
+
+
+        btbTent = (ImageButton)findViewById(R.id.buttonTent);
         btbTent.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -63,43 +63,62 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(TentIntent);
             }});
 
+        testBtn = (ImageButton)findViewById(R.id.testButton);
+        testBtn.setOnClickListener(new View.OnClickListener(){
 
-//        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//        if (bluetoothAdapter == null) {
-//            Toast.makeText(this,
-//                    "Bluetooth is not supported on this hardware platform",
-//                    Toast.LENGTH_LONG).show();
-//            finish();
-//            return;
-//        }
+            @Override
+            public void onClick(View v) {
+                Intent newIntent = new Intent(MainActivity.this, TestActivity.class);
 
-    }
+                startActivity(newIntent);
+            }});
 
-
-
-    //mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-    private class SendToMongodbTask extends AsyncTask<String, Integer, Long> {
-
-        @Override
-        protected Long doInBackground(String... strings) {
-
-            Log.e(MainActivity.class.getName(), "SendToMongodbTask");
-            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
-            MongoClient mongoClient = new MongoClient(mongoUri);
-            MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-            MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
-
-            //   BasicDBObject document = new BasicDBObject();
-
-            //document.put("name", strings[0]);
-            //  document.put("number", 7789);
-
-            // dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
-            //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
-            //dbCollection.insertOne(jsonData);
-            return null;
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this,
+                    "Bluetooth is not supported on this hardware platform",
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
+
     }
+
+
+    /**
+     *
+     */
+    /*
+    final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
+        //locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ //locationListener);
+    //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, 0, /*(LocationListener)*/ locationListener);
+    /*
+    btnTst = (Button)findViewById(R.id.myTestBtn);
+        btnTst.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View v) {
+                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
+                    String key = entry.getKey();
+                    Treatment value = entry.getValue();
+
+                    Log.e(MainActivity.class.getName(), key);
+                    Log.e(MainActivity.class.getName(), value.getName());
+                    Log.e(MainActivity.class.getName(), value.getType());
+                }*/
+           /* Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        /*if(tempLocation == null)
+            tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);*/
+
+           /* if(tempLocation != null) {
+                String myLocation = "Latitude = " + tempLocation.getLatitude() + " Longitude = " + tempLocation.getLongitude();
+
+                //I make a log to see the results
+                Log.e("MY CURRENT LOCATION", myLocation);
+            }
+        }
+
+    });*/
 
     @Override
     protected void onStart() {
@@ -110,7 +129,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //  unregisterReceiver(mReceiver);
+      //  unregisterReceiver(mReceiver);
 
     }
 

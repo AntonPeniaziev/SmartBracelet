@@ -1,14 +1,25 @@
 package com.example.androidbtcontrol;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import BTservice.BTservice;
 
 /**
  * Created by Sapir Eltanani on 24/04/2017.
@@ -19,12 +30,14 @@ public class CostumAdapter extends BaseAdapter {
     Context context;
     ArrayList<Patient> data;
     private static LayoutInflater inflater = null;
+    int _listRow;
 
-    public CostumAdapter(Context context) {
+    public CostumAdapter(Context context, int layoutId) {
         // TODO Auto-generated constructor stub
         this.context = context;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        _listRow=layoutId;
     }
 
     @Override
@@ -46,11 +59,11 @@ public class CostumAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
         View vi = convertView;
         if (vi == null) {
-            vi = inflater.inflate(R.layout.list_row, null);
+            vi = inflater.inflate(_listRow, null);
         }
 
         TextView text = (TextView) vi.findViewById(R.id.braceletMAC);
@@ -64,10 +77,49 @@ public class CostumAdapter extends BaseAdapter {
             bloodPressure.setText(data.get(position).getBloodPressure());
             json.setText(data.get(position).getJson());
         }
+
+        Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
+        setOnClickBeep(beepButton, (TentActivity)context, position);
+        Button webInfo = (Button) vi.findViewById(R.id.webInfo);
+        setOnClickWeb(webInfo,(TentActivity)context, position);
+
+
+
         return vi;
     }
 
+    private void setOnClickBeep(final Button btn, final TentActivity currActivity,final int position) {
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String patientBMac = data.get(position).getBtMac().toString();
+                Toast.makeText(currActivity,
+                        "beep sent to " + patientBMac,
+                        Toast.LENGTH_SHORT).show();
+                currActivity.getBt().addDataToBeSentByMac(patientBMac, "<6,0>");
+
+            }
+        });
+    }
+
+    private void setOnClickWeb(final Button btn, final TentActivity currActivity,final int position){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
+                new SendToMongodbTask().execute(patientTreatments);
+            }
+        });
+
+            }
+
     public void setData(ArrayList<Patient> data) {
         this.data = data;
+    }
+
+    @Override
+    public boolean isEnabled(int position)
+    {
+        return true;
     }
 }

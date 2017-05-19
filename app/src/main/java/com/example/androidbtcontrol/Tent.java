@@ -70,8 +70,33 @@ public class Tent {
         }
     }
 
+    public void updatePatientInfoTest(){
+        int numOfPatientTest = 5;
+        for(int i=0; i< numOfPatientTest ; ++i){
+            String num = new Integer(i).toString();
+            AddPatientInfo("", num);
+        }
+
+    }
+
     public ArrayList<Patient> getPatientsArray() {
         return new ArrayList<Patient>(_patients.values());
+    }
+
+    public ArrayList<String> getPatientsMacsArray() {
+        return new ArrayList<String>(_patients.keySet());
+    }
+
+    public String  getHeartrateByMac(String mac) {
+        return _patients.get(mac).getHeartRate();
+    }
+
+    public String  getJsonByMac(String mac) {
+        return _patients.get(mac).getJson();
+    }
+
+    public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
+        return _patients.get(mac).getTreatmentsArray();
     }
 
 }
