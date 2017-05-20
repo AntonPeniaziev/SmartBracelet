@@ -3,6 +3,7 @@ package com.example.androidbtcontrol;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -153,6 +154,15 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     void runOnUI() {
+
+        /**
+         * Uncomment the code below to test without physical Bluetooth devices
+         * AddPatientInfo should be changed back to be private before release
+         */
+//        _tent.AddPatientInfo("[{\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"},{\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"}, {\"uid\": \"111\",\"ts\": \"1\",\"tsid\": \"1\"}]#", "mac1");
+//        _tent.AddPatientInfo("[{\"uid\": \"22\",\"ts\": \"0\",\"tsid\": \"0\"},{\"uid\": \"22 1\",\"ts\": \"1\",\"tsid\": \"1\"}]#", "MAC2");
+
+        /**************************************************************************/
         updateListView(_tent.getPatientsArray());
     }
 
