@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Bracelet {
     ConcurrentHashMap<String, Treatment> _treatments;
     String jsonAsStr;
     String jsonArray;
+    long braceletStartTimeMinutes = 0;
 
     public Bracelet(String jsonStr, String macAddress) {
 
@@ -33,6 +35,8 @@ public class Bracelet {
         //jsonAsStr = jsonStr;
 
         //JsonArrList = new List<JSONArray>();
+        braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
+
         AddActionsToBracelet(jsonStr);
 
     }
@@ -64,10 +68,14 @@ public class Bracelet {
 
         public void AddActionsToBracelet(String jsonStr) {
 
-            if (jsonStr.contains("[") || jsonStr.contains("]")) {
+            if (jsonStr.contains("[") && jsonStr.contains("]")) {
                 String[] firstData = jsonStr.split("<");
                 for (int i = 1; i < firstData.length; i++) {
                     String toAdd = "<" + firstData[i];
+
+                    if (!getMessageType(toAdd).equals("0") || toAdd.contains("#")) {//TODO: cases # is sent
+                        continue;
+                    }
 
                     _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
                             new Treatment(getMessageTreatmentName(toAdd),
@@ -102,6 +110,13 @@ public class Bracelet {
         return mes.split(",")[0].split("<")[1];
     }
     private String getMessageTime(String mes) {
+        int arduinoMinutes = Integer.parseInt(mes.split(",")[1]);
+        long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(resultMinutes * 60 * 1000);
+        return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
+    }
+    private String getTimeField(String mes) {
         return mes.split(",")[1];
     }
     private String getMessageTsID(String mes) {
@@ -120,5 +135,19 @@ public class Bracelet {
 
     public ArrayList<Treatment> getTreatmentsArray() {
         return new ArrayList<Treatment>(_treatments.values());
+    }
+
+    private long getArduinoStartTimeFromFirstData(String mes) {
+        long res = 0;
+        Calendar c = Calendar.getInstance();
+        long minutes = c.getTimeInMillis() / (60 * 1000);
+
+        if (mes.contains("[") && mes.contains("]")) {
+            String[] firstData = mes.split("<");
+
+            res = minutes - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+        }
+
+        return res;
     }
 }
