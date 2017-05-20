@@ -17,19 +17,19 @@ import java.util.LinkedHashMap;
  */
 
 public class TreatmentsTable {
-    LinkedHashMap<String, Treatment> treatmentsTable;
+    LinkedHashMap<String, SubTreatment> treatmentsTable;
 
     public TreatmentsTable() {
-        treatmentsTable = new LinkedHashMap<String, Treatment>();
+        treatmentsTable = new LinkedHashMap<String, SubTreatment>();
 
         new TreatmentsTable.updateActivitiesTable().execute();
     }
 
-    public LinkedHashMap<String, Treatment> getTreatmentsTable() {
+    public LinkedHashMap<String, SubTreatment> getTreatmentsTable() {
         return treatmentsTable;
     }
 
-    public void putToTable(String s, Treatment d) {
+    public void putToTable(String s, SubTreatment d) {
         treatmentsTable.put(s, d);
     }
 
@@ -52,7 +52,7 @@ public class TreatmentsTable {
                 Object name = doc.get("name");
                 Object type = doc.get("type");
                 //TODO add time
-                Treatment t = new Treatment(name.toString(), type.toString(),"");
+                SubTreatment t = new SubTreatment(name.toString(), type.toString());
                 treatmentsTable.put(number.toString(), t);
 
                 //Log.e(MainActivity.class.getName(), number.toString());

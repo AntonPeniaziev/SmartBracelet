@@ -40,6 +40,9 @@ public class TestActivity extends AppCompatActivity {
                    // new SendToMongodbTask().execute(myLocation);
                     //Add a function to test
                 }
+
+                String[] userAndPass = {"doctor5", "123"};
+                new LoginTask().execute(userAndPass);
             }
         });
 

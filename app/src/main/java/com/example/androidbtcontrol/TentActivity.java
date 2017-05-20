@@ -24,6 +24,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     CostumAdapter _adapter;
     ListView _listView;
 
+    static public TreatmentsTable treatmentUidTranslator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +56,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         TreatmensUidToName.put("20","Israeli bandage");
         TreatmensUidToName.put("30","Hemostatic");
         TreatmensUidToName.put("40","Morphine");
+
+        treatmentUidTranslator = new TreatmentsTable();
 
     }
 
