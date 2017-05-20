@@ -63,7 +63,7 @@ public class BTservice implements BTserviceInterface {
         _textInfo.setText(stInfo);
 
         Toast.makeText(_context,
-                "BTservice constructor!",
+                "BTservice is on",
                 Toast.LENGTH_SHORT).show();
 
         myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
@@ -127,7 +127,9 @@ public class BTservice implements BTserviceInterface {
                     bluetoothSocket.close();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
-                    e1.printStackTrace();
+                    Toast.makeText(_context,
+                            "Connection lost with " + bluetoothDevice.getName(),
+                            Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -144,19 +146,10 @@ public class BTservice implements BTserviceInterface {
                         _textInfo.setText("");
                         Toast.makeText(_context, msgconnected, Toast.LENGTH_LONG).show();
 
-                        //listViewPairedDevice.setVisibility(View.GONE);
-                        //inputPane.setVisibility(View.VISIBLE);
                     }
                 });
 
                 startThreadConnected(bluetoothSocket, bluetoothDevice);
-
-                //String startChar = "<1," + _bluetoothAdapter.getAddress().toString() + ">";
-//                String startChar = "<1,23456789>\n";
-//                byte[] bytesToSend = startChar.getBytes();
-//                myThreadConnected.write(bytesToSend);
-                //byte[] NewLine = "\n".getBytes();
-                //myThreadConnected.write(NewLine);
 
             }else{
                 //fail
@@ -204,7 +197,9 @@ public class BTservice implements BTserviceInterface {
                 out = socket.getOutputStream();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
+                Toast.makeText(_context,
+                        "Connection trouble with " + btDevice.getName(),
+                        Toast.LENGTH_LONG).show();
             }
 
             connectedInputStream = in;
@@ -215,7 +210,6 @@ public class BTservice implements BTserviceInterface {
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
-            String strRx = "";
             boolean receivedOldData = false;
             String startChar = "<1,234>\n";
             byte[] bytesToSend = startChar.getBytes();
@@ -229,30 +223,12 @@ public class BTservice implements BTserviceInterface {
                     final String strReceived = new String(buffer, 0, bytes);
                     final String strByteCnt = String.valueOf(bytes) + " bytes received.\n";
 
-//                    if (strReceived.length() > 0) {
-//                        Toast.makeText(_context,
-//                                strReceived,
-//                                Toast.LENGTH_SHORT).show();
-//                    }
 
                     if (((false == receivedOldData) && strReceived.contains("]")) ||
                             ((true == receivedOldData) && strReceived.contains(">"))) {
 
-                       // if (strReceived.contains(">")) {
-
                         JsonMessage += strReceived;
-                        //JsonMessage = JsonMessage.substring(0, JsonMessage.length() - 3);
-                        //tent.AddPatient(JsonMessage, device.getAddress());
 
-
-
-//                        runOnUiThread(new Runnable(){
-//                            @Override
-//                            public void run() {
-//                                _textInfo.setText(JsonMessage);
-//
-//
-//                            }});
                         _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
                         JsonMessage = "";
                         receivedOldData = true;
@@ -268,12 +244,23 @@ public class BTservice implements BTserviceInterface {
 
                     final String msgConnectionLost = "Connection lost:\n"
                             + e.getMessage();
-                    runOnUiThread(new Runnable(){
 
-                        @Override
-                        public void run() {
-                            _textInfo.setText(msgConnectionLost);
-                        }});
+                    _macToJsonList.remove(device.getAddress().toString());
+                    _ConnectionThreadsByMac.remove(device.getAddress().toString());
+                    _macToDataForBracelet.remove(device.getAddress().toString());
+
+//                    runOnUiThread(new Runnable() {
+//
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(_context,
+//                                    msgConnectionLost,
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+
+                    this.interrupt();
+
                 }
             }
         }
@@ -411,14 +398,4 @@ public class BTservice implements BTserviceInterface {
         }
     }
 
-//    private long macAddressToInt (String macAddress) {
-//        String[] macAddressParts = macAddress.split(":");
-//
-//        // convert hex string to byte values
-//        Byte[] macAddressBytes = new Byte[6];
-//        for(int i=0; i<6; i++){
-//            Integer hex = Integer.parseInt(macAddressParts[i], 16);
-//            macAddressBytes[i] = hex.byteValue();
-//        }
-//    }
 }

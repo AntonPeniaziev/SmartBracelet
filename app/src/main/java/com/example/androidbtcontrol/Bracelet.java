@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -15,56 +16,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Bracelet {
     String _mac_address;
-    List<JSONObject> JsonArrList;
     ConcurrentHashMap<String, Treatment> _treatments;
-    String jsonAsStr;
     String jsonArray;
     long braceletStartTimeMinutes = 0;
 
     public Bracelet(String jsonStr, String macAddress) {
 
-        JsonArrList = Collections.synchronizedList(new ArrayList<JSONObject>());
-        JsonArrList.add(ArduinoFormatToJson(jsonStr));
-
         _mac_address = macAddress;
-        jsonAsStr = new String();
-        jsonArray = new String();
         _treatments = new ConcurrentHashMap<String, Treatment>();
 
-        jsonArray = "[" + ArduinoFormatToJson(jsonStr).toString() + "]";
-        //jsonAsStr = jsonStr;
-
-        //JsonArrList = new List<JSONArray>();
         braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
 
         AddActionsToBracelet(jsonStr);
 
     }
 
-    private JSONObject ArduinoFormatToJson(String mes) {
-        String JsonString = "{\"uid\": \"" + getMessageTreatmentName(mes) + "\",\"ts\": \"" + getMessageTime(mes) + "\",\"tsid\": \"" + getMessageTsID(mes) + "\"}";
-        JSONObject JsonResult = null;
-        try {
-            JsonResult = new JSONObject(JsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        return JsonResult;
-    }
-
-    public String getJsonAsStr () {
-//        String res;
-//        synchronized(JsonArrList) {
-//            res = new String();
-//            Iterator i = JsonArrList.iterator();
-//            while (i.hasNext()) {
-//                res += i.next().toString();
-//            }
-//
-//        }
-        return jsonArray;
-    }
 
         public void AddActionsToBracelet(String jsonStr) {
 
@@ -77,9 +44,10 @@ public class Bracelet {
                         continue;
                     }
 
-                    _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
+
+                    _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
                             new Treatment(getMessageTreatmentName(toAdd),
-                                    "A", getMessageTime(jsonStr)));
+                                    "A", getMessageTime(toAdd)));
                 }
 
                 return;
@@ -89,33 +57,27 @@ public class Bracelet {
             if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
                 return;
             }
-            jsonAsStr += jsonStr;
-            StringBuilder ArrayResult = new StringBuilder(jsonArray);
-            ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
-            jsonArray = ArrayResult.toString();
 
-            _treatments.put(getMessageTime(jsonStr) + "|" + getMessageTsID(jsonStr),
+            _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
                     new Treatment(getMessageTreatmentName(jsonStr),
                             "A", getMessageTime(jsonStr)));
 
-            synchronized(JsonArrList) {
-
-                    JsonArrList.add(ArduinoFormatToJson(jsonStr));
-
-            }
 
     }
 
     private String getMessageType(String mes) {
         return mes.split(",")[0].split("<")[1];
     }
+
     private String getMessageTime(String mes) {
         int arduinoMinutes = Integer.parseInt(mes.split(",")[1]);
         long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(resultMinutes * 60 * 1000);
-        return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(calendar.getTime());
     }
+
     private String getTimeField(String mes) {
         return mes.split(",")[1];
     }

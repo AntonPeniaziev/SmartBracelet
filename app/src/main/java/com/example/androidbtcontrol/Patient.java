@@ -47,10 +47,6 @@ public class Patient {
         return Double.toString(33 + (42 - 33) * rand.nextDouble()).substring(0,4) + " ºC";
     }
 
-    public String getJson() {
-        return _bracelet.getJsonAsStr();
-    }
-
     public void AddActions(String additionalActions) {
         _bracelet.AddActionsToBracelet(additionalActions);
 

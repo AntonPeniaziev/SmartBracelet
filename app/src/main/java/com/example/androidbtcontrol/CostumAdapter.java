@@ -75,7 +75,11 @@ public class CostumAdapter extends BaseAdapter {
             text.setText(data.get(position).getBtMac());
             bodyTemp.setText(data.get(position).getBodyTemp());
             bloodPressure.setText(data.get(position).getBloodPressure());
-            json.setText(data.get(position).getJson());
+            String treatInfo = "";
+            for (Treatment tr : data.get(position).getTreatmentsArray()) {
+                treatInfo += "Treatment received: " + tr.getName() + " at " + tr.getLastTime() + " of type " + tr.getType() + "\n";
+            }
+            json.setText(treatInfo);
         }
 
         Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
@@ -102,7 +106,7 @@ public class CostumAdapter extends BaseAdapter {
         });
     }
 
-    private void setOnClickWeb(final Button btn, final TentActivity currActivity,final int position){
+    private void setOnClickWeb(final Button btn, final TentActivity currActivity, final int position){
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
