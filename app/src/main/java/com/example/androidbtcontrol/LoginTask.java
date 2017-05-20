@@ -29,8 +29,6 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
 
         FindIterable<BasicDBObject> users = dbCollection.find();
-        //String myUser = "doctor1";
-        //String myPassw = "123";
         int i = 1;
         long count = dbCollection.count();
 
@@ -47,15 +45,7 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
             }
         }
         //Log.e(TestActivity.class.getName(), doctor[0] + " is not a valid user");
-        //BasicDBObject document = new BasicDBObject();
 
-        //document.put("jason", patients[0]);
-
-        //dbCollection.insertOne(document);
-
-        // dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
-        //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
-        //dbCollection.insertOne(jsonData);
         return false;
     }
 
