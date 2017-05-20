@@ -2,7 +2,7 @@ package com.example.androidbtcontrol;
 
 import java.util.ArrayList;
 
-public class Treatment extends SubTreatment {
+public class Treatment extends Equipment {
     String /*name,type,*/lastTime;
     ArrayList<String> _history;
 

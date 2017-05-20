@@ -1,7 +1,6 @@
 package com.example.androidbtcontrol;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -17,19 +16,19 @@ import java.util.LinkedHashMap;
  */
 
 public class TreatmentsTable {
-    LinkedHashMap<String, SubTreatment> treatmentsTable;
+    LinkedHashMap<String, Equipment> treatmentsTable;
 
     public TreatmentsTable() {
-        treatmentsTable = new LinkedHashMap<String, SubTreatment>();
+        treatmentsTable = new LinkedHashMap<String, Equipment>();
 
         new TreatmentsTable.updateActivitiesTable().execute();
     }
 
-    public LinkedHashMap<String, SubTreatment> getTreatmentsTable() {
+    public LinkedHashMap<String, Equipment> getTreatmentsTable() {
         return treatmentsTable;
     }
 
-    public void putToTable(String s, SubTreatment d) {
+    public void putToTable(String s, Equipment d) {
         treatmentsTable.put(s, d);
     }
 
@@ -52,7 +51,7 @@ public class TreatmentsTable {
                 Object name = doc.get("name");
                 Object type = doc.get("type");
                 //TODO add time
-                SubTreatment t = new SubTreatment(name.toString(), type.toString());
+                Equipment t = new Equipment(name.toString(), type.toString());
                 treatmentsTable.put(number.toString(), t);
 
                 //Log.e(MainActivity.class.getName(), number.toString());
