@@ -1,18 +1,25 @@
 package com.example.androidbtcontrol;
 
-public class Treatment {
-    String name,type;
+import java.util.ArrayList;
 
-    public Treatment(String name, String type) {
-        this.name = name;
-        this.type = type;
+public class Treatment extends SubTreatment {
+    String /*name,type,*/lastTime;
+    ArrayList<String> _history;
+
+    public Treatment(String name, String type, String time) {
+        super(name, type);
+        //this.name = name;
+        //this.type = type;
+        this.lastTime = time;
     }
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
     public String getType() {
         return type;
-    }
+    }*/
+
+    public String getLastTime() { return lastTime; }
 }

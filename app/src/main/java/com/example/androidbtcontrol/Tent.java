@@ -83,4 +83,20 @@ public class Tent {
         return new ArrayList<Patient>(_patients.values());
     }
 
+    public ArrayList<String> getPatientsMacsArray() {
+        return new ArrayList<String>(_patients.keySet());
+    }
+
+    public String  getHeartrateByMac(String mac) {
+        return _patients.get(mac).getHeartRate();
+    }
+
+    public String  getJsonByMac(String mac) {
+        return _patients.get(mac).getJson();
+    }
+
+    public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
+        return _patients.get(mac).getTreatmentsArray();
+    }
+
 }

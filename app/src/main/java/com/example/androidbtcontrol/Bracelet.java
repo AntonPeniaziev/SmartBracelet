@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Bracelet {
     String _mac_address;
     List<JSONObject> JsonArrList;
+    ConcurrentHashMap<String, Treatment> _treatments;
     String jsonAsStr;
     String jsonArray;
 
@@ -25,16 +27,18 @@ public class Bracelet {
         _mac_address = macAddress;
         jsonAsStr = new String();
         jsonArray = new String();
+        _treatments = new ConcurrentHashMap<String, Treatment>();
 
         jsonArray = "[" + ArduinoFormatToJson(jsonStr).toString() + "]";
         //jsonAsStr = jsonStr;
 
         //JsonArrList = new List<JSONArray>();
+        AddActionsToBracelet(jsonStr);
 
     }
 
     private JSONObject ArduinoFormatToJson(String mes) {
-        String JsonString = "{\"uid\": \"" + mes + "\",\"ts\": \"0\",\"tsid\": \"0\"}";
+        String JsonString = "{\"uid\": \"" + getMessageTreatmentName(mes) + "\",\"ts\": \"" + getMessageTime(mes) + "\",\"tsid\": \"" + getMessageTsID(mes) + "\"}";
         JSONObject JsonResult = null;
         try {
             JsonResult = new JSONObject(JsonString);
@@ -58,18 +62,63 @@ public class Bracelet {
         return jsonArray;
     }
 
-    public void AddActionsToBracelet(String jsonStr) {
+        public void AddActionsToBracelet(String jsonStr) {
 
-        jsonAsStr += jsonStr;
-        StringBuilder ArrayResult = new StringBuilder(jsonArray);
-        ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
-        jsonArray = ArrayResult.toString();
+            if (jsonStr.contains("[") || jsonStr.contains("]")) {
+                String[] firstData = jsonStr.split("<");
+                for (int i = 1; i < firstData.length; i++) {
+                    String toAdd = "<" + firstData[i];
 
-        synchronized(JsonArrList) {
+                    _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
+                            new Treatment(getMessageTreatmentName(toAdd),
+                                    "A", getMessageTime(jsonStr)));
+                }
 
-                JsonArrList.add(ArduinoFormatToJson(jsonStr));
+                return;
+            }
 
+            //TODO different types of messages and origins
+            if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
+                return;
+            }
+            jsonAsStr += jsonStr;
+            StringBuilder ArrayResult = new StringBuilder(jsonArray);
+            ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
+            jsonArray = ArrayResult.toString();
+
+            _treatments.put(getMessageTime(jsonStr) + "|" + getMessageTsID(jsonStr),
+                    new Treatment(getMessageTreatmentName(jsonStr),
+                            "A", getMessageTime(jsonStr)));
+
+            synchronized(JsonArrList) {
+
+                    JsonArrList.add(ArduinoFormatToJson(jsonStr));
+
+            }
+
+    }
+
+    private String getMessageType(String mes) {
+        return mes.split(",")[0].split("<")[1];
+    }
+    private String getMessageTime(String mes) {
+        return mes.split(",")[1];
+    }
+    private String getMessageTsID(String mes) {
+        return mes.split(",")[2];
+    }
+    private String getMessageUID(String mes) {
+        return mes.split(",")[3].split(">")[0];
+    }
+
+    private String getMessageTreatmentName(String mes) {
+        if (false == TentActivity.TreatmensUidToName.containsKey(getMessageUID(mes))) {
+            return "Unknown";
         }
+        return TentActivity.TreatmensUidToName.get(getMessageUID(mes));
+    }
 
+    public ArrayList<Treatment> getTreatmentsArray() {
+        return new ArrayList<Treatment>(_treatments.values());
     }
 }

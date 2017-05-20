@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:id="@+id/row"
     android:clickable="false"
     android:layout_alignParentTop="true"
@@ -14,22 +14,31 @@
     android:weightSum="1"
     android:theme="@android:style/Theme.Holo.NoActionBar">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="33dp"
             android:layout_alignParentTop="true"
             android:layout_weight="0.52"
             android:gravity="right"
             android:orientation="horizontal"
             android:scrollbars="vertical"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:layout_toEndOf="@+id/linearLayout2">
 
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/treatment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".4"
+                    android:textColor="#000000"
+                    android:gravity="right" />
+
+                <TextView
+                    android:id="@+id/type"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:layout_alignParentEnd="true"
@@ -41,4 +50,39 @@
                     android:gravity="right" />
 
         </LinearLayout>
-</LinearLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_height="133dp"
+            android:layout_alignParentTop="true"
+            android:layout_weight="0.52"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:scrollbars="vertical"
+            android:weightSum="1"
+            android:id="@+id/linearLayout2">
+
+                <TextView
+                    android:id="@+id/amounts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".4"
+                    android:textColor="#000000"
+                    android:gravity="right" />
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_weight=".4"
+                    android:textColor="#000000"
+                    android:gravity="right" />
+
+        </LinearLayout>
+</RelativeLayout>

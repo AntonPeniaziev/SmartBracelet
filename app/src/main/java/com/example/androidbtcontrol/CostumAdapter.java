@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import BTservice.BTservice;
@@ -78,24 +79,39 @@ public class CostumAdapter extends BaseAdapter {
         }
 
         Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
-        setOnClick(beepButton, (TentActivity)context, position);
+        setOnClickBeep(beepButton, (TentActivity)context, position);
+        Button webInfo = (Button) vi.findViewById(R.id.webInfo);
+        setOnClickWeb(webInfo,(TentActivity)context, position);
+
+
 
         return vi;
     }
 
-    private void setOnClick(final Button btn, final TentActivity currActivity,final int position){
+    private void setOnClickBeep(final Button btn, final TentActivity currActivity,final int position) {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String patientBMac= data.get(position).getBtMac().toString();
+                String patientBMac = data.get(position).getBtMac().toString();
                 Toast.makeText(currActivity,
                         "beep sent to " + patientBMac,
                         Toast.LENGTH_SHORT).show();
-                currActivity.getBt().addDataToBeSentByMac(patientBMac,"<6,0>");
+                currActivity.getBt().addDataToBeSentByMac(patientBMac, "<6,0>");
 
             }
         });
     }
+
+    private void setOnClickWeb(final Button btn, final TentActivity currActivity,final int position){
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
+                new SendToMongodbTask().execute(patientTreatments);
+            }
+        });
+
+            }
 
     public void setData(ArrayList<Patient> data) {
         this.data = data;

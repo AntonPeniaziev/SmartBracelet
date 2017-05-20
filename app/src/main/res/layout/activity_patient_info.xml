@@ -54,7 +54,6 @@
                 android:layout_height="match_parent"
                 android:background="#375E7D"
                 android:gravity="center"
-                android:text="638638927          "
                 android:textColor="#FFFFFF" />
 
         </LinearLayout>

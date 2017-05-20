@@ -90,10 +90,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/beepBracelet"
-        android:layout_above="@+id/json"
-        android:layout_alignParentEnd="true"
         android:background="@drawable/list_selector"
         android:clickable="true"
-        android:text="Beep"/>
+        android:text="Beep"
+        android:layout_alignBaseline="@+id/braceletMAC"
+        android:layout_alignBottom="@+id/braceletMAC"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/webInfo"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:text="WEB"
+        android:layout_alignBaseline="@+id/beepBracelet"
+        android:layout_alignBottom="@+id/beepBracelet"
+        android:layout_toStartOf="@+id/beepBracelet"
+        android:layout_marginEnd="15dp" />
+
+
 
 </RelativeLayout>

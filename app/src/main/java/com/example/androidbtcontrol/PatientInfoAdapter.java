@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 
 /**
  * Created by Sapir Eltanani on 08/05/2017.
@@ -18,6 +20,8 @@ import android.widget.TextView;
 
 public class PatientInfoAdapter extends BaseAdapter {
     Context _context;
+    String _patientMac;
+    ArrayList<Treatment> _treatments;
     private static LayoutInflater inflater = null;
     int _listRow;
     //PatientInfo _patientInfo;
@@ -34,17 +38,17 @@ public class PatientInfoAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return (_treatments == null) ? 0 : _treatments.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return null;
+        return (_treatments == null) ? null : _treatments.get(i);
     }
 
     @Override
     public long getItemId(int i) {
-        return 0;
+        return i;
     }
 
     @Override
@@ -55,9 +59,20 @@ public class PatientInfoAdapter extends BaseAdapter {
             vi = inflater.inflate(_listRow, null);
         }
 
-        TextView braceletID = (TextView) vi.findViewById(R.id.braceletID);
-        //braceletID.setText(_patientInfo.getID());
+        TextView treatment = (TextView) vi.findViewById(R.id.treatment);
+        if (_treatments != null) {
+            treatment.setText(_treatments.get(position).getName());
+        }
+
         return vi;
+    }
+
+    public void setData(ArrayList<Treatment> treatments) {
+        this._treatments = treatments;
+    }
+
+    public void setMac(String mac) {
+        this._patientMac = mac;
     }
 }
 
