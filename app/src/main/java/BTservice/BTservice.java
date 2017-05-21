@@ -47,6 +47,8 @@ public class BTservice implements BTserviceInterface {
     String JsonMessage;
     ArrayList<BluetoothDevice> discoveredDevices;
 
+    private String _startMessage = new String("");
+
     public BTservice(TextView info, Context context) {
 
         _context = context;
@@ -218,8 +220,7 @@ public class BTservice implements BTserviceInterface {
             byte[] buffer = new byte[1024];
             int bytes;
             boolean receivedOldData = false;
-            String startChar = "<1,234>\n";
-            byte[] bytesToSend = startChar.getBytes();
+            byte[] bytesToSend = _startMessage.getBytes();
             _ConnectionThreadsByMac.get(device.getAddress().toString()).write(bytesToSend);
 
             while (true) {
@@ -386,6 +387,13 @@ public class BTservice implements BTserviceInterface {
         _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
         _macToDataForBracelet.get(mac).add(data);
         writeToMac(mac);
+    }
+
+    public void addStartDataToSendToAll(String data) {
+        _startMessage = data;
+//        for (String mac : _ConnectionThreadsByMac.keySet()) {
+//            addDataToBeSentByMac(mac, data);
+//        }
     }
 
     private void writeToMac(String mac) {

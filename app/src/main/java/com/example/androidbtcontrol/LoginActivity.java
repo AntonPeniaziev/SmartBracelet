@@ -20,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText _passwordText;
     Button _loginButton;
     String _errorMsg;
+    String _docID = "123";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
@@ -69,20 +70,18 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-
+        if (!validate()) {
+            onLoginFailed();
+            return;
+        }
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-
-                        // onLoginFailed();
-                        if (!validate()) {
-                            onLoginFailed();
-                            progressDialog.dismiss();
-                            return;
-                        }
                         // On complete call either onLoginSuccess or onLoginFailed
                         onLoginSuccess();
+                        // onLoginFailed();
+                        progressDialog.dismiss();
                     }
                 }, 3000);
     }
@@ -95,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         Intent tentIntent = new Intent(LoginActivity.this, TentActivity.class);
+        tentIntent.putExtra("DOC_ID", _docID);
         startActivity(tentIntent);
     }
 
@@ -113,6 +113,10 @@ public class LoginActivity extends AppCompatActivity {
          if(username.equals("master")){
             return true;
           }
+        if (username.matches("[0-9]+") && username.length() > 2) {
+            _docID = username; //TODO separate ID from name (maybe we need ID only, Android team expects to get an integer)
+        }
+
         if (username.isEmpty()) {
             _errorMsg = "enter a valid username";
             valid = false;

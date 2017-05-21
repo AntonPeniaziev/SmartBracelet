@@ -45,7 +45,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
 
+        String doc_id =  getIntent().getStringExtra("DOC_ID");
+        _bTservice.addStartDataToSendToAll("<1," + doc_id + ">");
         _bTservice.startBT();
+
+
         _updateData = new UpdateData();
         _updateData.start();
 
