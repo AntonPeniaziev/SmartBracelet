@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BTservice implements BTserviceInterface {
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter _bluetoothAdapter;
+    private HashMap<String, String> _supportedDeviceNames;
     ConcurrentHashMap<String, List<String>> _macToJsonList;
     ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
     HashMap<String, ThreadConnected> _ConnectionThreadsByMac;
@@ -57,6 +58,12 @@ public class BTservice implements BTserviceInterface {
                     Toast.LENGTH_LONG).show();
             return;
         }
+
+        _supportedDeviceNames = new HashMap<>();
+        _supportedDeviceNames.put("HC-06", "");
+        _supportedDeviceNames.put("HC-05", "");
+        _supportedDeviceNames.put("11", "");
+        _supportedDeviceNames.put("gun1", "");
 
         String stInfo = _bluetoothAdapter.getName() + "\n" +
                 _bluetoothAdapter.getAddress();
@@ -296,9 +303,6 @@ public class BTservice implements BTserviceInterface {
         filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         _context.registerReceiver(mReceiver, filter);
         _bluetoothAdapter.startDiscovery();
-
-
-        //_textInfo.setText("in start");
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -310,11 +314,15 @@ public class BTservice implements BTserviceInterface {
             {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                discoveredDevices.add(device);
+                if (device != null && device.getName() != null &&
+                        _supportedDeviceNames.containsKey(device.getName().toString())) {
+                    discoveredDevices.add(device);
+                    Toast.makeText(_context,
+                            "Found supported device " + device.getName(),
+                            Toast.LENGTH_LONG).show();
+                }
 
-                Toast.makeText(_context,
-                        "Found device " + device.getName(),
-                        Toast.LENGTH_LONG).show();
+
                 // Add the name and address to an array adapter to show in a ListView
                 // mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
@@ -346,9 +354,7 @@ public class BTservice implements BTserviceInterface {
     private void setup() {
 
         for (BluetoothDevice device : discoveredDevices) {
-            if (device.getName().toString().equals("HC-06") ||
-                    device.getName().toString().equals("HC-05") ||
-                    device.getName().toString().equals("11")) {
+            if (_supportedDeviceNames.containsKey(device.getName().toString())) {
                 Toast.makeText(_context,
                         "got bracelet bluetooth " + device.getAddress().toString(),
                         Toast.LENGTH_SHORT).show();

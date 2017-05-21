@@ -38,7 +38,7 @@ import java.util.LinkedHashMap;
 public class MainActivity extends AppCompatActivity {
 
 
-
+    private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
 
     ImageButton  btbTent, testBtn;
@@ -80,6 +80,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
             finish();
             return;
+        }
+
+        if (false == bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
     }
