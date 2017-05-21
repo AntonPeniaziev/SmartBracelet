@@ -20,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText _passwordText;
     Button _loginButton;
     String _errorMsg;
+    String _docID = "123";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
@@ -93,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         Intent tentIntent = new Intent(LoginActivity.this, TentActivity.class);
+        tentIntent.putExtra("DOC_ID", _docID);
         startActivity(tentIntent);
     }
 
@@ -108,6 +110,9 @@ public class LoginActivity extends AppCompatActivity {
         String username = _usernameText.getText().toString();
         String password = _passwordText.getText().toString();
 
+        if (username.matches("[0-9]+") && username.length() > 2) {
+            _docID = username; //TODO separate ID from name (maybe we need ID only, Android team expects to get an integer)
+        }
 
         if (username.isEmpty()) {
             _errorMsg = "enter a valid username";
