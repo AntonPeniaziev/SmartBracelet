@@ -28,6 +28,14 @@ public class TreatmentsTable {
         return treatmentsTable;
     }
 
+    public boolean containsKey(Object key) {
+        return treatmentsTable.containsKey(key);
+    }
+
+    public Equipment get(Object key) {
+        return treatmentsTable.get(key);
+    }
+
     public void putToTable(String s, Equipment d) {
         treatmentsTable.put(s, d);
     }
@@ -47,7 +55,7 @@ public class TreatmentsTable {
             }
             for(BasicDBObject doc : treatments) {
                 //access documents e.g. doc.get()
-                Object number = doc.get("number");
+                Object number = doc.get("equipment_id");
                 Object name = doc.get("name");
                 Object type = doc.get("type");
                 //TODO add time

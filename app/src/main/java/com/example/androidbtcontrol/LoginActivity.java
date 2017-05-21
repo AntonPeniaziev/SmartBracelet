@@ -12,6 +12,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mongodb.MongoSocketException;
+import com.mongodb.MongoTimeoutException;
+
+import java.util.concurrent.ExecutionException;
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -91,19 +96,55 @@ public class LoginActivity extends AppCompatActivity {
 
 
         if (username.isEmpty()) {
-            _errorMsg = "enter a valid username";
+            _errorMsg = "Enter a valid username";
             valid = false;
         } else {
             _usernameText.setError(null);
             //TODO: check if the username exist in web and if not get the username in
+            try {
+                valid = new LoginTask().execute(username).get();
+
+            } catch (InterruptedException e) {
+                Toast.makeText(getBaseContext(),  "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                Toast.makeText(getBaseContext(),  "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            } catch (MongoTimeoutException e) {
+                Toast.makeText(getBaseContext(),  "Something is wrong. Check internet connection or try again soon", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+
+            if (!valid) {
+                _errorMsg = "Username doesn't exist. try another user or check your INTERNET connection";
+                return valid;
+            }
 
             if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-                _errorMsg ="between 4 and 10 characters: numbers and letters";
+                _errorMsg ="Password between 4 and 10 characters: numbers and letters";
 
                 valid = false;
             } else {
                 //TODO:: check the correctness of the password
                 _passwordText.setError(null);
+                try {
+                    String[] userAndPass = {username, password};
+                    valid = new LoginTask().execute(userAndPass).get();
+                } catch (InterruptedException e) {
+                    Toast.makeText(getBaseContext(),  "something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    Toast.makeText(getBaseContext(),  "something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                } catch (MongoTimeoutException e) {
+                    Toast.makeText(getBaseContext(),  "Something is wrong. Check internet connection or try again soon", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                if (!valid) {
+                    _errorMsg = "The user name or password for SmartBracelet is incorrect. Otherwise, check your INTERNET connection";
+                    return valid;
+                }
+
             }
         }
         return valid;
