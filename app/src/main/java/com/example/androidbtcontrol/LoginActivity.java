@@ -70,18 +70,20 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
-        if (!validate()) {
-            onLoginFailed();
-            return;
-        }
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onLoginSuccess or onLoginFailed
+                        if (!validate()) {
+                            onLoginFailed();
+                            progressDialog.dismiss();
+                            return;
+                        }
                         onLoginSuccess();
                         // onLoginFailed();
-                        progressDialog.dismiss();
+
                     }
                 }, 3000);
     }
