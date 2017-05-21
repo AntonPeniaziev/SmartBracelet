@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import BTservice.BTservice;
 
-public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     TextView textInfo2;
     BTservice _bTservice;

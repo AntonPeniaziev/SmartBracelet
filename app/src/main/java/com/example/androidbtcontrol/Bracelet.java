@@ -5,7 +5,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -14,64 +16,38 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Bracelet {
     String _mac_address;
-    List<JSONObject> JsonArrList;
     ConcurrentHashMap<String, Treatment> _treatments;
-    String jsonAsStr;
     String jsonArray;
+    long braceletStartTimeMinutes = 0;
 
     public Bracelet(String jsonStr, String macAddress) {
 
-        JsonArrList = Collections.synchronizedList(new ArrayList<JSONObject>());
-        JsonArrList.add(ArduinoFormatToJson(jsonStr));
-
         _mac_address = macAddress;
-        jsonAsStr = new String();
-        jsonArray = new String();
         _treatments = new ConcurrentHashMap<String, Treatment>();
 
-        jsonArray = "[" + ArduinoFormatToJson(jsonStr).toString() + "]";
-        //jsonAsStr = jsonStr;
+        braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
 
-        //JsonArrList = new List<JSONArray>();
         AddActionsToBracelet(jsonStr);
 
     }
 
-    private JSONObject ArduinoFormatToJson(String mes) {
-        String JsonString = "{\"uid\": \"" + getMessageTreatmentName(mes) + "\",\"ts\": \"" + getMessageTime(mes) + "\",\"tsid\": \"" + getMessageTsID(mes) + "\"}";
-        JSONObject JsonResult = null;
-        try {
-            JsonResult = new JSONObject(JsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        return JsonResult;
-    }
-
-    public String getJsonAsStr () {
-//        String res;
-//        synchronized(JsonArrList) {
-//            res = new String();
-//            Iterator i = JsonArrList.iterator();
-//            while (i.hasNext()) {
-//                res += i.next().toString();
-//            }
-//
-//        }
-        return jsonArray;
-    }
 
         public void AddActionsToBracelet(String jsonStr) {
 
-            if (jsonStr.contains("[") || jsonStr.contains("]")) {
+            if (jsonStr.contains("[") && jsonStr.contains("]")) {
                 String[] firstData = jsonStr.split("<");
                 for (int i = 1; i < firstData.length; i++) {
                     String toAdd = "<" + firstData[i];
 
-                    _treatments.put(getMessageTime(toAdd) + "|" + getMessageTsID(toAdd),
+                    if (!getMessageType(toAdd).equals("0") || toAdd.contains("#")) {//TODO: cases # is sent
+                        continue;
+                    }
+
+
+                    _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
                             new Treatment(getMessageTreatmentName(toAdd),
-                                    "A", getMessageTime(jsonStr)));
+                                    "A", getMessageTime(toAdd)));
                 }
 
                 return;
@@ -81,27 +57,28 @@ public class Bracelet {
             if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
                 return;
             }
-            jsonAsStr += jsonStr;
-            StringBuilder ArrayResult = new StringBuilder(jsonArray);
-            ArrayResult.insert(jsonArray.length() - 1, "," + ArduinoFormatToJson(jsonStr).toString());
-            jsonArray = ArrayResult.toString();
 
-            _treatments.put(getMessageTime(jsonStr) + "|" + getMessageTsID(jsonStr),
+            _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
                     new Treatment(getMessageTreatmentName(jsonStr),
                             "A", getMessageTime(jsonStr)));
 
-            synchronized(JsonArrList) {
-
-                    JsonArrList.add(ArduinoFormatToJson(jsonStr));
-
-            }
 
     }
 
     private String getMessageType(String mes) {
         return mes.split(",")[0].split("<")[1];
     }
+
     private String getMessageTime(String mes) {
+        int arduinoMinutes = Integer.parseInt(mes.split(",")[1]);
+        long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(resultMinutes * 60 * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(calendar.getTime());
+    }
+
+    private String getTimeField(String mes) {
         return mes.split(",")[1];
     }
     private String getMessageTsID(String mes) {
@@ -120,5 +97,19 @@ public class Bracelet {
 
     public ArrayList<Treatment> getTreatmentsArray() {
         return new ArrayList<Treatment>(_treatments.values());
+    }
+
+    private long getArduinoStartTimeFromFirstData(String mes) {
+        long res = 0;
+        Calendar c = Calendar.getInstance();
+        long minutes = c.getTimeInMillis() / (60 * 1000);
+
+        if (mes.contains("[") && mes.contains("]")) {
+            String[] firstData = mes.split("<");
+
+            res = minutes - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+        }
+
+        return res;
     }
 }
