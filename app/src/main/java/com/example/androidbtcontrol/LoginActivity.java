@@ -1,6 +1,7 @@
 package com.example.androidbtcontrol;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,9 +21,27 @@ public class LoginActivity extends AppCompatActivity {
     Button _loginButton;
     String _errorMsg;
 
+    private final static int REQUEST_ENABLE_BT = 1;
+    BluetoothAdapter bluetoothAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) {
+            Toast.makeText(this,
+                    "Bluetooth is not supported on this hardware platform",
+                    Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        if (false == bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+
         setContentView(R.layout.activity_login);
         _usernameText = (EditText) findViewById(R.id.input_username);
         _passwordText = (EditText) findViewById(R.id.input_password);

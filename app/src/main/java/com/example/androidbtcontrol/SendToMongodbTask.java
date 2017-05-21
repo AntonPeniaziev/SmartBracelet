@@ -28,7 +28,6 @@ public class SendToMongodbTask extends AsyncTask<List<Treatment>, Integer, Long>
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
-
         BasicDBObject document = new BasicDBObject();
         //BasicDBObject treatDoc = new BasicDBObject();
 
