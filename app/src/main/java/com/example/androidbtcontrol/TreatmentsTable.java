@@ -1,7 +1,6 @@
 package com.example.androidbtcontrol;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -17,19 +16,27 @@ import java.util.LinkedHashMap;
  */
 
 public class TreatmentsTable {
-    LinkedHashMap<String, Treatment> treatmentsTable;
+    LinkedHashMap<String, Equipment> treatmentsTable;
 
     public TreatmentsTable() {
-        treatmentsTable = new LinkedHashMap<String, Treatment>();
+        treatmentsTable = new LinkedHashMap<String, Equipment>();
 
         new TreatmentsTable.updateActivitiesTable().execute();
     }
 
-    public LinkedHashMap<String, Treatment> getTreatmentsTable() {
+    public LinkedHashMap<String, Equipment> getTreatmentsTable() {
         return treatmentsTable;
     }
 
-    public void putToTable(String s, Treatment d) {
+    public boolean containsKey(Object key) {
+        return treatmentsTable.containsKey(key);
+    }
+
+    public Equipment get(Object key) {
+        return treatmentsTable.get(key);
+    }
+
+    public void putToTable(String s, Equipment d) {
         treatmentsTable.put(s, d);
     }
 
@@ -48,11 +55,11 @@ public class TreatmentsTable {
             }
             for(BasicDBObject doc : treatments) {
                 //access documents e.g. doc.get()
-                Object number = doc.get("number");
+                Object number = doc.get("equipment_id");
                 Object name = doc.get("name");
                 Object type = doc.get("type");
                 //TODO add time
-                Treatment t = new Treatment(name.toString(), type.toString(),"");
+                Equipment t = new Equipment(name.toString(), type.toString());
                 treatmentsTable.put(number.toString(), t);
 
                 //Log.e(MainActivity.class.getName(), number.toString());

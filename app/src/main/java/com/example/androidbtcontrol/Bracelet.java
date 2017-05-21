@@ -35,6 +35,7 @@ public class Bracelet {
 
         public void AddActionsToBracelet(String jsonStr) {
 
+            Equipment tempEquipt;
             if (jsonStr.contains("[") && jsonStr.contains("]")) {
                 String[] firstData = jsonStr.split("<");
                 for (int i = 1; i < firstData.length; i++) {
@@ -44,10 +45,10 @@ public class Bracelet {
                         continue;
                     }
 
-
+                    tempEquipt = getMessageTreatmentName(toAdd);
                     _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                            new Treatment(getMessageTreatmentName(toAdd),
-                                    "A", getMessageTime(toAdd)));
+                            new Treatment(tempEquipt.getName(),
+                                    tempEquipt.getType(), getMessageTime(toAdd)));
                 }
 
                 return;
@@ -58,9 +59,10 @@ public class Bracelet {
                 return;
             }
 
+            tempEquipt = getMessageTreatmentName(jsonStr);
             _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
-                    new Treatment(getMessageTreatmentName(jsonStr),
-                            "A", getMessageTime(jsonStr)));
+                    new Treatment(tempEquipt.getName(),
+                            tempEquipt.getType(), getMessageTime(jsonStr)));
 
 
     }
@@ -88,11 +90,11 @@ public class Bracelet {
         return mes.split(",")[3].split(">")[0];
     }
 
-    private String getMessageTreatmentName(String mes) {
-        if (false == TentActivity.TreatmensUidToName.containsKey(getMessageUID(mes))) {
-            return "Unknown";
+    private Equipment getMessageTreatmentName(String mes) {
+        if (false == TentActivity.treatmentUidTranslator.containsKey(getMessageUID(mes))) {
+            return null;
         }
-        return TentActivity.TreatmensUidToName.get(getMessageUID(mes));
+        return TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
     }
 
     public ArrayList<Treatment> getTreatmentsArray() {

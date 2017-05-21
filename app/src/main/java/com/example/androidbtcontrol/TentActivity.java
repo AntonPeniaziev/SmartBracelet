@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -25,6 +26,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     UpdateData _updateData;
     CostumAdapter _adapter;
     ListView _listView;
+
+    static public TreatmentsTable treatmentUidTranslator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         TreatmensUidToName.put("20","Israeli bandage");
         TreatmensUidToName.put("30","Hemostatic");
         TreatmensUidToName.put("40","Morphine");
+
+        treatmentUidTranslator = new TreatmentsTable();
 
     }
 
