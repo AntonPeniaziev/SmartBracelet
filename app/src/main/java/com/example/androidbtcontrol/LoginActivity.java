@@ -83,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                         // On complete call either onLoginSuccess or onLoginFailed
                         if (!validate()) {
                             onLoginFailed();
+                            System.exit(0);
                             progressDialog.dismiss();
                             return;
                         }
