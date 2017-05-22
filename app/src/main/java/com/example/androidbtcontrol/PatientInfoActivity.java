@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,6 +19,9 @@ public class PatientInfoActivity extends AppCompatActivity {
     String _patientMac;
     TextView hr;
     UpdateData _updateData;
+    Button _saveButton;
+    Button _urgentButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -47,6 +51,11 @@ public class PatientInfoActivity extends AppCompatActivity {
 
         hr = (TextView) findViewById(R.id.heartRate);
         hr.setText(TentActivity._tent.getHeartrateByMac(patientID));
+        _saveButton = (Button)findViewById(R.id.saveFile);
+        _urgentButton = (Button) findViewById(R.id.button4);
+        _saveButton.setClickable(true);
+        _urgentButton.setClickable(true);
+
     }
 
     @Override

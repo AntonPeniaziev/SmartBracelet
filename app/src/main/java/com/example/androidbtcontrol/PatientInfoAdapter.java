@@ -61,9 +61,8 @@ public class PatientInfoAdapter extends BaseAdapter {
 
         TextView treatment = (TextView) vi.findViewById(R.id.treatment);
         if (_treatments != null) {
-            treatment.setText(_treatments.get(position).getName() + " " + _treatments.get(position).getLastTime() + " " + "<-");
+            treatment.setText(_treatments.get(position).getLastTime()+ " " + _treatments.get(position).getName()  + " " );
         }
-        treatment.setTextSize(24);
         return vi;
     }
 
