@@ -46,9 +46,12 @@ public class Bracelet {
                     }
 
                     tempEquipt = getMessageTreatmentName(toAdd);
-                    _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                            new Treatment(tempEquipt.getName(),
-                                    tempEquipt.getType(), getMessageTime(toAdd)));
+                    if (tempEquipt != null) {
+                        _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
+                                new Treatment(tempEquipt.getName(),
+                                        tempEquipt.getType(), getMessageTime(toAdd)));
+                    }
+                    //TODO handle null equipment. check which bracelet sent the null update.
                 }
 
                 return;
@@ -68,7 +71,11 @@ public class Bracelet {
     }
 
     private String getMessageType(String mes) {
-        return mes.split(",")[0].split("<")[1];
+
+        if (mes.split(",").length > 0 && mes.split(",")[0].split("<").length > 1) {
+            return mes.split(",")[0].split("<")[1];
+        }
+        return "";
     }
 
     private String getMessageTime(String mes) {

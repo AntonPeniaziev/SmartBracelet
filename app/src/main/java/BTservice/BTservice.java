@@ -221,7 +221,10 @@ public class BTservice implements BTserviceInterface {
             int bytes;
             boolean receivedOldData = false;
             byte[] bytesToSend = _startMessage.getBytes();
-            _ConnectionThreadsByMac.get(device.getAddress().toString()).write(bytesToSend);
+            String deviceAddr = device.getAddress().toString();
+            if (_ConnectionThreadsByMac.containsKey(deviceAddr)) {
+                _ConnectionThreadsByMac.get(deviceAddr).write(bytesToSend);
+            }
 
             while (true) {
 
@@ -237,7 +240,9 @@ public class BTservice implements BTserviceInterface {
 
                         JsonMessage += strReceived;
 
-                        _macToJsonList.get(device.getAddress().toString()).add(JsonMessage);
+                        if (_macToJsonList.containsKey(deviceAddr)) {
+                            _macToJsonList.get(deviceAddr).add(JsonMessage);
+                        }
                         JsonMessage = "";
                         receivedOldData = true;
                     }
@@ -385,7 +390,9 @@ public class BTservice implements BTserviceInterface {
 
     public void addDataToBeSentByMac(String mac, String data) {
         _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
-        _macToDataForBracelet.get(mac).add(data);
+        if (_macToJsonList.containsKey(mac)) {
+            _macToDataForBracelet.get(mac).add(data);
+        }
         writeToMac(mac);
     }
 
@@ -404,9 +411,13 @@ public class BTservice implements BTserviceInterface {
                     Iterator i = _macToDataForBracelet.get(mac).iterator();
                     while (i.hasNext()) {
                         byte[] toMac = i.next().toString().getBytes();
-                        _ConnectionThreadsByMac.get(mac).write(toMac);
+                        if (_ConnectionThreadsByMac.containsKey(mac)) {
+                            _ConnectionThreadsByMac.get(mac).write(toMac);
+                        }
                     }
-                    _macToDataForBracelet.get(mac).clear();
+                    if (_macToDataForBracelet.containsKey(mac)) {
+                        _macToDataForBracelet.get(mac).clear();
+                    }
                 }
             }
         }

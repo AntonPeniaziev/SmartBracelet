@@ -25,7 +25,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     TextView textInfo2;
     BTservice _bTservice;
     static Tent _tent;
-    static public ConcurrentHashMap<String,String> TreatmensUidToName;
+    //static public ConcurrentHashMap<String,String> TreatmensUidToName;
     UpdateData _updateData;
     CostumAdapter _adapter;
     ListView _listView;
@@ -60,12 +60,12 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _updateData.start();
 
         /** Will be updated from the web**/
-        TreatmensUidToName = new ConcurrentHashMap<>();
+        /*TreatmensUidToName = new ConcurrentHashMap<>();
         TreatmensUidToName.put("0","Tourniquet");
         TreatmensUidToName.put("10","Acamol");
         TreatmensUidToName.put("20","Israeli bandage");
         TreatmensUidToName.put("30","Hemostatic");
-        TreatmensUidToName.put("40","Morphine");
+        TreatmensUidToName.put("40","Morphine");*/
 
         treatmentUidTranslator = new TreatmentsTable();
 
