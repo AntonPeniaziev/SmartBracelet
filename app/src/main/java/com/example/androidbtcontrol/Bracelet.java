@@ -19,6 +19,7 @@ public class Bracelet {
     ConcurrentHashMap<String, Treatment> _treatments;
     String jsonArray;
     long braceletStartTimeMinutes = 0;
+    long braceletStartTimeSeconds = 0;
 
     public Bracelet(String jsonStr, String macAddress) {
 
@@ -26,7 +27,7 @@ public class Bracelet {
         _treatments = new ConcurrentHashMap<String, Treatment>();
 
         braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
-
+        braceletStartTimeSeconds = getArduinoStartTimeFromFirstDataSeconds(jsonStr);
         AddActionsToBracelet(jsonStr);
 
     }
@@ -45,13 +46,9 @@ public class Bracelet {
                         continue;
                     }
 
-                    tempEquipt = getMessageTreatmentName(toAdd);
-                    if (tempEquipt != null) {
                         _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                                new Treatment(tempEquipt.getName(),
-                                        tempEquipt.getType(), getMessageTime(toAdd)));
-                    }
-                    //TODO handle null equipment. check which bracelet sent the null update.
+                                new Treatment(getMessageTreatmentName(toAdd),
+                                        getMessageTreatmentType(toAdd), getMessageTimeSeconds(toAdd)));
                 }
 
                 return;
@@ -62,13 +59,10 @@ public class Bracelet {
                 return;
             }
 
-            tempEquipt = getMessageTreatmentName(jsonStr);
-            if (tempEquipt != null) {
+
                 _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
-                        new Treatment(tempEquipt.getName(),
-                                tempEquipt.getType(), getMessageTime(jsonStr)));
-            }
-            //TODO handle null equipment. check which bracelet sent the null update.
+                        new Treatment(getMessageTreatmentName(jsonStr),
+                                getMessageTreatmentType(jsonStr), getMessageTimeSeconds(jsonStr)));
 
     }
 
@@ -89,6 +83,15 @@ public class Bracelet {
         return sdf.format(calendar.getTime());
     }
 
+    private String getMessageTimeSeconds(String mes) {
+        int arduinoSeconds = Integer.parseInt(mes.split(",")[1]);
+        long resultSeconds = braceletStartTimeSeconds + arduinoSeconds;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(resultSeconds * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        return sdf.format(calendar.getTime());
+    }
+
     private String getTimeField(String mes) {
         return mes.split(",")[1];
     }
@@ -99,11 +102,22 @@ public class Bracelet {
         return mes.split(",")[3].split(">")[0];
     }
 
-    private Equipment getMessageTreatmentName(String mes) {
-        if (false == TentActivity.treatmentUidTranslator.containsKey(getMessageUID(mes))) {
-            return null;
+    private String getMessageTreatmentName(String mes) {
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Name";
         }
-        return TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+
+        return equipment.getName();
+    }
+
+    private String getMessageTreatmentType(String mes) {
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Type";
+        }
+
+        return equipment.getType();
     }
 
     public ArrayList<Treatment> getTreatmentsArray() {
@@ -119,6 +133,20 @@ public class Bracelet {
             String[] firstData = mes.split("<");
 
             res = minutes - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+        }
+
+        return res;
+    }
+
+    private long getArduinoStartTimeFromFirstDataSeconds(String mes) {
+        long res = 0;
+        Calendar c = Calendar.getInstance();
+        long seconds = c.getTimeInMillis() / (1000);
+
+        if (mes.contains("[") && mes.contains("]")) {
+            String[] firstData = mes.split("<");
+
+            res = seconds - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
         }
 
         return res;
