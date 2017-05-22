@@ -45,13 +45,9 @@ public class Bracelet {
                         continue;
                     }
 
-                    tempEquipt = getMessageTreatmentName(toAdd);
-                    if (tempEquipt != null) {
                         _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                                new Treatment(tempEquipt.getName(),
-                                        tempEquipt.getType(), getMessageTime(toAdd)));
-                    }
-                    //TODO handle null equipment. check which bracelet sent the null update.
+                                new Treatment(getMessageTreatmentName(toAdd),
+                                        getMessageTreatmentType(toAdd), getMessageTime(toAdd)));
                 }
 
                 return;
@@ -62,13 +58,10 @@ public class Bracelet {
                 return;
             }
 
-            tempEquipt = getMessageTreatmentName(jsonStr);
-            if (tempEquipt != null) {
+
                 _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
-                        new Treatment(tempEquipt.getName(),
-                                tempEquipt.getType(), getMessageTime(jsonStr)));
-            }
-            //TODO handle null equipment. check which bracelet sent the null update.
+                        new Treatment(getMessageTreatmentName(jsonStr),
+                                getMessageTreatmentType(jsonStr), getMessageTime(jsonStr)));
 
     }
 
@@ -99,11 +92,22 @@ public class Bracelet {
         return mes.split(",")[3].split(">")[0];
     }
 
-    private Equipment getMessageTreatmentName(String mes) {
-        if (false == TentActivity.treatmentUidTranslator.containsKey(getMessageUID(mes))) {
-            return null;
+    private String getMessageTreatmentName(String mes) {
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Name";
         }
-        return TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+
+        return equipment.getName();
+    }
+
+    private String getMessageTreatmentType(String mes) {
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Type";
+        }
+
+        return equipment.getType();
     }
 
     public ArrayList<Treatment> getTreatmentsArray() {
