@@ -24,6 +24,15 @@
 
         </android.support.design.widget.AppBarLayout>-->
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="64dp"
+        android:layout_column="0"
+        android:background="#375E7D"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
         <include layout="@layout/content_tent"
             android:id="@+id/include" />
 

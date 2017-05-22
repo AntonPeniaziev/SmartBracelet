@@ -87,7 +87,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"/>
     <Button
-        android:layout_width="150dp"
+        android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/beepBracelet"
         android:background="@drawable/list_selector"
@@ -97,15 +97,15 @@
         android:layout_alignParentEnd="true" />
 
     <Button
-        android:layout_width="150dp"
+        android:layout_width="100dp"
         android:layout_height="100dp"
         android:id="@+id/webInfo"
         android:background="@drawable/list_selector"
         android:clickable="true"
         android:text="WEB"
+        android:layout_marginEnd="29dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/braceletMAC"
-        android:layout_marginStart="77dp" />
+        android:layout_toStartOf="@+id/beepBracelet" />
 
 
 
