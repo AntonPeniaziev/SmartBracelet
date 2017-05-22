@@ -10,13 +10,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Bracelet {
     String _mac_address;
-    ConcurrentHashMap<String, Treatment> _treatments;
+    LinkedHashMap<String, Treatment> _treatments;
     String jsonArray;
     long braceletStartTimeMinutes = 0;
     long braceletStartTimeSeconds = 0;
@@ -24,7 +25,7 @@ public class Bracelet {
     public Bracelet(String jsonStr, String macAddress) {
 
         _mac_address = macAddress;
-        _treatments = new ConcurrentHashMap<String, Treatment>();
+        _treatments = new LinkedHashMap<String, Treatment>();
 
         braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
         braceletStartTimeSeconds = getArduinoStartTimeFromFirstDataSeconds(jsonStr);
@@ -42,7 +43,7 @@ public class Bracelet {
                 for (int i = 1; i < firstData.length; i++) {
                     String toAdd = "<" + firstData[i];
 
-                    if (!getMessageType(toAdd).equals("0") || toAdd.contains("#")) {//TODO: cases # is sent
+                    if (!getMessageType(toAdd).equals("0") || toAdd.contains("#") || !firstData[i].contains(">")) {//TODO: cases # is sent
                         continue;
                     }
 
@@ -93,13 +94,22 @@ public class Bracelet {
     }
 
     private String getTimeField(String mes) {
-        return mes.split(",")[1];
+        if (mes.split(",").length > 1) {
+            return mes.split(",")[1];
+        }
+        return "";
     }
     private String getMessageTsID(String mes) {
-        return mes.split(",")[2];
+        if (mes.split(",").length > 2) {
+            return mes.split(",")[2];
+        }
+        return "";
     }
     private String getMessageUID(String mes) {
-        return mes.split(",")[3].split(">")[0];
+        if (mes.split(",").length > 3 && mes.split(",")[3].split(">").length > 0) {
+            return mes.split(",")[3].split(">")[0];
+        }
+        return "";
     }
 
     private String getMessageTreatmentName(String mes) {
