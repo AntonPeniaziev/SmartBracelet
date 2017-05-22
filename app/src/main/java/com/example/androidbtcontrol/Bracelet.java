@@ -19,6 +19,7 @@ public class Bracelet {
     ConcurrentHashMap<String, Treatment> _treatments;
     String jsonArray;
     long braceletStartTimeMinutes = 0;
+    long braceletStartTimeSeconds = 0;
 
     public Bracelet(String jsonStr, String macAddress) {
 
@@ -26,7 +27,7 @@ public class Bracelet {
         _treatments = new ConcurrentHashMap<String, Treatment>();
 
         braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
-
+        braceletStartTimeSeconds = getArduinoStartTimeFromFirstDataSeconds(jsonStr);
         AddActionsToBracelet(jsonStr);
 
     }
@@ -47,7 +48,7 @@ public class Bracelet {
 
                         _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
                                 new Treatment(getMessageTreatmentName(toAdd),
-                                        getMessageTreatmentType(toAdd), getMessageTime(toAdd)));
+                                        getMessageTreatmentType(toAdd), getMessageTimeSeconds(toAdd)));
                 }
 
                 return;
@@ -61,7 +62,7 @@ public class Bracelet {
 
                 _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
                         new Treatment(getMessageTreatmentName(jsonStr),
-                                getMessageTreatmentType(jsonStr), getMessageTime(jsonStr)));
+                                getMessageTreatmentType(jsonStr), getMessageTimeSeconds(jsonStr)));
 
     }
 
@@ -78,6 +79,15 @@ public class Bracelet {
         long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(resultMinutes * 60 * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        return sdf.format(calendar.getTime());
+    }
+
+    private String getMessageTimeSeconds(String mes) {
+        int arduinoSeconds = Integer.parseInt(mes.split(",")[1]);
+        long resultSeconds = braceletStartTimeSeconds + arduinoSeconds;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(resultSeconds * 1000);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         return sdf.format(calendar.getTime());
     }
@@ -123,6 +133,20 @@ public class Bracelet {
             String[] firstData = mes.split("<");
 
             res = minutes - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+        }
+
+        return res;
+    }
+
+    private long getArduinoStartTimeFromFirstDataSeconds(String mes) {
+        long res = 0;
+        Calendar c = Calendar.getInstance();
+        long seconds = c.getTimeInMillis() / (1000);
+
+        if (mes.contains("[") && mes.contains("]")) {
+            String[] firstData = mes.split("<");
+
+            res = seconds - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
         }
 
         return res;
