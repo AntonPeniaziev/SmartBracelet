@@ -83,7 +83,7 @@ public class Bracelet {
         long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(resultMinutes * 60 * 1000);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         return sdf.format(calendar.getTime());
     }
 
