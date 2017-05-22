@@ -46,9 +46,12 @@ public class Bracelet {
                     }
 
                     tempEquipt = getMessageTreatmentName(toAdd);
-                    _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                            new Treatment(tempEquipt.getName(),
-                                    tempEquipt.getType(), getMessageTime(toAdd)));
+                    if (tempEquipt != null) {
+                        _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
+                                new Treatment(tempEquipt.getName(),
+                                        tempEquipt.getType(), getMessageTime(toAdd)));
+                    }
+                    //TODO handle null equipment. check which bracelet sent the null update.
                 }
 
                 return;

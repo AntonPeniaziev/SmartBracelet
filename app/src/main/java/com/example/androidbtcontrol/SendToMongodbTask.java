@@ -19,9 +19,9 @@ import java.util.List;
 
 //mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-public class SendToMongodbTask extends AsyncTask<List<Treatment>, Integer, Long> {
+public class SendToMongodbTask extends AsyncTask</*List<Treatment>*/Patient, Integer, Long> {
     @Override
-    protected Long doInBackground(List<Treatment>... treatments) {
+    protected Long doInBackground(/*List<Treatment>*/Patient ... patients) {
 
         //Log.e(MainActivity.class.getName(), "SendToMongodbTask");
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
@@ -33,7 +33,7 @@ public class SendToMongodbTask extends AsyncTask<List<Treatment>, Integer, Long>
 
         ArrayList<BasicDBObject> treatList = new ArrayList<>();
 
-        for(Treatment obj : treatments[0]){
+        for(Treatment obj : patients[0].getTreatmentsArray()){
             BasicDBObject treatDoc = new BasicDBObject();
             treatDoc.put("Uid", obj.getName());
             treatDoc.put("type", obj.getType());
@@ -42,6 +42,10 @@ public class SendToMongodbTask extends AsyncTask<List<Treatment>, Integer, Long>
             treatList.add(treatDoc);
         }
 
+        document.put("bracelet_id", patients[0].getBtMac());
+        document.put("Heart_Rate", patients[0].getHeartRate());
+        document.put("Blood_Pressure", patients[0].getBloodPressure());
+        document.put("Body_Temp", patients[0].getBodyTemp());
         document.put("treatments", treatList);
 
         //document.put("name", "alon");
