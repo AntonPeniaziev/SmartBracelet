@@ -73,7 +73,11 @@ public class Bracelet {
     }
 
     private String getMessageType(String mes) {
-        return mes.split(",")[0].split("<")[1];
+
+        if (mes.split(",").length > 0 && mes.split(",")[0].split("<").length > 1) {
+            return mes.split(",")[0].split("<")[1];
+        }
+        return "";
     }
 
     private String getMessageTime(String mes) {
