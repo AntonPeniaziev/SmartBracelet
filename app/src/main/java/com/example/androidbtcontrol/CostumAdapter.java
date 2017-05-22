@@ -72,7 +72,7 @@ public class CostumAdapter extends BaseAdapter {
         TextView json = (TextView) vi.findViewById(R.id.json);
 
         if (data != null) {
-            text.setText(data.get(position).getBtMac());
+            text.setText("Bracelet: " + data.get(position).getBtMac());
             bodyTemp.setText(data.get(position).getBodyTemp());
             bloodPressure.setText(data.get(position).getBloodPressure());
             String treatInfo = "";
