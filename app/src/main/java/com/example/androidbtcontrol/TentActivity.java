@@ -1,7 +1,10 @@
 package com.example.androidbtcontrol;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -181,8 +184,22 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onBackPressed() {
-        Intent setIntent = new Intent(TentActivity.this, LoginActivity.class);
-        startActivity(setIntent);
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+        dlgAlert.setMessage("Logout?");
+        dlgAlert.setTitle("Smart Bracelet");
+        dlgAlert.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        System.exit(0);
+                    }
+                });
+
+        dlgAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        dlgAlert.show();
     }
 
 }
