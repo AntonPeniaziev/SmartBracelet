@@ -17,7 +17,8 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".LoginActivity"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,13 +29,16 @@
             android:name=".TentActivity"
             android:label="@string/title_activity_tent"
             android:parentActivityName=".LoginActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.androidbtcontrol.MainActivity" />
         </activity>
-        <activity android:name=".PatientInfoActivity" />
-        <activity android:name=".TestActivity"></activity>
+        <activity android:name=".PatientInfoActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".TestActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
