@@ -44,7 +44,7 @@ public class TreatmentsTable {
 
         @Override
         protected Long doInBackground(String... strings) {
-            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx");
+            MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
             MongoClient mongoClient = new MongoClient(mongoUri);
             MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
             MongoCollection<BasicDBObject> dbCollection = db.getCollection("treatments", BasicDBObject.class);
