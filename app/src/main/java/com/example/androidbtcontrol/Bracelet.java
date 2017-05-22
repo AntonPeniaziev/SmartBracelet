@@ -76,7 +76,7 @@ public class Bracelet {
     }
 
     private String getMessageTime(String mes) {
-        int arduinoMinutes = Integer.parseInt(mes.split(",")[1]);
+        int arduinoMinutes = mes.split(",").length > 1 ? Integer.parseInt(mes.split(",")[1]) : 0;
         long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(resultMinutes * 60 * 1000);
@@ -85,7 +85,7 @@ public class Bracelet {
     }
 
     private String getMessageTimeSeconds(String mes) {
-        int arduinoSeconds = Integer.parseInt(mes.split(",")[1]);
+        int arduinoSeconds = mes.split(",").length > 1 ? Integer.parseInt(mes.split(",")[1]) : 0;
         long resultSeconds = braceletStartTimeSeconds + arduinoSeconds;
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(resultSeconds * 1000);
