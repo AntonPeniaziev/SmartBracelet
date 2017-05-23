@@ -67,7 +67,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         TreatmensUidToName.put("30","Hemostatic");
         TreatmensUidToName.put("40","Morphine");*/
 
-        treatmentUidTranslator = new TreatmentsTable();
+        treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
 
     }
 

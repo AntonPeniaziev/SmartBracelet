@@ -107,7 +107,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginFailed() {
-        Toast.makeText(getBaseContext(),  _errorMsg, Toast.LENGTH_LONG).show();
+        int time = 5;
+        while(time > 0) {
+            Toast.makeText(getBaseContext(), _errorMsg, Toast.LENGTH_LONG).show();
+            time--;
+        }
 
         _loginButton.setEnabled(true);
     }
@@ -132,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
             _usernameText.setError(null);
             //TODO: check if the username exist in web and if not get the username in
             try {
-                valid = new LoginTask().execute(username).get();
+                valid = new LoginTask(getBaseContext()).execute(username).get();
 
             } catch (InterruptedException e) {
                 Toast.makeText(getBaseContext(),  "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
@@ -143,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             if (!valid) {
-                _errorMsg = "Username doesn't exist. try another user or check your INTERNET connection";
+                _errorMsg = "check your INTERNET connection";
                 return valid;
             }
 
@@ -156,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                 _passwordText.setError(null);
                 try {
                     String[] userAndPass = {username, password};
-                    valid = new LoginTask().execute(userAndPass).get();
+                    valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
                 } catch (InterruptedException e) {
                     Toast.makeText(getBaseContext(),  "something is wrong. try again soon", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
@@ -166,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if (!valid) {
-                    _errorMsg = "The user name or password for SmartBracelet is incorrect. Otherwise, check your INTERNET connection";
+                    _errorMsg = "Try a valid user and password or check your INTERNET connection";
                     return valid;
                 }
 

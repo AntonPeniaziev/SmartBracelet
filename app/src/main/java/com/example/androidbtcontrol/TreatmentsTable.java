@@ -1,15 +1,19 @@
 package com.example.androidbtcontrol;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by avizel on 19/4/2017.
@@ -18,10 +22,11 @@ import java.util.LinkedHashMap;
 public class TreatmentsTable {
     LinkedHashMap<String, Equipment> treatmentsTable;
 
-    public TreatmentsTable() {
+    public TreatmentsTable(Context context) {
         treatmentsTable = new LinkedHashMap<String, Equipment>();
 
-        new TreatmentsTable.updateActivitiesTable().execute();
+        new updateActivitiesTable(context).execute();
+
     }
 
     public LinkedHashMap<String, Equipment> getTreatmentsTable() {
@@ -40,30 +45,38 @@ public class TreatmentsTable {
         treatmentsTable.put(s, d);
     }
 
-    private class updateActivitiesTable extends AsyncTask<String, Integer, Long> {
+    private class updateActivitiesTable extends AsyncTask<String, Integer, Boolean> {
 
+        private Context mContext;
+        updateActivitiesTable(Context context) {
+            mContext = context;
+        }
         @Override
-        protected Long doInBackground(String... strings) {
+        protected Boolean doInBackground(String... strings) {
             MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
             MongoClient mongoClient = new MongoClient(mongoUri);
             MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
             MongoCollection<BasicDBObject> dbCollection = db.getCollection("equipment", BasicDBObject.class);
 
             FindIterable<BasicDBObject> treatments = dbCollection.find();
-            if (treatments == null) {
-                return null;
-            }
-            for(BasicDBObject doc : treatments) {
-                //access documents e.g. doc.get()
-                Object number = doc.get("equipment_id");
-                Object name = doc.get("name");
-                Object type = doc.get("type");
-                //TODO add time
-                Equipment t = new Equipment(name.toString(), type.toString());
-                treatmentsTable.put(number.toString(), t);
+            try {
+                for (BasicDBObject doc : treatments) {
+                    //access documents e.g. doc.get()
+                    Object number = doc.get("equipment_id");
+                    Object name = doc.get("name");
+                    Object type = doc.get("type");
+                    //TODO add time
+                    Equipment t = new Equipment(name.toString(), type.toString());
+                    treatmentsTable.put(number.toString(), t);
 
-                //Log.e(MainActivity.class.getName(), number.toString());
-                //Log.e(MainActivity.class.getName(), name.toString());
+                    //Log.e(MainActivity.class.getName(), number.toString());
+                    //Log.e(MainActivity.class.getName(), name.toString());
+                }
+            } catch (MongoTimeoutException e) {
+                e.printStackTrace();
+                treatmentsTable = null;
+                //Toast.makeText(mContext, "Something is wrong. Please check your INTERNET connection", Toast.LENGTH_LONG).show();
+                return false;
             }
             //activitiesTable
             /*for (LinkedHashMap.Entry<String, Details> entry : treatmentsTable.entrySet()) {
@@ -76,7 +89,18 @@ public class TreatmentsTable {
             }*/
 
 
-            return null;
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            int count = 10;
+            if (!aBoolean){
+                while (count > 0) {
+                    Toast.makeText(mContext, "Something is wrong. Please check your INTERNET connection and restart", Toast.LENGTH_LONG).show();
+                    count--;
+                }
+            }
         }
     }
 }

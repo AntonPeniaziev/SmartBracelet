@@ -47,7 +47,7 @@ public class TestActivity extends AppCompatActivity {
                 String[] userAndPass = {"doctor5", "123"};
                 boolean output = false;
                 try {
-                    output = new LoginTask().execute(userAndPass).get();
+                    output = new LoginTask(TestActivity.this).execute(userAndPass).get();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

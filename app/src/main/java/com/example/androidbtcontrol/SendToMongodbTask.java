@@ -1,11 +1,14 @@
 package com.example.androidbtcontrol;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -19,18 +22,22 @@ import java.util.List;
 
 //mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-public class SendToMongodbTask extends AsyncTask</*List<Treatment>*/Patient, Integer, Long> {
+public class SendToMongodbTask extends AsyncTask</*List<Treatment>*/Patient, Integer, Boolean> {
+
+    private Context mContext;
+    SendToMongodbTask(Context context) {
+        mContext = context;
+    }
     @Override
-    protected Long doInBackground(/*List<Treatment>*/Patient ... patients) {
+    protected Boolean doInBackground(/*List<Treatment>*/Patient ... patients) {
 
         //Log.e(MainActivity.class.getName(), "SendToMongodbTask");
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
-        BasicDBObject document = new BasicDBObject();
-        //BasicDBObject treatDoc = new BasicDBObject();
 
+        BasicDBObject document = new BasicDBObject();
         ArrayList<BasicDBObject> treatList = new ArrayList<>();
 
         for(Treatment obj : patients[0].getTreatmentsArray()){
@@ -51,11 +58,27 @@ public class SendToMongodbTask extends AsyncTask</*List<Treatment>*/Patient, Int
 
         //document.put("name", "alon");
 
-        dbCollection.insertOne(document);
+        try {
+            dbCollection.insertOne(document);
+        } catch (MongoTimeoutException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         // dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
         //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
         //dbCollection.insertOne(jsonData);
-        return null;
+        return true;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        int time = 7;
+        if (!aBoolean) {
+            while (time > 0) {
+                Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
+                time--;
+            }
+        }
     }
 }
