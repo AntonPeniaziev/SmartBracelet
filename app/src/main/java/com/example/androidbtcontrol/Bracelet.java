@@ -1,72 +1,29 @@
 package com.example.androidbtcontrol;
-import android.util.Log;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 
 public class Bracelet {
     String _mac_address;
     LinkedHashMap<String, Treatment> _treatments;
-    String jsonArray;
-    long braceletStartTimeMinutes = 0;
-    long braceletStartTimeSeconds = 0;
+    TimeUnit _timeUnit = TimeUnit.SECOND;
+    long _absoluteBraceletStartTime = 0;
 
-    public Bracelet(String jsonStr, String macAddress) {
+    public enum TimeUnit {
+        SECOND, MINUTE
+    }
 
+//region Constructor
+    public Bracelet(String initialDataFromBT, String macAddress) {
         _mac_address = macAddress;
-        _treatments = new LinkedHashMap<String, Treatment>();
-
-        braceletStartTimeMinutes = getArduinoStartTimeFromFirstData(jsonStr);
-        braceletStartTimeSeconds = getArduinoStartTimeFromFirstDataSeconds(jsonStr);
-        AddActionsToBracelet(jsonStr);
-
+        _treatments = new LinkedHashMap<>();
+        _absoluteBraceletStartTime = getArduinoStartTimeFromFirstData(initialDataFromBT);
+        AddActionsToBracelet(initialDataFromBT);
     }
+//endregion Constructor
 
-
-
-        public void AddActionsToBracelet(String jsonStr) {
-
-            Equipment tempEquipt;
-            if (jsonStr.contains("[") && jsonStr.contains("]")) {
-                String[] firstData = jsonStr.split("<");
-                for (int i = 1; i < firstData.length; i++) {
-                    String toAdd = "<" + firstData[i];
-
-                    if (!getMessageType(toAdd).equals("0") || toAdd.contains("#") || !firstData[i].contains(">")) {//TODO: cases # is sent
-                        continue;
-                    }
-
-                        _treatments.put(getTimeField(toAdd) + "|" + getMessageTsID(toAdd),
-                                new Treatment(getMessageTreatmentName(toAdd),
-                                        getMessageTreatmentType(toAdd), getMessageTimeSeconds(toAdd)));
-                }
-
-                return;
-            }
-
-            //TODO different types of messages and origins
-            if (!getMessageType(jsonStr).equals("0") || jsonStr.contains("#")) {
-                return;
-            }
-
-
-                _treatments.put(getTimeField(jsonStr) + "|" + getMessageTsID(jsonStr),
-                        new Treatment(getMessageTreatmentName(jsonStr),
-                                getMessageTreatmentType(jsonStr), getMessageTimeSeconds(jsonStr)));
-
-    }
-
+//region BT message parsing functions
     private String getMessageType(String mes) {
 
         if (mes.split(",").length > 0 && mes.split(",")[0].split("<").length > 1) {
@@ -75,21 +32,16 @@ public class Bracelet {
         return "";
     }
 
-    private String getMessageTime(String mes) {
-        int arduinoMinutes = mes.split(",").length > 1 ? Integer.parseInt(mes.split(",")[1]) : 0;
-        long resultMinutes = braceletStartTimeMinutes + arduinoMinutes;
+    private String getMessageFormattedTime(String mes) {
+        int messageTimeField = Integer.parseInt(getTimeField(mes));
+        long resultMinutes = _absoluteBraceletStartTime + messageTimeField;
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(resultMinutes * 60 * 1000);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        return sdf.format(calendar.getTime());
-    }
+        if (_timeUnit == TimeUnit.SECOND) {
+            calendar.setTimeInMillis(resultMinutes * 1000);
+            sdf = new SimpleDateFormat("HH:mm:ss");
+        }
 
-    private String getMessageTimeSeconds(String mes) {
-        int arduinoSeconds = mes.split(",").length > 1 ? Integer.parseInt(mes.split(",")[1]) : 0;
-        long resultSeconds = braceletStartTimeSeconds + arduinoSeconds;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(resultSeconds * 1000);
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         return sdf.format(calendar.getTime());
     }
 
@@ -97,7 +49,7 @@ public class Bracelet {
         if (mes.split(",").length > 1) {
             return mes.split(",")[1];
         }
-        return "";
+        return "0";
     }
     private String getMessageTsID(String mes) {
         if (mes.split(",").length > 2) {
@@ -130,35 +82,60 @@ public class Bracelet {
         return equipment.getType();
     }
 
-    public ArrayList<Treatment> getTreatmentsArray() {
-        return new ArrayList<Treatment>(_treatments.values());
-    }
-
     private long getArduinoStartTimeFromFirstData(String mes) {
-        long res = 0;
+        long absoluteStartTime = 0;
+        long millisInUnit = 60 * 1000;
+        if (_timeUnit == TimeUnit.SECOND) {
+            millisInUnit = 1000;
+        }
         Calendar c = Calendar.getInstance();
-        long minutes = c.getTimeInMillis() / (60 * 1000);
+        long mesReceivingTime = c.getTimeInMillis() / millisInUnit;
 
         if (mes.contains("[") && mes.contains("]")) {
             String[] firstData = mes.split("<");
 
-            res = minutes - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+            absoluteStartTime = mesReceivingTime - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
         }
 
-        return res;
+        return absoluteStartTime;
     }
+    //returns a unique identifier of the Arduino message in the form time|tsid
+    private String getMessageUniqueIdentifier(String mes) {
+        return getTimeField(mes) + "|" + getMessageTsID(mes);
+    }
+    // adds new Treatment instance to _treatments from message of type <0,time,tsid,uid>
+    private void addTreatmentFromDiamond(String mes) {
+        _treatments.put(getMessageUniqueIdentifier(mes),
+                new Treatment(getMessageTreatmentName(mes),
+                        getMessageTreatmentType(mes), getMessageFormattedTime(mes)));
+    }
+//endregion BT message parsing functions
 
-    private long getArduinoStartTimeFromFirstDataSeconds(String mes) {
-        long res = 0;
-        Calendar c = Calendar.getInstance();
-        long seconds = c.getTimeInMillis() / (1000);
+//region public methods
 
-        if (mes.contains("[") && mes.contains("]")) {
-            String[] firstData = mes.split("<");
-
-            res = seconds - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
+    public void AddActionsToBracelet(String inputMessage) {
+        if (inputMessage.contains("[") && inputMessage.contains("]")) {
+            String[] firstData = inputMessage.split("<");
+            for (int i = 1; i < firstData.length; i++) {
+                String oneDiamondMessage = "<" + firstData[i];
+                if (!getMessageType(oneDiamondMessage).equals("0") ||
+                        oneDiamondMessage.contains("#") ||
+                        !firstData[i].contains(">")) {//TODO: cases # is sent
+                    continue;
+                }
+                addTreatmentFromDiamond(oneDiamondMessage);
+            }
+            return;
         }
-
-        return res;
+        //TODO different types of messages and origins
+        if (!getMessageType(inputMessage).equals("0") || inputMessage.contains("#")) {
+            return;
+        }
+        addTreatmentFromDiamond(inputMessage);
     }
+
+    public ArrayList<Treatment> getTreatmentsArray() {
+        return new ArrayList<>(_treatments.values());
+    }
+//endregion public methods
 }
