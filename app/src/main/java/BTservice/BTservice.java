@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
-import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -24,35 +23,24 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-
-/**
- * Created by apeniazi on 11-Apr-17.
- */
-
 public class BTservice implements BTserviceInterface {
-    private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter _bluetoothAdapter;
     private HashMap<String, String> _supportedDeviceNames;
-    ConcurrentHashMap<String, List<String>> _macToJsonList;
-    ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
-    HashMap<String, ThreadConnected> _ConnectionThreadsByMac;
-    TextView _textInfo;
-    Context _context;
-    Handler _handler;
+    private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
+    private ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
+    private HashMap<String, ThreadConnected> _connectionThreadsByMac;
+    private Context _context;
+    private Handler _handler;
     private UUID myUUID;
-    private final String UUID_STRING_WELL_KNOWN_SPP =
-            "00001101-0000-1000-8000-00805F9B34FB";
-
-    ThreadConnectBTdevice myThreadConnectBTdevice;
-    String JsonMessage;
-    ArrayList<BluetoothDevice> discoveredDevices;
-
-    private String _startMessage = new String("");
-
-    public BTservice(TextView info, Context context) {
+    private final String UUID_STRING_WELL_KNOWN_SPP = "00001101-0000-1000-8000-00805F9B34FB";
+    private ThreadConnectBTdevice _myThreadConnectBTdevice;
+    private String _receivedMessage;
+    private ArrayList<BluetoothDevice> _discoveredDevices;
+    private String _startMessage;
+//region BTservice constructor
+    public BTservice(Context context) {
 
         _context = context;
-        _textInfo = info;
         _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (_bluetoothAdapter == null) {
             Toast.makeText(_context,
@@ -67,49 +55,31 @@ public class BTservice implements BTserviceInterface {
         _supportedDeviceNames.put("11", "");
         _supportedDeviceNames.put("gun1", "");
 
-        String stInfo = _bluetoothAdapter.getName() + "\n" +
-                _bluetoothAdapter.getAddress();
-        _textInfo.setText(stInfo);
-
         Toast.makeText(_context,
                 "BTservice is on",
                 Toast.LENGTH_SHORT).show();
 
         myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
 
-
         _handler = new Handler(context.getMainLooper());
-        discoveredDevices = new ArrayList<BluetoothDevice>();
-        _macToJsonList = new ConcurrentHashMap<String, List<String>>();
-        _macToDataForBracelet = new ConcurrentHashMap<String, List<String>>();
-        _ConnectionThreadsByMac = new HashMap<String, ThreadConnected>();
+        _discoveredDevices = new ArrayList<>();
+        _macToReceivedBraceletData = new ConcurrentHashMap<>();
+        _macToDataForBracelet = new ConcurrentHashMap<>();
+        _connectionThreadsByMac = new HashMap<String, ThreadConnected>();
+        _startMessage = "";
     }
+//endregion BTservice constructor
 
-
-    private void runOnUiThread(Runnable r) {
-        _handler.post(r);
-    }
-    //Called in ThreadConnectBTdevice once connect successed
-    //to start ThreadConnected
-    private void startThreadConnected(BluetoothSocket socket, BluetoothDevice device){
-        _ConnectionThreadsByMac.put(device.getAddress().toString(), new ThreadConnected(socket, device));
-        _ConnectionThreadsByMac.get(device.getAddress().toString()).start();
-    }
-
+//region ThreadConnectBTdevice
     private class ThreadConnectBTdevice extends Thread {
-
         private BluetoothSocket bluetoothSocket = null;
         private final BluetoothDevice bluetoothDevice;
 
-
         private ThreadConnectBTdevice(BluetoothDevice device) {
             bluetoothDevice = device;
-
             try {
                 bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
-                _textInfo.setText("bluetoothSocket: \n" + bluetoothSocket);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -122,20 +92,21 @@ public class BTservice implements BTserviceInterface {
                 success = true;
             } catch (IOException e) {
                 e.printStackTrace();
-
                 final String eMessage = e.getMessage();
+
                 runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
-                        _textInfo.setText("something wrong bluetoothSocket.connect(): \n" + eMessage);
+                        Toast.makeText(_context,
+                                "something wrong bluetoothSocket.connect(): \n" + eMessage,
+                                Toast.LENGTH_LONG).show();
                     }
                 });
 
                 try {
                     bluetoothSocket.close();
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
                     Toast.makeText(_context,
                             "Connection lost with " + bluetoothDevice.getName(),
                             Toast.LENGTH_LONG).show();
@@ -152,7 +123,6 @@ public class BTservice implements BTserviceInterface {
 
                     @Override
                     public void run() {
-                        _textInfo.setText("");
                         Toast.makeText(_context, msgconnected, Toast.LENGTH_LONG).show();
 
                     }
@@ -181,12 +151,10 @@ public class BTservice implements BTserviceInterface {
         }
 
     }
+//endregion ThreadConnectBTdevice
 
-    /*
-  ThreadConnected:
-  Background Thread to handle Bluetooth data communication
-  after connected
-   */
+//region ThreadConnected
+//Background Thread to handle Bluetooth data communication
     private class ThreadConnected extends Thread {
         private final BluetoothSocket connectedBluetoothSocket;
         private final InputStream connectedInputStream;
@@ -199,7 +167,7 @@ public class BTservice implements BTserviceInterface {
             InputStream in = null;
             OutputStream out = null;
             device = btDevice;
-            JsonMessage = "";
+            _receivedMessage = "";
 
             try {
                 in = socket.getInputStream();
@@ -221,59 +189,36 @@ public class BTservice implements BTserviceInterface {
             int bytes;
             boolean receivedOldData = false;
             byte[] bytesToSend = _startMessage.getBytes();
-            String deviceAddr = device.getAddress().toString();
-            if (_ConnectionThreadsByMac.containsKey(deviceAddr)) {
-                _ConnectionThreadsByMac.get(deviceAddr).write(bytesToSend);
+            String deviceAddr = device.getAddress();
+            if (_connectionThreadsByMac.containsKey(deviceAddr)) {
+                _connectionThreadsByMac.get(deviceAddr).write(bytesToSend);
             }
 
             while (true) {
-
                 try {
-
                     bytes = connectedInputStream.read(buffer);
                     final String strReceived = new String(buffer, 0, bytes);
-                    final String strByteCnt = String.valueOf(bytes) + " bytes received.\n";
-
 
                     if (((false == receivedOldData) && strReceived.contains("]")) ||
                             ((true == receivedOldData) && strReceived.contains(">"))) {
 
-                        JsonMessage += strReceived;
+                        _receivedMessage += strReceived;
 
-                        if (_macToJsonList.containsKey(deviceAddr)) {
-                            _macToJsonList.get(deviceAddr).add(JsonMessage);
+                        if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
+                            _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
                         }
-                        JsonMessage = "";
+                        _receivedMessage = "";
                         receivedOldData = true;
                     }
                     else {
-                        JsonMessage += strReceived;
+                        _receivedMessage += strReceived;
                     }
-
-
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
-
-                    final String msgConnectionLost = "Connection lost:\n"
-                            + e.getMessage();
-
-                    _macToJsonList.remove(device.getAddress().toString());
-                    _ConnectionThreadsByMac.remove(device.getAddress().toString());
-                    _macToDataForBracelet.remove(device.getAddress().toString());
-
-//                    runOnUiThread(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(_context,
-//                                    msgConnectionLost,
-//                                    Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-
+                    _macToReceivedBraceletData.remove(device.getAddress());
+                    _connectionThreadsByMac.remove(device.getAddress());
+                    _macToDataForBracelet.remove(device.getAddress());
                     this.interrupt();
-
                 }
             }
         }
@@ -282,7 +227,6 @@ public class BTservice implements BTserviceInterface {
             try {
                 connectedOutputStream.write(buffer);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -291,50 +235,32 @@ public class BTservice implements BTserviceInterface {
             try {
                 connectedBluetoothSocket.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
+//endregion ThreadConnected
 
-    public void startBT() {
-        //Turn ON BlueTooth if it is OFF
-     /*   if (!bluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        }
-        */
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
-        _context.registerReceiver(mReceiver, filter);
-        _bluetoothAdapter.startDiscovery();
-    }
-
+//region private internal
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-
             //Finding devices
             if (BluetoothDevice.ACTION_FOUND.equals(action))
             {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null && device.getName() != null &&
-                        _supportedDeviceNames.containsKey(device.getName().toString())) {
-                    discoveredDevices.add(device);
+                        _supportedDeviceNames.containsKey(device.getName())) {
+                    _discoveredDevices.add(device);
                     Toast.makeText(_context,
                             "Found supported device " + device.getName(),
                             Toast.LENGTH_LONG).show();
                 }
-
-
-                // Add the name and address to an array adapter to show in a ListView
-                // mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Toast.makeText(_context,
-                        "Scanned devices number = " + discoveredDevices.size(),
+                        "Scanned devices number = " + _discoveredDevices.size(),
                         Toast.LENGTH_LONG).show();
                 setup();
             }
@@ -350,7 +276,6 @@ public class BTservice implements BTserviceInterface {
                     //setPairing confirmation if neeeded
                     device.setPairingConfirmation(true);
                 } catch (Exception e) {
-                    // Log.e(TAG, "Error occurs when trying to auto pair");
                     e.printStackTrace();
                 }
             }
@@ -358,61 +283,37 @@ public class BTservice implements BTserviceInterface {
     };
 
     private void setup() {
-
-        for (BluetoothDevice device : discoveredDevices) {
-            if (_supportedDeviceNames.containsKey(device.getName().toString())) {
+        for (BluetoothDevice device : _discoveredDevices) {
+            if (_supportedDeviceNames.containsKey(device.getName())) {
                 Toast.makeText(_context,
-                        "got bracelet bluetooth " + device.getAddress().toString(),
+                        "got bracelet bluetooth " + device.getAddress(),
                         Toast.LENGTH_SHORT).show();
-                myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
-                _macToJsonList.putIfAbsent(device.getAddress().toString(), Collections.synchronizedList(new ArrayList<String>()));
-                myThreadConnectBTdevice.start();
+                _myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
+                _macToReceivedBraceletData.putIfAbsent(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
+                _myThreadConnectBTdevice.start();
             }
         }
     }
 
-    public void destroy() {
-        if (myThreadConnectBTdevice != null) {
-            myThreadConnectBTdevice.cancel();
-        }
-        _context.unregisterReceiver(mReceiver);
+    private void runOnUiThread(Runnable r) {
+        _handler.post(r);
     }
-
-    public ConcurrentHashMap<String, List<String>> getMacToJsonList() {
-        return _macToJsonList;
-    }
-
-    public void clearBtBuffers() {
-        for (Map.Entry<String, List<String>> it : _macToJsonList.entrySet()) {
-            it.getValue().clear();
-        }
-    }
-
-    public void addDataToBeSentByMac(String mac, String data) {
-        _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
-        if (_macToJsonList.containsKey(mac)) {
-            _macToDataForBracelet.get(mac).add(data);
-        }
-        writeToMac(mac);
-    }
-
-    public void addStartDataToSendToAll(String data) {
-        _startMessage = data;
-//        for (String mac : _ConnectionThreadsByMac.keySet()) {
-//            addDataToBeSentByMac(mac, data);
-//        }
+    //Called in ThreadConnectBTdevice once connect successed
+    //to start ThreadConnected
+    private void startThreadConnected(BluetoothSocket socket, BluetoothDevice device){
+        _connectionThreadsByMac.put(device.getAddress(), new ThreadConnected(socket, device));
+        _connectionThreadsByMac.get(device.getAddress()).start();
     }
 
     private void writeToMac(String mac) {
-        //TODO perfomance
         if (_macToDataForBracelet.size() > 0) {
             if (_macToDataForBracelet.containsKey(mac)) {
                 synchronized (_macToDataForBracelet.get(mac)) {
                     Iterator i = _macToDataForBracelet.get(mac).iterator();
                     while (i.hasNext()) {
                         byte[] toMac = i.next().toString().getBytes();
-                        if (_ConnectionThreadsByMac.containsKey(mac)) {
-                            _ConnectionThreadsByMac.get(mac).write(toMac);
+                        if (_connectionThreadsByMac.containsKey(mac)) {
+                            _connectionThreadsByMac.get(mac).write(toMac);
                         }
                     }
                     if (_macToDataForBracelet.containsKey(mac)) {
@@ -422,5 +323,45 @@ public class BTservice implements BTserviceInterface {
             }
         }
     }
+//endregion private internal
+
+//region public methods
+    public void startBT() {
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
+        _context.registerReceiver(mReceiver, filter);
+        _bluetoothAdapter.startDiscovery();
+    }
+
+    public void destroy() {
+        if (_myThreadConnectBTdevice != null) {
+            _myThreadConnectBTdevice.cancel();
+        }
+        _context.unregisterReceiver(mReceiver);
+    }
+
+    public ConcurrentHashMap<String, List<String>> getMacToReceivedDataMap() {
+        return _macToReceivedBraceletData;
+    }
+
+    public void clearBtBuffers() {
+        for (Map.Entry<String, List<String>> it : _macToReceivedBraceletData.entrySet()) {
+            it.getValue().clear();
+        }
+    }
+
+    public void addDataToBeSentByMac(String mac, String data) {
+        _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
+        if (_macToReceivedBraceletData.containsKey(mac)) {
+            _macToDataForBracelet.get(mac).add(data);
+        }
+        writeToMac(mac);
+    }
+
+    public void addStartDataToSendToAll(String data) {
+        _startMessage = data;
+    }
+//endregion public methods
 
 }

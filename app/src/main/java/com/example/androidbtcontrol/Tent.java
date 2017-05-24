@@ -10,7 +10,7 @@ public class Tent {
     ConcurrentHashMap<String, Patient> _patients;
 
     public Tent() {
-        _patients = new ConcurrentHashMap<String, Patient>();
+        _patients = new ConcurrentHashMap<>();
     }
 
     private void AddPatientInfo(String infoFromBracelet, String bt_mac) {
@@ -23,8 +23,9 @@ public class Tent {
         }
     }
 
-
+//region public methods
     public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList) {
+
         for (Map.Entry<String, List<String>> it : macToJsonList.entrySet()) {
             synchronized(it.getValue()) {
                 Iterator i = it.getValue().iterator();
@@ -47,7 +48,7 @@ public class Tent {
     }
 
     public ArrayList<Patient> getPatientsArray() {
-        return new ArrayList<Patient>(_patients.values());
+        return new ArrayList<>(_patients.values());
     }
 
     public String  getHeartrateByMac(String mac) {
@@ -57,5 +58,5 @@ public class Tent {
     public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
         return _patients.containsKey(mac) ? _patients.get(mac).getTreatmentsArray() : null;
     }
-
+//endregion public methods
 }

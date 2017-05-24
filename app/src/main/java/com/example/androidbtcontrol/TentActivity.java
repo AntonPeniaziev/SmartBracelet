@@ -17,10 +17,8 @@ import BTservice.BTservice;
 
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    TextView textInfo2;
     BTservice _bTservice;
     static Tent _tent;
-    //static public ConcurrentHashMap<String,String> TreatmensUidToName;
     UpdateData _updateData;
     CustomAdapter _adapter;
     ListView _listView;
@@ -30,15 +28,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Toast.makeText(this,
-//               "Tent onCreate" ,
-//                Toast.LENGTH_SHORT).show();
         setContentView(R.layout.activity_tent);
 
         _tent = new Tent();
-        textInfo2 = (TextView)findViewById(R.id.myView);
-
-        _bTservice = new BTservice(textInfo2, this);
+        _bTservice = new BTservice(this);
 
         _listView = (ListView) findViewById(android.R.id.list);
 
@@ -50,18 +43,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _bTservice.addStartDataToSendToAll("<1," + doc_id + ">");
         _bTservice.startBT();
 
-
         _updateData = new UpdateData();
         _updateData.start();
-
-        /** Will be updated from the web**/
-        /*TreatmensUidToName = new ConcurrentHashMap<>();
-        TreatmensUidToName.put("0","Tourniquet");
-        TreatmensUidToName.put("10","Acamol");
-        TreatmensUidToName.put("20","Israeli bandage");
-        TreatmensUidToName.put("30","Hemostatic");
-        TreatmensUidToName.put("40","Morphine");*/
-
         treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
 
     }
@@ -69,10 +52,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
               Patient item = _adapter.getItem(position);
-//        Toast.makeText(this,
-//               "beep sent to " + item.getBtMac().toString(),
-//                Toast.LENGTH_SHORT).show();
-//        _bTservice.addDataToBeSentByMac(item.getBtMac().toString(),"<6,0>");
         Intent intent = new Intent(TentActivity.this, PatientInfoActivity.class);
         intent.putExtra("PATIENT_ID", item.getBtMac().toString());
 
@@ -82,51 +61,31 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     protected void onStart() {
-//        Toast.makeText(this,
-//                "Tent onStart" ,
-//                Toast.LENGTH_SHORT).show();
         super.onStart();
-
-
-
     }
 
     @Override
     protected void onDestroy() {
-//        Toast.makeText(this,
-//                "Tent onDestroy" ,
-//                Toast.LENGTH_SHORT).show();
         super.onDestroy();
         _bTservice.destroy();
-        if(_updateData!=null){
-          //  updateData.cancel();
-        }
     }
 
     @Override
     protected void onPause() {
-//        Toast.makeText(this,
-//                "Tent onPause" ,
-//                Toast.LENGTH_SHORT).show();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-//        Toast.makeText(this,
-//                "Tent onResume" ,
-//                Toast.LENGTH_SHORT).show();
         super.onResume();
-        //_updateData.run();
     }
 
     private class UpdateData extends Thread {
-
         @Override
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                _tent.updatePatientInfoFromBT(_bTservice.getMacToJsonList());
+                _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap());
                 _bTservice.clearBtBuffers();
 
                 runOnUiThread(new Runnable() {
@@ -135,23 +94,16 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                         runOnUI();
                     }
                 });
-
                 //release for UI
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
-
         }
     }
 
-    /**
-     * updates the List View on Tent Avtivity.
-     * @param data
-     */
     void updateListView(ArrayList<Patient> data){
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();

@@ -1,30 +1,18 @@
 package com.example.androidbtcontrol;
 
-
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Patient {
     Bracelet _bracelet;
-    // Bracelet MAC + patient registration time
     String id;
-    /**
-     * id: depends on bracelet reusability + ability to identify soldier in the tent
-     * StateDescription : text, voice, image
-     * ImmediateInfo : current pulse, blood pressure ...
-     */
 
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
     }
 
-    public String getBtMac() {
-        return id;
-    }
-
+//region random dummy functions
     public String getHeartRate() {
         Random rand = new Random();
         return Integer.toString(rand.nextInt(200) + 40);
@@ -46,7 +34,9 @@ public class Patient {
         Random rand = new Random();
         return Double.toString(33 + (42 - 33) * rand.nextDouble()).substring(0,4) + " ºC";
     }
+//endregion random dummy functions
 
+//region public methods
     public void AddActions(String additionalActions) {
         _bracelet.AddActionsToBracelet(additionalActions);
 
@@ -56,4 +46,9 @@ public class Patient {
         return _bracelet.getTreatmentsArray();
     }
 
+    public String getBtMac() {
+        return id;
+    }
+    //endregion public methods
 }
+

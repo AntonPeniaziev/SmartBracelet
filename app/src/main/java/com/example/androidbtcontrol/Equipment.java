@@ -1,7 +1,5 @@
 package com.example.androidbtcontrol;
 
-import java.util.ArrayList;
-
 /**
  * Created by avizel on 17/5/2017.
  */
