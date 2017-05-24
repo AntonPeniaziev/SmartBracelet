@@ -2,21 +2,16 @@ package com.example.androidbtcontrol;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 import BTservice.BTservice;
 
@@ -27,7 +22,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static Tent _tent;
     //static public ConcurrentHashMap<String,String> TreatmensUidToName;
     UpdateData _updateData;
-    CostumAdapter _adapter;
+    CustomAdapter _adapter;
     ListView _listView;
 
     static public TreatmentsTable treatmentUidTranslator;
@@ -47,7 +42,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         _listView = (ListView) findViewById(android.R.id.list);
 
-        _adapter = new CostumAdapter(this, R.layout.list_row);
+        _adapter = new CustomAdapter(this, R.layout.list_row);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
 

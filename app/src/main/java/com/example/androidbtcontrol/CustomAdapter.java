@@ -25,14 +25,14 @@ import BTservice.BTservice;
  * Created by Sapir Eltanani on 24/04/2017.
  */
 
-public class CostumAdapter extends BaseAdapter {
+public class CustomAdapter extends BaseAdapter {
 
     Context context;
     ArrayList<Patient> data;
     private static LayoutInflater inflater = null;
     int _listRow;
 
-    public CostumAdapter(Context context, int layoutId) {
+    public CustomAdapter(Context context, int layoutId) {
         // TODO Auto-generated constructor stub
         this.context = context;
         inflater = (LayoutInflater) context
