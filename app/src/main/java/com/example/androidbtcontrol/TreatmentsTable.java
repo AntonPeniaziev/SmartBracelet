@@ -7,6 +7,9 @@ import android.widget.Toast;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoSecurityException;
+import com.mongodb.MongoSocketOpenException;
+import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -77,6 +80,15 @@ public class TreatmentsTable {
                 treatmentsTable = null;
                 //Toast.makeText(mContext, "Something is wrong. Please check your INTERNET connection", Toast.LENGTH_LONG).show();
                 return false;
+            } catch (MongoSocketReadException e) {
+                e.printStackTrace();
+                return false;
+            } catch (MongoSocketOpenException e) {
+                e.printStackTrace();
+                return false;
+            } catch (MongoSecurityException e) {
+                e.printStackTrace();
+                return false;
             }
             //activitiesTable
             /*for (LinkedHashMap.Entry<String, Details> entry : treatmentsTable.entrySet()) {
@@ -94,10 +106,10 @@ public class TreatmentsTable {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            int count = 10;
+            int count = 7;
             if (!aBoolean){
                 while (count > 0) {
-                    Toast.makeText(mContext, "Something is wrong. Please check your INTERNET connection and restart", Toast.LENGTH_LONG).show();
+                    Toast.makeText(mContext, "Info missing! Please check your INTERNET connection and restart", Toast.LENGTH_LONG).show();
                     count--;
                 }
             }

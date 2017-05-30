@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
      * when failed to login show the error message and go back to login screen
      */
     public void onLoginFailed() {
-        int time = 5;
+        int time = 3;
         while(time > 0) {
             Toast.makeText(getBaseContext(), _errorMsg, Toast.LENGTH_LONG).show();
             time--;
@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         Boolean valid = true;
 
         //check if the username is a string and its length above 2 characters
-        if (username.matches("[0-9]+") && username.length() > 2) {
+        if (username.matches("[a-zA-Z0-9]+") && username.length() > 2) {
             _docID = username; //TODO separate ID from name (maybe we need ID only, Android team expects to get an integer)
         } else {
             _errorMsg = "Enter a valid username";
@@ -246,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
         valid = validateUserName(username, progressDialog, message);
 
         if (!valid) {
-            _errorMsg = "check your INTERNET connection";
+            _errorMsg = "Enter a valid USER or check your INTERNET connection";
             return valid;
         }
 
@@ -255,7 +255,7 @@ public class LoginActivity extends AppCompatActivity {
         valid = validatePassword(username, password, progressDialog, message);
 
         if (!valid) {
-            _errorMsg = "Try a valid user and password or check your INTERNET connection";
+            _errorMsg = "Enter a valid PASSWORD or check your INTERNET connection";
             return valid;
         }
 
