@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomAdapter extends BaseAdapter {
 
@@ -97,8 +98,10 @@ public class CustomAdapter extends BaseAdapter {
             public void onClick(View v) {
 //                SeList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
 //                new SendToMongodbTask().execute(patientTreatments);
-                Patient patient = data.get(position);
-                //new SendToMongodbTask(currActivity).execute(patient);
+                //Patient patient = data.get(position);
+                List<Patient> patient = new ArrayList<Patient>();
+                patient.add(data.get(position));
+                new SendToMongodbTask(currActivity).execute(patient);
 
             }
         });
