@@ -83,7 +83,7 @@
             android:layout_height="844dp"
             android:layout_column="0"
             android:layout_row="0"
-            android:divider="@android:color/white"
+            android:divider="#262E1E"
             android:dividerHeight="10.0sp"
             />
     </FrameLayout>
