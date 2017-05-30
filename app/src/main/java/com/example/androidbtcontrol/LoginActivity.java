@@ -238,7 +238,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         if(username.equals("master")){
-            progressDialog.setMessage(message + "\n" + "Mater Pass...");
+            progressDialog.setMessage(message + "\n" + "Master Pass...");
             progressDialog.show();
             return true;
         }

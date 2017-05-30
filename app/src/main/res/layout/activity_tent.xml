@@ -4,9 +4,9 @@
     xmlns:app2="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     tools:context="com.example.androidbtcontrol.TentActivity"
-    >
+    android:background="#262E1E">
 
     <!--
         <android.support.design.widget.AppBarLayout
@@ -24,14 +24,40 @@
 
         </android.support.design.widget.AppBarLayout>-->
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="64dp"
-        android:layout_column="0"
-        android:background="#375E7D"
-        android:orientation="vertical">
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbars="vertical"
+        android:layout_weight="1"
+        android:background="#262E1E"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
-    </LinearLayout>
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/refreshBracelet"
+            android:background="#4E5944"
+            android:clickable="true"
+            android:text="Refresh"
+            android:textColor="#FFFFFF"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:id="@+id/logOut"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="#4E5944"
+            android:clickable="true"
+            android:text="Logout"
+            android:textColor="#FFFFFF" />
+    </RelativeLayout>
 
         <include layout="@layout/content_tent"
             android:id="@+id/include" />
@@ -44,22 +70,25 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_marginTop="?attr/actionBarSize"
         android:scrollbars="vertical"
-        >
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/linearLayout">
 
         <ListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="844dp"
             android:layout_column="0"
             android:layout_row="0"
             android:divider="@android:color/white"
             android:dividerHeight="10.0sp"
             />
     </FrameLayout>
+
+
+
 
 </RelativeLayout>
