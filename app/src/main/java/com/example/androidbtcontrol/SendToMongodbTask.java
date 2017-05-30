@@ -11,6 +11,10 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +60,13 @@ public class SendToMongodbTask extends AsyncTask</*List<Treatment>*/Patient, Int
         document.put("Body_Temp", patients[0].getBodyTemp());
         document.put("treatments", treatList);
 
+        Bson searchQuery = new Document("bracelet_id", patients[0].getBtMac());
+        UpdateOptions upsertDoc = new  UpdateOptions();
+        upsertDoc.upsert(true);
         //document.put("name", "alon");
 
         try {
-            dbCollection.insertOne(document);
+            dbCollection.replaceOne(searchQuery, document, upsertDoc);
         } catch (MongoTimeoutException e) {
             e.printStackTrace();
             return false;
