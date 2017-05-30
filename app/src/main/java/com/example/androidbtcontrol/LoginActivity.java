@@ -19,6 +19,7 @@ import com.mongodb.MongoTimeoutException;
 import java.util.concurrent.ExecutionException;
 
 
+
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     EditText _usernameText;
@@ -30,22 +31,38 @@ public class LoginActivity extends AppCompatActivity {
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    /**
+     *  Function which initiating the Bluetooth Adapter
+     * @return true if the bluetooth adapter initiated successfully, else false
+     */
+    boolean initBluetooth(){
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this,
                     "Bluetooth is not supported on this hardware platform",
                     Toast.LENGTH_LONG).show();
             finish();
-            return;
+            return false;
         }
 
         if (false == bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        return true;
+    }
+
+
+    /**
+     * OnCreate function initiates the screen and all the views in it
+     * @param savedInstanceState
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(!initBluetooth()){
+            return;
         }
 
         setContentView(R.layout.activity_login);
@@ -63,27 +80,30 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * open the Authenticating screen and call validate function
+     *  to check if the user name and password are correct
+     */
     public void login() {
         Log.d(TAG, "Login");
-
-
         _loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.Base_Theme_AppCompat_Light_DarkActionBar);
         progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
+        String message = "Authenticating...";
+        progressDialog.setMessage(message);
         progressDialog.show();
-
-
+        final Boolean valid = validate(progressDialog, message);
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
                         // On complete call either onLoginSuccess or onLoginFailed
-                        if (!validate()) {
+                        if (!valid) {
                             onLoginFailed();
-                            System.exit(0);
+                            //System.exit(0);
                             progressDialog.dismiss();
                             return;
                         }
@@ -100,12 +120,19 @@ public class LoginActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
+    /**
+     * When the Authentication success continue to The bracelets screen
+     */
     public void onLoginSuccess() {
         Intent tentIntent = new Intent(LoginActivity.this, TentActivity.class);
         tentIntent.putExtra("DOC_ID", _docID);
         startActivity(tentIntent);
     }
 
+
+    /**
+     * when failed to login show the error message and go back to login screen
+     */
     public void onLoginFailed() {
         int time = 5;
         while(time > 0) {
@@ -116,66 +143,125 @@ public class LoginActivity extends AppCompatActivity {
         _loginButton.setEnabled(true);
     }
 
-    public boolean validate() {
+
+    /**
+     *
+     * @param username : the username needs to be checked
+     * @return true if the username is legal one and in the database
+     */
+    boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
+        progressDialog.setMessage(message + "\n" + "Checking Username...");
+        progressDialog.show();
         Boolean valid = true;
 
-        String username = _usernameText.getText().toString();
-        String password = _passwordText.getText().toString();
-
-         if(username.equals("master")){
-            return true;
-          }
+        //check if the username is a string and its length above 2 characters
         if (username.matches("[0-9]+") && username.length() > 2) {
             _docID = username; //TODO separate ID from name (maybe we need ID only, Android team expects to get an integer)
+        } else {
+            _errorMsg = "Enter a valid username";
+            valid = false;
+            return valid;
         }
 
+        // check if the username is not empty
         if (username.isEmpty()) {
             _errorMsg = "Enter a valid username";
             valid = false;
+            return valid;
         } else {
             _usernameText.setError(null);
-            //TODO: check if the username exist in web and if not get the username in
+            //check if the username exist in the database in web
             try {
                 valid = new LoginTask(getBaseContext()).execute(username).get();
 
             } catch (InterruptedException e) {
-                Toast.makeText(getBaseContext(),  "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             } catch (ExecutionException e) {
-                Toast.makeText(getBaseContext(),  "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        }
+        return valid;
+    }
+
+
+    /**
+     * @param username: the username connected to the password
+     * @param password : the password needs to be checked
+     * @return true if the password is legal one and according to the password in database
+     */
+    boolean validatePassword(String username,String password,ProgressDialog progressDialog, String message) {
+        progressDialog.setMessage(message + "\n" + "Checking Password...");
+        progressDialog.show();
+        Boolean valid = true;
+
+        //check that the password is not empty and its length above 4 characters
+        // and below 10 characters
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            _errorMsg = "Password between 4 and 10 characters: numbers and letters";
+
+            valid = false;
+        } else {
+            // check the correctness of the password in the database
+            _passwordText.setError(null);
+            try {
+                String[] userAndPass = {username, password};
+                valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
+            } catch (InterruptedException e) {
+                Toast.makeText(getBaseContext(), "something is wrong. try again soon", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                Toast.makeText(getBaseContext(), "something is wrong. try again soon", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
-            if (!valid) {
-                _errorMsg = "check your INTERNET connection";
-                return valid;
-            }
-
-            if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-                _errorMsg ="Password between 4 and 10 characters: numbers and letters";
-
-                valid = false;
-            } else {
-                //TODO:: check the correctness of the password
-                _passwordText.setError(null);
-                try {
-                    String[] userAndPass = {username, password};
-                    valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
-                } catch (InterruptedException e) {
-                    Toast.makeText(getBaseContext(),  "something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    Toast.makeText(getBaseContext(),  "something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-
-                if (!valid) {
-                    _errorMsg = "Try a valid user and password or check your INTERNET connection";
-                    return valid;
-                }
-
-            }
         }
+        return valid;
+    }
+
+
+    /**
+     * function that validates the correctness of the username and password of a client.
+     * the conditions for username and password to pass:
+     * 1. username must be an alphanumeric string
+     * 2. username must be above 2 characters
+     * 3. username must be found in the database on web
+     * 4. password must be an alphanumeric string
+     * 5. password must be above 4 characters and below 10 characters
+     * 6. password must be matched to the password connected to the username in the database in  web
+     * @return
+     */
+    public boolean validate(ProgressDialog progressDialog, String message) {
+        Boolean valid = true;
+        String username = _usernameText.getText().toString();
+        String password = _passwordText.getText().toString();
+
+        if(username.equals("master")){
+            progressDialog.setMessage(message + "\n" + "Master Pass...");
+            progressDialog.show();
+            return true;
+        }
+
+        valid = validateUserName(username, progressDialog, message);
+
+        if (!valid) {
+            _errorMsg = "check your INTERNET connection";
+            return valid;
+        }
+
+        progressDialog.setMessage(message + "\n" + "Username Passed...");
+        progressDialog.show();
+        valid = validatePassword(username, password, progressDialog, message);
+
+        if (!valid) {
+            _errorMsg = "Try a valid user and password or check your INTERNET connection";
+            return valid;
+        }
+
+
+        progressDialog.setMessage(message + "\n" + "Starting Scanning Bracelets...");
+        progressDialog.show();
         return valid;
     }
 }

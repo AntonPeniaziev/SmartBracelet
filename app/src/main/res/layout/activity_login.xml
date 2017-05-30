@@ -2,21 +2,14 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:background="#262E1E">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="64dp"
-            android:layout_column="0"
-            android:background="#375E7D"
-            android:orientation="vertical">
-
-        </LinearLayout>
 
 
         <LinearLayout
@@ -59,12 +52,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+            >
             <EditText android:id="@+id/input_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:hint="Username" />
+                android:hint="Username"
+                android:textColorHint="#FFFFFF"
+                android:textColor="#FFFFFF"
+                />
         </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->
@@ -72,12 +70,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
+            android:layout_marginBottom="8dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+            >
             <EditText android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:hint="Password"/>
+                android:hint="Password"
+                android:textColorHint="#FFFFFF"
+                android:textColor="#FFFFFF"
+                />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton
