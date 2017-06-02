@@ -43,6 +43,7 @@
             android:background="#4E5944"
             android:clickable="true"
             android:text="Refresh"
+            android:textSize="20sp"
             android:textColor="#FFFFFF"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true" />
@@ -56,6 +57,7 @@
             android:background="#4E5944"
             android:clickable="true"
             android:text="Logout"
+            android:textSize="20sp"
             android:textColor="#FFFFFF" />
     </RelativeLayout>
 

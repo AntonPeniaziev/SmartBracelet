@@ -24,7 +24,7 @@ public class Tent {
     }
 
 //region public methods
-    public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList) {
+    public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList, boolean connected) {
 
         for (Map.Entry<String, List<String>> it : macToJsonList.entrySet()) {
             synchronized(it.getValue()) {
@@ -32,6 +32,7 @@ public class Tent {
                 while (i.hasNext()) {
                     String jsonStr = new String(i.next().toString());
                     AddPatientInfo(jsonStr, it.getKey());
+                    _patients.get(it.getKey()).setConnected(connected);
                 }
             }
 
@@ -40,7 +41,8 @@ public class Tent {
         //Check there are disconnections
         for (Map.Entry<String, Patient> it : _patients.entrySet()) {
             String key = it.getKey();
-            if (false == macToJsonList.containsKey(key)) {
+            if ((false == macToJsonList.containsKey(key) && connected && _patients.get(key).isConnected()) ||
+            (false == macToJsonList.containsKey(key) && !connected && !_patients.get(key).isConnected())){
                 _patients.remove(key);
             }
         }

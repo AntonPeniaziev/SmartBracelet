@@ -1,6 +1,8 @@
 package com.example.androidbtcontrol;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,34 +52,58 @@ public class CustomAdapter extends BaseAdapter {
         if (vi == null) {
             vi = inflater.inflate(_listRow, null);
         }
-
         TextView text = (TextView) vi.findViewById(R.id.braceletMAC);
+        Typeface army_font = Typeface.createFromAsset(context.getAssets(),  "fonts/Army.ttf");
+        text.setTypeface(army_font);
         TextView bodyTemp = (TextView) vi.findViewById(R.id.bodyTemp);
         TextView bloodPressure = (TextView) vi.findViewById(R.id.bloodPressure);
         TextView json = (TextView) vi.findViewById(R.id.json);
 
         if (data != null) {
-            text.setText("Bracelet: " + data.get(position).getBtMac());
-            bodyTemp.setText(data.get(position).getBodyTemp());
-            bloodPressure.setText(data.get(position).getBloodPressure());
-            String treatInfo = "";
-            for (Treatment tr : data.get(position).getTreatmentsArray()) {
-                treatInfo += "Treatment received: " + tr.getName() + " at " + tr.getLastTime() + " of type " + tr.getType() + "\n";
+            Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
+            beepButton.setTypeface(army_font);
+            setOnClickBeep(beepButton, (TentActivity)context, position);
+            Button webInfo = (Button) vi.findViewById(R.id.webInfo);
+            webInfo.setTypeface(army_font);
+            setOnClickWeb(webInfo,(TentActivity)context, position);
+
+            if (data.get(position).isConnected() == false) {
+                text.setText("Bracelet: " + data.get(position).getBtMac() + "\n\n(CLICK TO CONNECT)");
+                vi.setAlpha((float) 0.2);
+                webInfo.setVisibility(View.GONE);
+                beepButton.setVisibility(View.GONE);
+                json.setVisibility(View.GONE);
+                bodyTemp.setVisibility(View.GONE);
+                bloodPressure.setVisibility(View.GONE);
             }
-            json.setText(treatInfo);
+            else {
+                vi.setAlpha((float) 1);
+                webInfo.setVisibility(View.VISIBLE);
+                beepButton.setVisibility(View.VISIBLE);
+                json.setVisibility(View.VISIBLE);
+                bodyTemp.setVisibility(View.VISIBLE);
+                bloodPressure.setVisibility(View.VISIBLE);
+
+                text.setText("Bracelet: " + data.get(position).getBtMac());
+                bodyTemp.setText(data.get(position).getBodyTemp());
+                bloodPressure.setText(data.get(position).getBloodPressure());
+                String treatInfo = "";
+                for (Treatment tr : data.get(position).getTreatmentsArray()) {
+                    treatInfo += "Treatment received: " + tr.getName() + " at " + tr.getLastTime() + " of type " + tr.getType() + "\n";
+                }
+                json.setText(treatInfo);
+            }
         }
 
-        Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
-        setOnClickBeep(beepButton, (TentActivity)context, position);
-        Button webInfo = (Button) vi.findViewById(R.id.webInfo);
-        setOnClickWeb(webInfo,(TentActivity)context, position);
+
+
 
 
 
         return vi;
     }
 
-    private void setOnClickBeep(final Button btn, final TentActivity currActivity,final int position) {
+    private void setOnClickBeep(final Button btn, final TentActivity currActivity, final int position) {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

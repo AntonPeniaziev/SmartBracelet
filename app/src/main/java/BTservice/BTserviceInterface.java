@@ -14,6 +14,10 @@ public interface BTserviceInterface {
     void addStartDataToSendToAll(String data);
     //clears all received data buffers
     void clearBtBuffers();
+    //disconnects from bracelet bluetooth
+    void disconnectByMac(String mac);
+    //connects to bracelet bluetooth
+    void connectByMac(String mac);
     //need to be called in onDestroy()
     void destroy();
 }

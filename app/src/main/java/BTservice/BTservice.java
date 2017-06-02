@@ -68,7 +68,7 @@ public class BTservice implements BTserviceInterface {
         _macToReceivedBraceletData = new ConcurrentHashMap<>();
         _macToDataForBracelet = new ConcurrentHashMap<>();
         _connectionThreadsByMac = new HashMap<String, ThreadConnected>();
-        _startMessage = "";
+        _startMessage = "<1,222>";
     }
 //endregion BTservice constructor
 
@@ -162,7 +162,7 @@ public class BTservice implements BTserviceInterface {
         private final InputStream connectedInputStream;
         private final OutputStream connectedOutputStream;
         private final BluetoothDevice device;
-
+        boolean breakLoop = false;
 
         public ThreadConnected(BluetoothSocket socket, BluetoothDevice btDevice) {
             connectedBluetoothSocket = socket;
@@ -170,6 +170,7 @@ public class BTservice implements BTserviceInterface {
             OutputStream out = null;
             device = btDevice;
             _receivedMessage = "";
+
 
             try {
                 in = socket.getInputStream();
@@ -187,7 +188,6 @@ public class BTservice implements BTserviceInterface {
 
         @Override
         public void run() {
-            final Object lock = new Object();
             byte[] buffer = new byte[1024];
             int bytes;
             boolean receivedOldData = false;
@@ -197,14 +197,28 @@ public class BTservice implements BTserviceInterface {
             }
 
             while (true) {
+                long time1;
                 try {
-                        bytes = connectedInputStream.read(buffer);
-                        final String strReceived = new String(buffer, 0, bytes);
+                    time1 = System.currentTimeMillis();
+                    bytes = connectedInputStream.read(buffer);
+                    if (breakLoop) {
+                        break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    cancel();
+                    break;
+                }
 
-                        if (((false == receivedOldData) && strReceived.contains("]")) ||
-                                ((true == receivedOldData) && strReceived.contains(">"))) {
-                            sendAck();
-                            _receivedMessage += strReceived;
+                final String strReceived = new String(buffer, 0, bytes);
+
+                if (((false == receivedOldData) && strReceived.contains("]")) ||
+                        ((true == receivedOldData) && strReceived.contains(">"))) {
+                    sendAck();
+                    long time2 = System.currentTimeMillis();
+                    long delta = time2 - time1;
+                    Log.d("DELTA",Long.toString(delta));
+                    _receivedMessage += strReceived;
 
 //                        runOnUiThread(new Runnable() {
 //
@@ -216,20 +230,13 @@ public class BTservice implements BTserviceInterface {
 //                        });
 
 
-                            if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
-                                _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
-                            }
-                            _receivedMessage = "";
-                            receivedOldData = true;
-                        } else {
-                            _receivedMessage += strReceived;
-                        }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    _macToReceivedBraceletData.remove(device.getAddress());
-                    _connectionThreadsByMac.remove(device.getAddress());
-                    _macToDataForBracelet.remove(device.getAddress());
-                    this.interrupt();
+                    if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
+                        _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
+                    }
+                    _receivedMessage = "";
+                    receivedOldData = true;
+                } else {
+                    _receivedMessage += strReceived;
                 }
             }
         }
@@ -252,6 +259,10 @@ public class BTservice implements BTserviceInterface {
         }
 
         public void cancel() {
+            breakLoop = true;
+            _macToReceivedBraceletData.remove(device.getAddress());
+            _connectionThreadsByMac.remove(device.getAddress());
+            _macToDataForBracelet.remove(device.getAddress());
             try {
                 connectedBluetoothSocket.close();
             } catch (IOException e) {
@@ -282,7 +293,7 @@ public class BTservice implements BTserviceInterface {
                 Toast.makeText(_context,
                         "Scanned devices number = " + _discoveredDevices.size(),
                         Toast.LENGTH_LONG).show();
-                setup();
+                //setup();
             }
             else if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
                 try {
@@ -350,14 +361,7 @@ public class BTservice implements BTserviceInterface {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothDevice.ACTION_PAIRING_REQUEST);
         _context.registerReceiver(mReceiver, filter);
-        _bluetoothAdapter.startDiscovery();
-      //  BluetoothDevice device = _bluetoothAdapter.getRemoteDevice("98:D3:31:20:19:69");
-        //_discoveredDevices.add(device);
-        //_bluetoothAdapter.cancelDiscovery();
-//        Toast.makeText(_context,
-//                "Device from NFC " + device.getName(),
-//                Toast.LENGTH_SHORT).show();
- //       setup();
+        //_bluetoothAdapter.startDiscovery();
     }
 
     public void connectImmediately(String mac) {
@@ -402,6 +406,52 @@ public class BTservice implements BTserviceInterface {
 
     public void addStartDataToSendToAll(String data) {
         _startMessage = data;
+    }
+
+    public void disconnectByMac(String mac) {
+//       if(_bluetoothAdapter.isDiscovering()) {
+//           _bluetoothAdapter.cancelDiscovery();
+//       }
+        _macToReceivedBraceletData.remove(mac);
+        _macToDataForBracelet.remove(mac);
+        if (_connectionThreadsByMac.containsKey(mac)) {
+            _connectionThreadsByMac.get(mac).interrupt();
+            _connectionThreadsByMac.get(mac).cancel();
+        }
+        _connectionThreadsByMac.remove(mac);
+    }
+
+    public void connectByMac(String mac) {
+        if(_bluetoothAdapter.isDiscovering()) {
+           _bluetoothAdapter.cancelDiscovery();
+       }
+        BluetoothDevice device = _bluetoothAdapter.getRemoteDevice(mac);
+        if(_discoveredDevices.contains(device)) {
+            _discoveredDevices.remove(device);
+            if (_supportedDeviceNames.containsKey(device.getName())) {
+                _myThreadConnectBTdevice = new ThreadConnectBTdevice(device);
+                _macToReceivedBraceletData.put(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
+                _myThreadConnectBTdevice.start();
+            }
+        }
+    }
+    //TODO : change design!
+    public ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap() {
+
+        ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<>();
+        for (BluetoothDevice device : _discoveredDevices) {
+            map.put(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
+            map.get(device.getAddress()).add("");
+        }
+        return map;
+    }
+
+    public void discover() {
+        if (_bluetoothAdapter.isDiscovering()) {
+            _bluetoothAdapter.cancelDiscovery();
+        }
+        _discoveredDevices.clear();
+        _bluetoothAdapter.startDiscovery();
     }
 //endregion public methods
 

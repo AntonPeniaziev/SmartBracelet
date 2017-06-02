@@ -2,27 +2,30 @@ package com.example.androidbtcontrol;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import BTservice.BTservice;
 
-public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     BTservice _bTservice;
     static Tent _tent;
     UpdateData _updateData;
     CustomAdapter _adapter;
     ListView _listView;
-
+    Button _refreshButton, _logoutButton;
     static public TreatmentsTable treatmentUidTranslator;
 
     @Override
@@ -32,14 +35,23 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         _tent = new Tent();
         _bTservice = new BTservice(this);
-
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Army.ttf");
         _listView = (ListView) findViewById(android.R.id.list);
+        _refreshButton = (Button) findViewById(R.id.refreshBracelet);
+        _logoutButton = (Button) findViewById(R.id.logOut);
+        _refreshButton.setTypeface(army_font);
+        setOnClickRefresh(_refreshButton);
 
+        _logoutButton = (Button) findViewById(R.id.logOut);
+        _refreshButton.setTypeface(army_font);
+        _logoutButton.setTypeface(army_font);
         _adapter = new CustomAdapter(this, R.layout.list_row);
         _listView.setAdapter(_adapter);
         _listView.setOnItemClickListener(this);
+        _listView.setLongClickable(true);
+        _listView.setOnItemLongClickListener(this);
 
-        String doc_id =  getIntent().getStringExtra("DOC_ID");
+        final String doc_id =  getIntent().getStringExtra("DOC_ID");
         _bTservice.addStartDataToSendToAll("<1," + doc_id + ">");
         _bTservice.startBT();
 
@@ -51,12 +63,39 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-              Patient item = _adapter.getItem(position);
-        Intent intent = new Intent(TentActivity.this, PatientInfoActivity.class);
-        intent.putExtra("PATIENT_ID", item.getBtMac().toString());
+        Patient item = _adapter.getItem(position);
+        if (item.isConnected()) {
+            Intent intent = new Intent(TentActivity.this, PatientInfoActivity.class);
+            intent.putExtra("PATIENT_ID", item.getBtMac());
+            startActivity(intent);
+        }
+        else {
+            _bTservice.connectByMac(item.getBtMac());
+        }
+    }
 
-        startActivity(intent);
+    @Override
+    public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long id) {
+        final Patient item = _adapter.getItem(position);
+        final String itemAddress = item.getBtMac();
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+        dlgAlert.setMessage("Disconnect from " + itemAddress + "?");
+        dlgAlert.setTitle("Bracelet " + itemAddress);
+        dlgAlert.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        _bTservice.disconnectByMac(itemAddress);
+                    }
+                });
 
+        dlgAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                return;
+            }
+        });
+        dlgAlert.show();
+
+        return true;
     }
 
     @Override
@@ -85,7 +124,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap());
+                _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
+                _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
 
                 runOnUiThread(new Runnable() {
@@ -147,6 +187,15 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
         dlgAlert.show();
+    }
+
+    private void setOnClickRefresh(final Button btn) {
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _bTservice.discover();
+            }
+        });
     }
 
 }

@@ -6,10 +6,12 @@ import java.util.Random;
 public class Patient {
     Bracelet _bracelet;
     String id;
+    boolean _isConnected;
 
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
+        _isConnected = false;
     }
 
 //region random dummy functions
@@ -48,6 +50,14 @@ public class Patient {
 
     public String getBtMac() {
         return id;
+    }
+
+    public void setConnected(boolean status) {
+        _isConnected = status;
+    }
+
+    public boolean isConnected() {
+        return _isConnected;
     }
     //endregion public methods
 }
