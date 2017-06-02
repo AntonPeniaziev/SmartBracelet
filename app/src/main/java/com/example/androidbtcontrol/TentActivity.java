@@ -11,17 +11,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
-
 import BTservice.BTservice;
 
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
-    BTservice _bTservice;
-    static Tent _tent;
+    static private BTservice _bTservice;
+    static Tent _tent; // TODO change to private and add access methods
     UpdateData _updateData;
     CustomAdapter _adapter;
     ListView _listView;
@@ -197,6 +193,18 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 _bTservice.discover();
             }
         });
+    }
+
+    //Sends an update record to bracelet and updates a treatment of specified patient in tent
+    static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
+
+        String treatmentId = "10"; //TODO : need to be a function of newTreatmentName. i.e. 'Acamol' => "10"
+//        if (not found) {
+//            return "Specified treatment doesn't exist";
+//        }
+        _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId));
+        _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
+        return "";
     }
 
 }

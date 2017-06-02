@@ -60,5 +60,11 @@ public class Tent {
     public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
         return _patients.containsKey(mac) ? _patients.get(mac).getTreatmentsArray() : null;
     }
+
+    public void updatePatientsTreatment(String mac, Treatment treatment, String newTreatmentName) {
+        if (_patients.containsKey(mac)) {
+            _patients.get(mac).updateTreatment(treatment.getUid(), newTreatmentName);
+        }
+    }
 //endregion public methods
 }

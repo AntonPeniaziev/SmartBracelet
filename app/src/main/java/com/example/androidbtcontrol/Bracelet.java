@@ -2,11 +2,13 @@ package com.example.androidbtcontrol;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Bracelet {
     String _mac_address;
-    LinkedHashMap<String, Treatment> _treatments;
+    Map<String, Treatment> _treatments;
     TimeUnit _timeUnit = TimeUnit.SECOND;
     long _absoluteBraceletStartTime = 0;
 
@@ -17,7 +19,7 @@ public class Bracelet {
 //region Constructor
     public Bracelet(String initialDataFromBT, String macAddress) {
         _mac_address = macAddress;
-        _treatments = new LinkedHashMap<>();
+        _treatments = Collections.synchronizedMap(new LinkedHashMap<String, Treatment>());
         _absoluteBraceletStartTime = getArduinoStartTimeFromFirstData(initialDataFromBT);
         AddActionsToBracelet(initialDataFromBT);
     }
@@ -105,9 +107,13 @@ public class Bracelet {
     }
     // adds new Treatment instance to _treatments from message of type <0,time,tsid,uid>
     private void addTreatmentFromDiamond(String mes) {
-        _treatments.put(getMessageUniqueIdentifier(mes),
-                new Treatment(getMessageTreatmentName(mes),
-                        getMessageTreatmentType(mes), getMessageFormattedTime(mes)));
+        synchronized (_treatments) {
+            _treatments.put(getMessageUniqueIdentifier(mes),
+                    new Treatment(getMessageTreatmentName(mes),
+                            getMessageTreatmentType(mes),
+                            getMessageFormattedTime(mes),
+                            getMessageUniqueIdentifier(mes)));
+        }
     }
 //endregion BT message parsing functions
 
@@ -135,7 +141,17 @@ public class Bracelet {
     }
 
     public ArrayList<Treatment> getTreatmentsArray() {
-        return new ArrayList<>(_treatments.values());
+        ArrayList<Treatment> treatmentsArr;
+        synchronized(_treatments) {
+            treatmentsArr = new ArrayList<>(_treatments.values());
+        }
+        return treatmentsArr;
+    }
+
+    public void updateTreatment(String treatmentUid, String newName) {
+        synchronized(_treatments) {
+            _treatments.get(treatmentUid).updateTreatment(newName);
+        }
     }
 //endregion public methods
 }

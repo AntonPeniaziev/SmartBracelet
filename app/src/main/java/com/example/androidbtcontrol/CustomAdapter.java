@@ -125,9 +125,13 @@ public class CustomAdapter extends BaseAdapter {
 //                SeList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
 //                new SendToMongodbTask().execute(patientTreatments);
                 //Patient patient = data.get(position);
-                List<Patient> patient = new ArrayList<Patient>();
-                patient.add(data.get(position));
-                new SendToMongodbTask(currActivity).execute(patient);
+
+
+//                List<Patient> patient = new ArrayList<Patient>();
+//                patient.add(data.get(position));
+//                new SendToMongodbTask(currActivity).execute(patient);
+
+                //TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(0),"ss");
 
             }
         });

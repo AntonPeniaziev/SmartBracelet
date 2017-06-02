@@ -20,4 +20,8 @@ public class Equipment {
     public String getType() {
         return type;
     }
+
+    public void setName(String newName) {
+        name = newName;
+    }
 }

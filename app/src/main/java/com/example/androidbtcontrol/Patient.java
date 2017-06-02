@@ -59,6 +59,10 @@ public class Patient {
     public boolean isConnected() {
         return _isConnected;
     }
+
+    public void updateTreatment(String treatmentUid, String newName) {
+        _bracelet.updateTreatment(treatmentUid, newName);
+    }
     //endregion public methods
 }
 

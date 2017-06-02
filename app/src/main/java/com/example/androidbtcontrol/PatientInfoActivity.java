@@ -93,16 +93,10 @@ public class PatientInfoActivity extends AppCompatActivity {
         }
     }
 
-//    void updateListView(ArrayList<Patient> data){
-//        _adapter.setData(data);
-//        _adapter.notifyDataSetChanged();
-//    }
-
     void runOnUI() {
         hr.setText(TentActivity._tent.getHeartrateByMac(_patientMac));
         //TODO : pressure, breath ..
         updateListView(TentActivity._tent.getTreatmentsArrayByMac(_patientMac));
-
     }
 
     void updateListView(ArrayList<Treatment> treatmentsArr){
