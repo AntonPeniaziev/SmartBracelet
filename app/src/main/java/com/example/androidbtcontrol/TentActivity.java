@@ -127,6 +127,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
+                new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
 
                 runOnUiThread(new Runnable() {
                     @Override
