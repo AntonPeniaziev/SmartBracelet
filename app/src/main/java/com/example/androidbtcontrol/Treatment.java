@@ -23,8 +23,14 @@ public class Treatment extends Equipment {
         this.setName(newValue);
     }
 
-    public String generateUpdateRecord(String newNumber) {
-        String res = "<3," + arduinoUid.split("\\|")[0] + "," + arduinoUid.split("\\|")[1] + "," + newNumber + ">";
+    public String generateUpdateRecord(String newNumber, String name) {
+        String res;
+        if (name == null) {//delete record
+            res = "<7," + arduinoUid.split("\\|")[0] + "," + arduinoUid.split("\\|")[1] + ",0>";
+        }
+        else {
+            res = "<3," + arduinoUid.split("\\|")[0] + "," + arduinoUid.split("\\|")[1] + "," + newNumber + ">";
+        }
         return res;
     }
 }

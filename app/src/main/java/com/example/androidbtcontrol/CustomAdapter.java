@@ -131,12 +131,12 @@ public class CustomAdapter extends BaseAdapter {
 //                patient.add(data.get(position));
 //                new SendToMongodbTask(currActivity).execute(patient);
 
-                //TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(0),"ss");
+                TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(0), "ss");
+                TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(1), null);
 
             }
         });
-
-            }
+    }
 
     public void setData(ArrayList<Patient> data) {
         this.data = data;

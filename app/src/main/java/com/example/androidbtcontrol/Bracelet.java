@@ -53,9 +53,27 @@ public class Bracelet {
         }
         return "0";
     }
+    private String getTimeFieldFromUpdateRec(String mes) {
+        if (mes.split(",").length > 3) {
+            return mes.split(",")[3];
+        }
+        return "0";
+    }
     private String getMessageTsID(String mes) {
         if (mes.split(",").length > 2) {
             return mes.split(",")[2];
+        }
+        return "";
+    }
+    private String getMessageTsIDFromUpdateRec(String mes) {
+        if (mes.split(",").length > 4) {
+            return mes.split(",")[4];
+        }
+        return "";
+    }
+    private String getDataFromUpdateRec(String mes) {
+        if (mes.split(",").length > 5 && mes.split(",")[5].split(">").length > 0) {
+            return mes.split(",")[5].split(">")[0];
         }
         return "";
     }
@@ -67,11 +85,14 @@ public class Bracelet {
     }
 
     private String getMessageTreatmentName(String mes) {
-        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        return getTreatmentNameByNumber(getMessageUID(mes));
+    }
+
+    private String getTreatmentNameByNumber(String number) {
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(number);
         if (null == equipment) {
             return "Unknown Name";
         }
-
         return equipment.getName();
     }
 
@@ -105,8 +126,37 @@ public class Bracelet {
     private String getMessageUniqueIdentifier(String mes) {
         return getTimeField(mes) + "|" + getMessageTsID(mes);
     }
+    //returns a target uid from an update message
+    private String getTargetUidFromUpdateRec(String mes) {
+        return getTimeFieldFromUpdateRec(mes) + "|" + getMessageTsIDFromUpdateRec(mes);
+    }
     // adds new Treatment instance to _treatments from message of type <0,time,tsid,uid>
     private void addTreatmentFromDiamond(String mes) {
+        //update message record
+        if (getMessageType(mes).equals("3")) {
+            synchronized (_treatments) {
+                String uidKey = getTargetUidFromUpdateRec(mes);
+                if(_treatments.containsKey(uidKey)) {
+                    _treatments.get(uidKey).updateTreatment(getTreatmentNameByNumber(getDataFromUpdateRec(mes)));
+                }
+            }
+            return;
+        }
+        //deletion type
+        if (getMessageType(mes).equals("7")) {
+            synchronized (_treatments) {
+                String uidKey = getTargetUidFromUpdateRec(mes);
+                if(_treatments.containsKey(uidKey)) {
+                    _treatments.remove(uidKey);
+                }
+            }
+            return;
+        }
+        //ignore all types another from treatment record
+        if (!getMessageType(mes).equals("0") || mes.contains("#") || !mes.contains(">")) {
+            return;
+        }
+
         synchronized (_treatments) {
             _treatments.put(getMessageUniqueIdentifier(mes),
                     new Treatment(getMessageTreatmentName(mes),
@@ -124,17 +174,8 @@ public class Bracelet {
             String[] firstData = inputMessage.split("<");
             for (int i = 1; i < firstData.length; i++) {
                 String oneDiamondMessage = "<" + firstData[i];
-                if (!getMessageType(oneDiamondMessage).equals("0") ||
-                        oneDiamondMessage.contains("#") ||
-                        !firstData[i].contains(">")) {//TODO: cases # is sent
-                    continue;
-                }
                 addTreatmentFromDiamond(oneDiamondMessage);
             }
-            return;
-        }
-        //TODO different types of messages and origins
-        if (!getMessageType(inputMessage).equals("0") || inputMessage.contains("#")) {
             return;
         }
         addTreatmentFromDiamond(inputMessage);
@@ -150,8 +191,16 @@ public class Bracelet {
 
     public void updateTreatment(String treatmentUid, String newName) {
         synchronized(_treatments) {
-            _treatments.get(treatmentUid).updateTreatment(newName);
+            if (_treatments.containsKey(treatmentUid)) {
+                if (newName == null) {
+                    _treatments.remove(treatmentUid);
+                }
+                else {
+                    _treatments.get(treatmentUid).updateTreatment(newName);
+                }
+            }
         }
     }
+
 //endregion public methods
 }

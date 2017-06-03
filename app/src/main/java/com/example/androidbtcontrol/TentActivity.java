@@ -195,17 +195,24 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         });
     }
 
-    //Sends an update record to bracelet and updates a treatment of specified patient in tent
+    /**
+        Sends an update record to bracelet and updates a treatment of specified patient in tent
+        mac - bracelet mac address, treatment - treatment to update
+        if newTreatmentName == null a specified treatment will be deleted
+        in case of successful update an empty string will be returned
+     **/
     static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
 
-        String treatmentId = "10"; //TODO : need to be a function of newTreatmentName. i.e. 'Acamol' => "10"
+        String treatmentId = "10"; //TODO : need to be a function of newTreatmentName. i.e. 'Acamol' => "10" , null => dont care
 //        if (not found) {
 //            return "Specified treatment doesn't exist";
 //        }
-        _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId));
+
+        _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId, newTreatmentName));
         _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
         return "";
     }
+
 
 }
 
