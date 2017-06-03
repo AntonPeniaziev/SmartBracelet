@@ -37,7 +37,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _logoutButton = (Button) findViewById(R.id.logOut);
         _refreshButton.setTypeface(army_font);
         setOnClickRefresh(_refreshButton);
-
+        setOnClickLogOut(_logoutButton);
         _logoutButton = (Button) findViewById(R.id.logOut);
         _refreshButton.setTypeface(army_font);
         _logoutButton.setTypeface(army_font);
@@ -54,6 +54,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _updateData = new UpdateData();
         _updateData.start();
         treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
+
 
     }
 
@@ -191,6 +192,16 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 _bTservice.discover();
+            }
+        });
+    }
+
+
+    private void setOnClickLogOut(final Button btn) {
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }
