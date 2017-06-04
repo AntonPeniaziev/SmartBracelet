@@ -26,41 +26,56 @@ public class PatientInfoActivity extends AppCompatActivity {
     Button _urgentButton;
     ImageButton _backButton;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_patient_info);
-        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-
-
+    /**
+     * Initiates the list of treatments of specific patient
+     */
+    void initListOfTreatments(){
         _listView = (ListView) findViewById(R.id.listView);
-
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
-        //_listView.setAdapter(_patientsAdapter);
-
-        //_listView.setAdapter(_patientsAdapter);
-        /******************************************************************************/
-        //_listView = (ListView) findViewById(android.R.id.list);
-
         _listView.setAdapter(_patientsAdapter);
-       // _listView.setOnItemClickListener(this);
+    }
 
-        /******************************************************************************/
-        String patientID = getIntent().getStringExtra("PATIENT_ID");
+    /**
+     * Initiate the patient ID got from TentActivity
+     * @param patientID
+     */
+    void initPatientID(String patientID){
         TextView text = (TextView) findViewById(R.id.braceletID);
         Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Army.ttf");
         text.setTypeface(army_font);
         text.setText(patientID);
 
-        _patientMac = patientID;
+    }
 
-        hr = (TextView) findViewById(R.id.heartRate);
-        hr.setText(TentActivity._tent.getHeartrateByMac(patientID));
+    /**
+     * Initiate the Edit/Save button and its behavior
+     */
+    void initSaveButton(){
         _saveButton = (Button)findViewById(R.id.saveFile);
-        _urgentButton = (Button) findViewById(R.id.button4);
         _saveButton.setClickable(true);
+    }
+
+    /**
+     * Initiate the Urgent Evacuation button and its behavior
+     */
+    void initUrgentButton(){
+        _urgentButton = (Button) findViewById(R.id.button4);
         _urgentButton.setClickable(true);
+    }
+
+    /**
+     * Initiate the heart rate of the patient
+     * @param patientID
+     */
+    void initHeartRate(String patientID){
+        hr = (TextView) findViewById(R.id.heartRate);
+        hr.setText(TentActivity.getHeartrateByMac(patientID));
+    }
+
+    /**
+     * Initiate the Back button located right top on the screen and its behavior
+     */
+    void initBackButton(){
         _backButton = (ImageButton) findViewById(R.id.back_button);
         _backButton.setClickable(true);
         _backButton.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +84,27 @@ public class PatientInfoActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    /**
+     * main OnCreate function. initiates the views on the activity and the background services
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_patient_info);
+        getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+
+        String patientID = getIntent().getStringExtra("PATIENT_ID");
+        _patientMac = patientID;
+        initListOfTreatments();
+        initPatientID(patientID);
+        initSaveButton();
+        initUrgentButton();
+        initHeartRate(patientID);
+        initBackButton();
 
     }
 
@@ -108,9 +144,9 @@ public class PatientInfoActivity extends AppCompatActivity {
     }
 
     void runOnUI() {
-        hr.setText(TentActivity._tent.getHeartrateByMac(_patientMac));
+        hr.setText(TentActivity.getHeartrateByMac(_patientMac));
         //TODO : pressure, breath ..
-        updateListView(TentActivity._tent.getTreatmentsArrayByMac(_patientMac));
+        updateListView(TentActivity.getTreatmentsArrayByMac(_patientMac));
     }
 
     void updateListView(ArrayList<Treatment> treatmentsArr){
