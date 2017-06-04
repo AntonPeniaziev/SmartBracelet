@@ -5,6 +5,7 @@ package com.example.androidbtcontrol;
  */
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,8 @@ public class PatientInfoAdapter extends BaseAdapter {
         }
 
         TextView treatment = (TextView) vi.findViewById(R.id.treatment);
+        Typeface army_font = Typeface.createFromAsset(_context.getAssets(),  "fonts/Army.ttf");
+        treatment.setTypeface(army_font);
         if (_treatments != null) {
             treatment.setText(_treatments.get(position).getLastTime()+ " " + _treatments.get(position).getName()  + " " );
         }

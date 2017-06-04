@@ -10,20 +10,22 @@
     android:focusableInTouchMode="false"
     android:theme="@android:style/Theme.Holo.NoActionBar"
     android:layout_weight="1"
+    android:background="#262E1D"
     >
 
     <LinearLayout
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:scrollbars="vertical"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_weight="1"
-        android:background="#375E7D"
+        android:background="#262E1D"
         android:id="@+id/linearLayout"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        android:weightSum="1">
 
 
         <LinearLayout
@@ -33,17 +35,18 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:orientation="horizontal"
-            android:background="#375E7D"
+            android:background="#262E1D"
             android:weightSum="1"
-            android:layout_gravity="center_horizontal"
-            android:scrollbars="vertical">
+            android:layout_gravity="left"
+            android:scrollbars="vertical"
+            android:layout_weight="0.44">
 
 
             <TextView
                 android:id="@+id/tumb"
-                android:layout_width="91dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#375E7D"
+                android:background="#262E1D"
                 android:drawableLeft="@drawable/image"
                 android:drawablePadding="5dp"
                 android:gravity="center" />
@@ -52,11 +55,65 @@
                 android:id="@+id/braceletID"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#375E7D"
-                android:gravity="center"
-                android:textColor="#FFFFFF" />
+                android:background="#262E1D"
+                android:gravity="left"
+                android:layout_gravity="center"
+                android:textColor="#FFFFFF"
+                android:paddingTop="15dp"
+                android:paddingLeft="5dp"
+                android:textSize="22dp" />
 
         </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/logo"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:background="#262E1D"
+        android:weightSum="1"
+        android:layout_gravity="left"
+        android:gravity="left"
+        android:scrollbars="vertical"
+        android:layout_weight="0.56">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="24dp"
+            android:drawablePadding="5dp"
+            android:layout_gravity="center_horizontal"
+            android:paddingTop="5dp"
+            android:src="@drawable/main" />
+    </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/backButton"
+                android:layout_width="119dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="right"
+                android:background="#262E1D"
+                android:gravity="right"
+                android:orientation="horizontal"
+                android:scrollbars="vertical"
+                android:weightSum="1">
+
+                <ImageButton
+                    android:id="@+id/back_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="24dp"
+                    android:drawablePadding="5dp"
+                    android:background="#262E1D"
+                    android:src="@drawable/back" />
+            </LinearLayout>
+
     </LinearLayout>
 
 
@@ -69,19 +126,105 @@
         android:layout_weight="1"
         android:id="@+id/linearLayout1"
         android:weightSum="1"
-        android:layout_marginTop="34dp"
+        android:layout_marginTop="32dp"
+        android:background="#262E1D"
         android:layout_below="@+id/linearLayout"
-        android:layout_alignStart="@+id/listView"
-        android:background="#F2F2F2">
+        android:layout_alignStart="@+id/listView">
 
-        <ImageView
+        <RelativeLayout
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_weight="0.63"
             android:src="@drawable/information"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true">
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:id="@+id/temperature_picture"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/air_picture"
+                android:layout_marginEnd="70dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:id="@+id/temperature_pic"
+                    android:gravity="center"
+                    android:src="@drawable/temperature">
+                </ImageView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:id="@+id/air_picture"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/oxygen_picture"
+                android:layout_marginEnd="60dp">
+
+                <ImageView
+                    android:id="@+id/air_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:src="@drawable/air"></ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:id="@+id/oxygen_picture"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true">
+
+                <ImageView
+                    android:id="@+id/oxygen_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:src="@drawable/oxygen"></ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bloodPressure_picture"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="70dp"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@+id/temperature_picture">
+
+                <ImageView
+                    android:id="@+id/bloodPressure_pic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:text="128/95"
+                    android:src="@drawable/blood">
+
+                </ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/heartRate_picture"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true">
+
+                <ImageView
+                    android:id="@+id/heartRate_pic"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:text="76"
+                    android:src="@drawable/heart">
+
+                </ImageView>
+            </LinearLayout>
+
+        </RelativeLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -93,98 +236,104 @@
 
 
             <LinearLayout
-                android:layout_width="40dp"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:id="@+id/linearLayout4"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/linearLayout6"
-                android:layout_marginEnd="53dp">
+                android:layout_marginEnd="70dp">
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:id="@+id/temperature"
                     android:gravity="center"
                     android:text="@string/degree"
-                    android:textColor="#000000">
+                    android:textSize="20dp"
+                    android:textColor="#FFFFFF">
                 </TextView>
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="40dp"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:id="@+id/linearLayout6"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/linearLayout7"
-                android:layout_marginEnd="43dp">
+                android:layout_marginEnd="50dp">
 
                 <TextView
                     android:id="@+id/air"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:gravity="center"
                     android:text="16"
-                    android:textColor="#000000"></TextView>
+                    android:textSize="20dp"
+                    android:textColor="#FFFFFF"></TextView>
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="40dp"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:id="@+id/linearLayout7"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="93dp">
+                android:layout_marginEnd="10dp">
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="60dp"
                     android:id="@+id/oxygen"
                     android:text="92%"
-                    android:textColor="#000000"
-                    android:gravity="center">
+                    android:textColor="#FFFFFF"
+                    android:gravity="center"
+                    android:textSize="20dp">
                 </TextView>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linearLayout3"
-                android:layout_width="60dp"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="32dp"
+                android:layout_marginEnd="60dp"
+                android:layout_marginTop="5dp"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/linearLayout4">
 
                 <TextView
                     android:id="@+id/bloodPressure"
-                    android:layout_width="60dp"
+                    android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:text="128/95"
-                    android:textColor="#000000"
+                    android:textSize="20dp"
+                    android:textColor="#FFFFFF"
+                    android:gravity="center">
+
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linearLayout5"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="20dp">
+
+                <TextView
+                    android:id="@+id/heartRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    android:text="76"
+                    android:textSize="20dp"
+                    android:textColor="#FFFFFF"
                     android:gravity="center">
 
                 </TextView>
             </LinearLayout>
 
-
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/linearLayout5"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="72dp">
 
-            <TextView
-                android:id="@+id/heartRate"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:text="76"
-                android:textColor="#000000"
-                android:gravity="center">
-
-            </TextView>
-        </LinearLayout>
     </RelativeLayout>
 
 
@@ -193,11 +342,10 @@
         android:layout_width="550dp"
         android:layout_height="524dp"
         android:layout_gravity="bottom"
-        android:divider="@android:color/white"
+        android:divider="#262E1D"
         android:dividerHeight="10.0sp"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_alignStart="@+id/RelativeLayout1"
-        android:layout_marginTop="20dp" />
+        android:layout_above="@+id/RelativeLayout1"
+        android:layout_alignStart="@+id/RelativeLayout1" />
 
     <RelativeLayout
         android:layout_width="550dp"
@@ -224,7 +372,7 @@
                     android:text="Urgent Evacuation"
                     android:textStyle="bold"
                     android:textSize="30dp"
-                    android:background="#FF232B"
+                    android:background="@drawable/button_urgant"
                     android:fontFamily="sans-serif-light"
                     android:clickable="true"/>
             </LinearLayout>
@@ -241,8 +389,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/saveFile"
-                    android:background="#375E7D"
-                    android:text="Save File"
+                    android:background="@drawable/button_edit"
+                    android:text="Edit"
                     android:textStyle="bold"
                     android:textSize="30dp"
                     android:fontFamily="sans-serif-light"

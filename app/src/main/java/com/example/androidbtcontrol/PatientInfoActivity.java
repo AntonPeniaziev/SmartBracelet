@@ -2,11 +2,14 @@ package com.example.androidbtcontrol;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,6 +24,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     UpdateData _updateData;
     Button _saveButton;
     Button _urgentButton;
+    ImageButton _backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,8 @@ public class PatientInfoActivity extends AppCompatActivity {
         /******************************************************************************/
         String patientID = getIntent().getStringExtra("PATIENT_ID");
         TextView text = (TextView) findViewById(R.id.braceletID);
+        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Army.ttf");
+        text.setTypeface(army_font);
         text.setText(patientID);
 
         _patientMac = patientID;
@@ -55,6 +61,14 @@ public class PatientInfoActivity extends AppCompatActivity {
         _urgentButton = (Button) findViewById(R.id.button4);
         _saveButton.setClickable(true);
         _urgentButton.setClickable(true);
+        _backButton = (ImageButton) findViewById(R.id.back_button);
+        _backButton.setClickable(true);
+        _backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
     }
 
