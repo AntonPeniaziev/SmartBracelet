@@ -32,6 +32,7 @@ public class PatientInfoActivity extends AppCompatActivity {
     void initListOfTreatments(){
         _listView = (ListView) findViewById(R.id.listView);
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
+        _listView.setItemsCanFocus(true);
         _listView.setAdapter(_patientsAdapter);
     }
 

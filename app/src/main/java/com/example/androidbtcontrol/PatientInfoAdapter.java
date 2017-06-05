@@ -18,11 +18,14 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -76,8 +79,8 @@ public class PatientInfoAdapter extends BaseAdapter {
         }
         views.add(vi);
         //EditText treatment = (EditText) vi.findViewById(R.id.treatment);
-        EditText treatmentName = (EditText) vi.findViewById(R.id.treatment_name);
-        EditText treatmentTime = (EditText) vi.findViewById(R.id.treatment_time);
+        final EditText treatmentName = (EditText) vi.findViewById(R.id.treatment_name);
+        TextView treatmentTime = (TextView) vi.findViewById(R.id.treatment_time);
         Typeface army_font = Typeface.createFromAsset(_context.getAssets(), "fonts/Army.ttf");
         //treatment.setTypeface(army_font);
         treatmentName.setTypeface(army_font);
@@ -86,7 +89,9 @@ public class PatientInfoAdapter extends BaseAdapter {
             // treatment.setText(_treatments.get(position).getLastTime()+ " " + _treatments.get(position).getName()  + " " );
             treatmentTime.setText(_treatments.get(position).getLastTime() + " ");
             treatmentName.setText(_treatments.get(position).getName() + " ");
+            treatmentName.setEnabled(false);
         }
+
         return vi;
     }
 
@@ -99,15 +104,55 @@ public class PatientInfoAdapter extends BaseAdapter {
     }
 
 
-//    void setOnClickEditText(final EditText treatmentName){
-//        treatmentName.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
+    void setOnClickEditText(final EditText treatmentName) {
+        treatmentName.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View view) {
+                                                 treatmentName.setEnabled(true);
+//                treatmentName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                    @Override
+//                    public void onFocusChange(final View v, final boolean hasFocus) {
+//                        if (hasFocus && treatmentName.isEnabled() && treatmentName.isFocusable()) {
+//                            treatmentName.post(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    final InputMethodManager imm = (InputMethodManager) _context.getSystemService(Context.INPUT_METHOD_SERVICE);
+//                                    imm.showSoftInput(treatmentName, InputMethodManager.SHOW_IMPLICIT);
+//                                }
+//                            });
+//                        }
+//                    }
+//                });
 //            }
 //        });
-//
 //    }
+                                                 treatmentName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                                     @Override
+                                                     public void onFocusChange(View view, boolean b) {
+                                                         if (!b) {
+                                                             int itemIndex = view.getId();
+                                                             String enteredInfo = ((EditText) view).getText()
+                                                                     .toString();
+                                                             TentActivity.updateTreatment(_patientMac, _treatments.get(itemIndex), enteredInfo);
+                                                         }
+                                                     }
+                                                 });
+
+                                             }
+                                         }
+        );
+    }
+
+
+
+
+
+    private void displayKeyboard(EditText editText){
+        if (editText != null) {
+            InputMethodManager imm = (InputMethodManager)_context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInputFromWindow(editText.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+        }
+    }
 
     public void setEditTextEnabled() {
         // Create a border programmatically
@@ -120,12 +165,10 @@ public class PatientInfoAdapter extends BaseAdapter {
             for(int i=0; i< views.size(); ++i){
                 EditText treatmentName = (EditText) views.get(i).findViewById(R.id.treatment_name);
                 treatmentName.setEnabled(true);
-                treatmentName.setFocusable(true);
                 treatmentName.setClickable(true);
                 treatmentName.setBackground(shape);
-               // setOnClickEditText(treatmentName);
+               setOnClickEditText(treatmentName);
             }
         }
     }
 }
-

@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.Base_Theme_AppCompat_Light_DarkActionBar);
         progressDialog.setIndeterminate(true);
-        String message = "Authenticating...";
+        final String message = "Authenticating...";
         progressDialog.setMessage(message);
         progressDialog.show();
         final Boolean valid = validate(progressDialog, message);
@@ -111,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
 
                     }
-                }, 3000);
+                }, 6000);
+
     }
 
     @Override

@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PatientInfoActivity"
-    android:descendantFocusability="blocksDescendants"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:theme="@android:style/Theme.Holo.NoActionBar"
@@ -345,7 +344,8 @@
         android:divider="#262E1D"
         android:dividerHeight="10.0sp"
         android:layout_above="@+id/RelativeLayout1"
-        android:layout_alignStart="@+id/RelativeLayout1" />
+        android:layout_alignStart="@+id/RelativeLayout1"
+        android:descendantFocusability="afterDescendants"/>
 
     <RelativeLayout
         android:layout_width="550dp"
