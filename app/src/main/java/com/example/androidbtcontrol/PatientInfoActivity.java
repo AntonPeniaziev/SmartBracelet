@@ -53,6 +53,12 @@ public class PatientInfoActivity extends AppCompatActivity {
     void initSaveButton(){
         _saveButton = (Button)findViewById(R.id.saveFile);
         _saveButton.setClickable(true);
+        _saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                _patientsAdapter.setEditTextEnabled();
+            }
+        });
     }
 
     /**
