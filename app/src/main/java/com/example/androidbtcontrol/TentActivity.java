@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import java.util.ArrayList;
 import BTservice.BTservice;
-
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
