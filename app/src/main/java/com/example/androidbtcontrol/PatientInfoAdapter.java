@@ -5,7 +5,10 @@ package com.example.androidbtcontrol;
  */
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -14,15 +17,20 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.text.InputType;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -39,6 +47,7 @@ public class PatientInfoAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     int _listRow;
     ArrayList<View> views;
+    public Boolean setDiseable;
     //PatientInfo _patientInfo;
 
 
@@ -58,7 +67,7 @@ public class PatientInfoAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Treatment getItem(int i) {
         return (_treatments == null) ? null : _treatments.get(i);
     }
 
@@ -76,8 +85,8 @@ public class PatientInfoAdapter extends BaseAdapter {
         }
         views.add(vi);
         //EditText treatment = (EditText) vi.findViewById(R.id.treatment);
-        EditText treatmentName = (EditText) vi.findViewById(R.id.treatment_name);
-        EditText treatmentTime = (EditText) vi.findViewById(R.id.treatment_time);
+        TextView treatmentName = (TextView) vi.findViewById(R.id.treatment_name);
+        TextView treatmentTime = (TextView) vi.findViewById(R.id.treatment_time);
         Typeface army_font = Typeface.createFromAsset(_context.getAssets(), "fonts/Army.ttf");
         //treatment.setTypeface(army_font);
         treatmentName.setTypeface(army_font);
@@ -86,6 +95,9 @@ public class PatientInfoAdapter extends BaseAdapter {
             // treatment.setText(_treatments.get(position).getLastTime()+ " " + _treatments.get(position).getName()  + " " );
             treatmentTime.setText(_treatments.get(position).getLastTime() + " ");
             treatmentName.setText(_treatments.get(position).getName() + " ");
+        }
+        if(setDiseable){
+            setTextViewDisabled();
         }
         return vi;
     }
@@ -99,18 +111,22 @@ public class PatientInfoAdapter extends BaseAdapter {
     }
 
 
-//    void setOnClickEditText(final EditText treatmentName){
+
+//    public void setOnClickEditText(final TextView treatmentName){
 //        treatmentName.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//
+//                PatientInfoActivity instance = PatientInfoActivity.getInstance();
+//                instance.createDialogEditTreatment(treatmentName);
 //            }
 //        });
 //
 //    }
 
-    public void setEditTextEnabled() {
+
+    public void setTextViewEnabled() {
         // Create a border programmatically
+        setDiseable = false;
         ShapeDrawable shape = new ShapeDrawable(new RectShape());
         shape.getPaint().setColor(Color.WHITE);
         shape.getPaint().setStyle(Paint.Style.STROKE);
@@ -118,14 +134,43 @@ public class PatientInfoAdapter extends BaseAdapter {
 
         if(views != null) {
             for(int i=0; i< views.size(); ++i){
-                EditText treatmentName = (EditText) views.get(i).findViewById(R.id.treatment_name);
-                treatmentName.setEnabled(true);
-                treatmentName.setFocusable(true);
-                treatmentName.setClickable(true);
-                treatmentName.setBackground(shape);
-               // setOnClickEditText(treatmentName);
+                LinearLayout layout = (LinearLayout) views.get(i).findViewById(R.id.treatmentInfo);
+               layout.setEnabled(false);
+                layout.setClickable(false);
+                layout.setBackground(shape);
+                RelativeLayout layout1 = (RelativeLayout) views.get(i).findViewById(R.id.row);
+                layout1.setEnabled(false);
+                layout1.setClickable(false);
+                //TextView treatmentName = (TextView) views.get(i).findViewById(R.id.treatment_name);
+//                treatmentName.setEnabled(true);
+//                treatmentName.setFocusable(true);
+//                treatmentName.setClickable(true);
+//                treatmentName.setBackground(shape);
+                //setOnClickEditText(treatmentName);
             }
         }
     }
+
+
+    public void setTextViewDisabled() {
+        if(views != null) {
+            for(int i=0; i< views.size(); ++i){
+                LinearLayout layout = (LinearLayout) views.get(i).findViewById(R.id.treatmentInfo);
+                layout.setBackgroundResource(0);
+                layout.setEnabled(true);
+                layout.setClickable(true);
+                RelativeLayout layout1 = (RelativeLayout) views.get(i).findViewById(R.id.row);
+                layout1.setEnabled(true);
+                layout1.setClickable(true);
+            }
+        }
+    }
+
+
+    public ArrayList<Treatment> getTreatments(){
+        return _treatments;
+    }
+
+
 }
 
