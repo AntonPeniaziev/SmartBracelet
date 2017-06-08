@@ -453,6 +453,10 @@ public class BTservice implements BTserviceInterface {
         _discoveredDevices.clear();
         _bluetoothAdapter.startDiscovery();
     }
+
+    public boolean isConnectedToBtMac (String mac) {
+        return _connectionThreadsByMac.containsKey(mac);
+    }
 //endregion public methods
 
 
