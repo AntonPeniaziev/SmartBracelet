@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     tools:context="com.example.androidbtcontrol.TentActivity"
-    android:background="#262E1E">
+    android:background="#262E1E"
+    android:keepScreenOn="true">
 
     <!--
         <android.support.design.widget.AppBarLayout
@@ -87,12 +88,12 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:scrollbars="vertical"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/linearLayout">
+        android:layout_alignParentEnd="true">
 
         <ListView
             android:id="@android:id/list"
-            android:layout_width="match_parent"
-            android:layout_height="844dp"
+            android:layout_width="603dp"
+            android:layout_height="809dp"
             android:layout_column="0"
             android:layout_row="0"
             android:divider="#262E1E"

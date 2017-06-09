@@ -7,11 +7,11 @@
     android:id="@+id/row"
     android:clickable="false"
     android:layout_alignParentTop="true"
-    android:descendantFocusability="blocksDescendants"
     android:focusable="false"
     android:gravity="start"
     android:focusableInTouchMode="false"
     android:weightSum="1"
+    android:descendantFocusability="afterDescendants"
     android:theme="@android:style/Theme.Holo.NoActionBar">
 
 
@@ -25,24 +25,38 @@
             android:orientation="horizontal"
             android:scrollbars="vertical"
             android:weightSum="1"
-            android:id="@+id/linearLayout2">
+            android:id="@+id/treatmentInfo"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
 
                 <TextView
-                    android:id="@+id/time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_weight=".4"
+                    android:id="@+id/treatment_time"
+                    android:layout_width="93dp"
+                    android:layout_height="34dp"
                     android:textColor="#FFFFFF"
-                    android:gravity="start" />
+                    android:gravity="start"
+                    android:background="@android:color/transparent"
+                    android:textSize="20dp"
+                    android:layout_marginTop="50dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"/>
 
-                <TextView
-                    android:id="@+id/amounts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_weight=".4"
-                    android:textColor="#FFFFFF"
-                    android:gravity="start" />
 
+                    <TextView
+                        android:id="@+id/treatment_name"
+                        android:layout_height="32dp"
+                        android:layout_width="match_parent"
+                        android:textColor="#FFFFFF"
+                        android:gravity="left"
+                        android:background="@android:color/transparent"
+                        android:textSize="20dp"
+                        android:layout_marginTop="50dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        />
 
 
         </LinearLayout>
@@ -56,16 +70,24 @@
             android:scrollbars="vertical"
             android:weightSum="1"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true">
+            android:layout_alignParentStart="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
 
-                <TextView
+                <EditText
                     android:id="@+id/treatment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight=".4"
                     android:textColor="#000000"
                     android:gravity="start"
-                    android:textSize="24dp"/>
+                    android:textSize="24dp"
+                    android:background="@android:color/transparent"
+                    android:enabled="false"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"/>
 
         </LinearLayout>
 

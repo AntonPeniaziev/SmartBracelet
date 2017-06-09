@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     EditText _usernameText;
     EditText _passwordText;
-    Button _loginButton;
+    static Button _loginButton;
     String _errorMsg;
     String _docID = "123";
 
@@ -107,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                             progressDialog.dismiss();
                             return;
                         }
+                        progressDialog.dismiss();
                         onLoginSuccess();
                         // onLoginFailed();
 
