@@ -2,6 +2,7 @@ package com.example.androidbtcontrol;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -66,9 +67,14 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_login);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+
         _usernameText = (EditText) findViewById(R.id.input_username);
         _passwordText = (EditText) findViewById(R.id.input_password);
         _loginButton = (Button) findViewById(R.id.btn_login);
+        _usernameText.setTypeface(army_font);
+        _passwordText.setTypeface(army_font);
+        _loginButton.setTypeface(army_font);
         _errorMsg="";
 
         _loginButton.setOnClickListener(new View.OnClickListener() {

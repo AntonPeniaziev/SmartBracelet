@@ -87,7 +87,7 @@ public class PatientInfoAdapter extends BaseAdapter {
         //EditText treatment = (EditText) vi.findViewById(R.id.treatment);
         TextView treatmentName = (TextView) vi.findViewById(R.id.treatment_name);
         TextView treatmentTime = (TextView) vi.findViewById(R.id.treatment_time);
-        Typeface army_font = Typeface.createFromAsset(_context.getAssets(), "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(_context.getAssets(), "fonts/Assistant-Bold.ttf");
         //treatment.setTypeface(army_font);
         treatmentName.setTypeface(army_font);
         treatmentTime.setTypeface(army_font);

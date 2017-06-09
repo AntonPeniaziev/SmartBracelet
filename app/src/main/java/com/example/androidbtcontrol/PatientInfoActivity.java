@@ -60,7 +60,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initPatientID(String patientID){
         TextView text = (TextView) findViewById(R.id.braceletID);
-        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
         text.setTypeface(army_font);
         text.setText(patientID);
 
@@ -71,6 +71,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initSaveButton(){
         _saveButton = (Button)findViewById(R.id.saveFile);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
+        _saveButton.setTypeface(army_font);
         _saveButton.setClickable(true);
         _saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +95,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initUrgentButton(){
         _urgentButton = (Button) findViewById(R.id.button4);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
+        _urgentButton.setTypeface(army_font);
         _urgentButton.setClickable(true);
     }
 

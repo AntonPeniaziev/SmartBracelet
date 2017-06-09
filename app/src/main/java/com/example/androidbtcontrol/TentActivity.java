@@ -53,7 +53,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * Initiates the refresh Button located on the right top of the screen
      */
     void initRefreshButton() {
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
         _refreshButton = (Button) findViewById(R.id.refreshBracelet);
         _refreshButton.setTypeface(army_font);
         setOnClickRefresh(_refreshButton);
@@ -66,7 +66,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      *
      */
     void initLogOutButton() {
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
         _logoutButton = (Button) findViewById(R.id.logOut);
         setOnClickLogOut(_logoutButton);
         _logoutButton = (Button) findViewById(R.id.logOut);

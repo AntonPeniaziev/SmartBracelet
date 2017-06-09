@@ -54,7 +54,7 @@ public class CustomAdapter extends BaseAdapter {
             vi = inflater.inflate(_listRow, null);
         }
         TextView text = (TextView) vi.findViewById(R.id.braceletMAC);
-        Typeface army_font = Typeface.createFromAsset(context.getAssets(),  "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(context.getAssets(),  "fonts/Assistant-Regular.ttf");
         text.setTypeface(army_font);
         TextView bodyTemp = (TextView) vi.findViewById(R.id.bodyTemp);
         TextView bloodPressure = (TextView) vi.findViewById(R.id.bloodPressure);
@@ -70,7 +70,7 @@ public class CustomAdapter extends BaseAdapter {
 
             if (data.get(position).isConnected() == false) {
                 text.setText("Bracelet: " + data.get(position).getBtMac() + "\n\n(CLICK TO CONNECT)");
-                vi.setAlpha((float) 0.2);
+                vi.setAlpha((float) 0.5);
                 webInfo.setVisibility(View.GONE);
                 beepButton.setVisibility(View.GONE);
                 json.setVisibility(View.GONE);
