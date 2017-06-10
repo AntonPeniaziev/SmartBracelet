@@ -50,6 +50,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static public TreatmentsTable treatmentUidTranslator;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
+    static TentActivity _instance;
 
     static boolean updateToWeb = false;
 
@@ -57,6 +58,12 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static MyCurrentLocationListener locationListener;
 
     static public Logger logger;
+
+
+    static public TentActivity getInstance(){
+        return _instance;
+    }
+
     /**
      * Initiates the list of bracelets around
      */
@@ -118,6 +125,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
+        _instance = this;
         initListOfBracelets();
         initBTService();
         initRefreshButton();

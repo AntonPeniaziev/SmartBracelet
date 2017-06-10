@@ -95,12 +95,12 @@
         android:layout_alignParentEnd="true" />
 
     <Button
-        android:layout_width="100dp"
+        android:layout_width="130dp"
         android:layout_height="100dp"
-        android:id="@+id/webInfo"
+        android:id="@+id/disconnect"
         android:background="@drawable/my_button_selector"
         android:clickable="true"
-        android:text="WEB"
+        android:text="DISCONNECT"
         android:textSize="20sp"
         android:textColor="#FFFFFF"
         android:layout_marginEnd="13dp"

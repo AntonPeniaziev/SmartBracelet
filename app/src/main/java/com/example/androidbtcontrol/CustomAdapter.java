@@ -1,6 +1,7 @@
 package com.example.androidbtcontrol;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -64,14 +65,14 @@ public class CustomAdapter extends BaseAdapter {
             Button beepButton = (Button) vi.findViewById(R.id.beepBracelet);
             beepButton.setTypeface(army_font);
             setOnClickBeep(beepButton, (TentActivity)context, position);
-            Button webInfo = (Button) vi.findViewById(R.id.webInfo);
-            webInfo.setTypeface(army_font);
-            setOnClickWeb(webInfo,(TentActivity)context, position);
+            Button disconnect = (Button) vi.findViewById(R.id.disconnect);
+            disconnect.setTypeface(army_font);
+            setOnClickDisconnect(disconnect,(TentActivity)context, position);
 
             if (data.get(position).isConnected() == false) {
                 text.setText("Bracelet: " + data.get(position).getBtMac() + "\n\n(CLICK TO CONNECT)");
                 vi.setAlpha((float) 0.5);
-                webInfo.setVisibility(View.GONE);
+                disconnect.setVisibility(View.GONE);
                 beepButton.setVisibility(View.GONE);
                 json.setVisibility(View.GONE);
                 bodyTemp.setVisibility(View.GONE);
@@ -79,7 +80,7 @@ public class CustomAdapter extends BaseAdapter {
             }
             else {
                 vi.setAlpha((float) 1);
-                webInfo.setVisibility(View.VISIBLE);
+                disconnect.setVisibility(View.VISIBLE);
                 beepButton.setVisibility(View.VISIBLE);
                 json.setVisibility(View.VISIBLE);
                 bodyTemp.setVisibility(View.VISIBLE);
@@ -118,10 +119,26 @@ public class CustomAdapter extends BaseAdapter {
         });
     }
 
-    private void setOnClickWeb(final Button btn, final TentActivity currActivity, final int position){
+    private void setOnClickDisconnect(final Button btn, final TentActivity currActivity, final int position){
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                final Patient item = getItem(position);
+                final String itemAddress = item.getBtMac();
+                String message = "Disconnect from " + itemAddress + "?";
+                String title = "Bracelet " + itemAddress;
+                DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        TentActivity.getInstance().getBt().disconnectByMac(itemAddress);
+                    }
+                };
+                DialogInterface.OnClickListener clickNo =  new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                };
+                TentActivity.getInstance().dialogAlert(message, title, clickYes ,clickNo);
 //                SeList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
 //                new SendToMongodbTask().execute(patientTreatments);
                 //Patient patient = data.get(position);
