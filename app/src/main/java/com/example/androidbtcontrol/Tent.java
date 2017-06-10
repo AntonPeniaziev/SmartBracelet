@@ -33,9 +33,9 @@ public class Tent {
                     String jsonStr = new String(i.next().toString());
                     AddPatientInfo(jsonStr, it.getKey());
                     _patients.get(it.getKey()).setConnected(connected);
+                    TentActivity.updateToWeb = true;
                 }
             }
-
         }
 
         //Check there are disconnections

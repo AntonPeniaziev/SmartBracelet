@@ -2,10 +2,14 @@ package com.example.androidbtcontrol;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -24,17 +28,29 @@ import android.widget.Toast;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import BTservice.BTservice;
+
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
+
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
     static private Tent _tent;
     UpdateData _updateData;
+    //UpdateWeb _updateWeb;
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
     static public TreatmentsTable treatmentUidTranslator;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
+
+    static boolean updateToWeb = false;
+
+    static final float minDistanceForGpsUpdate = 500;
+    static MyCurrentLocationListener locationListener;
+//    static double latitude = 0;
+//    static double longitude = 0;
 
     /**
      * Initiates the list of bracelets around
@@ -101,6 +117,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
+       // _updateWeb = new UpdateWeb();
+        //_updateWeb.start();
         treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -115,6 +133,22 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
+
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyCurrentLocationListener();
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
+        /*Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
+        if (tempLocation == null)
+            tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
+        if (tempLocation != null){
+            if (latitude != tempLocation.getLatitude() || longitude != tempLocation.getLongitude()){
+                latitude = tempLocation.getLatitude();
+                longitude = tempLocation.getLongitude();
+                Double[] coordinates = {latitude, longitude};
+                new LocationTask(TentActivity.this).execute(coordinates);
+            }
+        }*/
     }
 
     /**
@@ -292,7 +326,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
-                new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+
+                if(updateToWeb) {
+                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+                    updateToWeb = false;
+                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -309,6 +347,29 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     }
+
+    /*private class LocationChecker extends Thread {
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            while (true) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUI();
+                    }
+                });
+                //release for UI
+                try {
+                    Thread.sleep(15000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                webTask.cancel(true);
+            }
+        }
+    }*/
 
     /**
      * updates the list of bracelets
@@ -361,6 +422,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         String title = "Smart Bracelet";
         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
                 finish();
             }

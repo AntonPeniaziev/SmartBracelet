@@ -22,23 +22,18 @@ import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by avizel on 19/4/2017.
- */
-
 
 //mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
-public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integer, Boolean> {
+public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Boolean> {
 
     private Context mContext;
     SendToMongodbTask(Context context) {
         mContext = context;
     }
     @Override
-    protected Boolean doInBackground(/*List<Treatment>*/List<Patient> ... patients) {
+    protected Boolean doInBackground(ArrayList<Patient> ... patients) {
 
-        //Log.e(MainActivity.class.getName(), "SendToMongodbTask");
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
@@ -48,7 +43,7 @@ public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integ
             BasicDBObject document = new BasicDBObject();
             ArrayList<BasicDBObject> treatList = new ArrayList<>();
 
-            for (Treatment obj : patient.getTreatmentsArray() /*patients[0].getTreatmentsArray()*/) {
+            for (Treatment obj : patient.getTreatmentsArray()) {
                 BasicDBObject treatDoc = new BasicDBObject();
                 treatDoc.put("Uid", obj.getName());
                 treatDoc.put("type", obj.getType());
@@ -57,14 +52,11 @@ public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integ
                 treatList.add(treatDoc);
             }
 
-            /*document.put("bracelet_id", patients[0].getBtMac());
-            document.put("Heart_Rate", patients[0].getHeartRate());
-            document.put("Breathe_Rate", patients[0].getBreatheRate());
-            document.put("Blood_Pressure", patients[0].getBloodPressure());
-            document.put("Body_Temp", patients[0].getBodyTemp());
-            document.put("treatments", treatList);
-
-            Bson searchQuery = new Document("bracelet_id", patients[0].getBtMac());*/
+            ArrayList<BasicDBObject> doctorList = new ArrayList<>();
+            BasicDBObject doctorDoc = new BasicDBObject();
+            doctorDoc.put("name", LoginActivity.doctorName);
+            doctorDoc.put("number", LoginActivity.doctorNumber);
+            doctorList.add(doctorDoc);
 
             document.put("bracelet_id", patient.getBtMac());
             document.put("Heart_Rate", patient.getHeartRate());
@@ -72,14 +64,16 @@ public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integ
             document.put("Blood_Pressure", patient.getBloodPressure());
             document.put("Body_Temp", patient.getBodyTemp());
             document.put("treatments", treatList);
+            document.put("doctor", doctorList);
 
             Bson searchQuery = new Document("bracelet_id", patient.getBtMac());
             UpdateOptions upsertDoc = new UpdateOptions();
             upsertDoc.upsert(true);
-            //document.put("name", "alon");
 
             try {
                 dbCollection.replaceOne(searchQuery, document, upsertDoc);
+                if (isCancelled())
+                    return true;
             } catch (MongoTimeoutException e) {
                 e.printStackTrace();
                 return false;
@@ -95,9 +89,6 @@ public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integ
             }
         }
 
-        // dbCollection.insertOne(BasicDBObject.parse(JsonMessage));
-        //DBObject jsonData = (DBObject) JSON.parse(strings[0]);
-        //dbCollection.insertOne(jsonData);
         return true;
     }
 
@@ -110,5 +101,10 @@ public class SendToMongodbTask extends AsyncTask<List<Patient>/*Patient*/, Integ
                 time--;
             }
         }
+    }
+
+    @Override
+    protected void onCancelled(){
+
     }
 }
