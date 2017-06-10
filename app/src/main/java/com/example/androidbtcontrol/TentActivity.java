@@ -460,13 +460,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         in case of successful update an empty string will be returned
      **/
     static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
-
-        String treatmentId = "10"; //TODO : need to be a function of newTreatmentName. i.e. 'Acamol' => "10" , null => dont care
-        //TODO : now you can use treatmentUidTranslator.getCode(Object key)
-//        if (not found) {
-//            return "Specified treatment doesn't exist";
-//        }
-
+        String treatmentId = treatmentUidTranslator.getCode(newTreatmentName);
+               if (treatmentId == null && newTreatmentName != null) {
+                        return "Specified treatment doesn't exist";
+               }
         _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId, newTreatmentName));
         _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
         return "";
