@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PatientInfoActivity"
-    android:descendantFocusability="blocksDescendants"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:theme="@android:style/Theme.Holo.NoActionBar"
     android:layout_weight="1"
     android:background="#262E1D"
+    android:keepScreenOn="true"
+    android:descendantFocusability="afterDescendants"
     >
 
     <LinearLayout
@@ -126,10 +127,10 @@
         android:layout_weight="1"
         android:id="@+id/linearLayout1"
         android:weightSum="1"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:background="#262E1D"
         android:layout_below="@+id/linearLayout"
-        android:layout_alignStart="@+id/listView">
+        android:layout_alignStart="@+id/frameLayout">
 
         <RelativeLayout
             android:id="@+id/imageView"
@@ -337,15 +338,29 @@
     </RelativeLayout>
 
 
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
         android:layout_width="550dp"
         android:layout_height="524dp"
+        android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:divider="#262E1D"
-        android:dividerHeight="10.0sp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:scrollbars="vertical"
+        android:id="@+id/frameLayout"
         android:layout_above="@+id/RelativeLayout1"
-        android:layout_alignStart="@+id/RelativeLayout1" />
+        android:layout_alignStart="@+id/RelativeLayout1"
+        android:layout_marginBottom="22dp">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="550dp"
+            android:layout_height="524dp"
+            android:layout_above="@+id/RelativeLayout1"
+            android:layout_alignStart="@+id/RelativeLayout1"
+            android:layout_gravity="bottom"
+            android:divider="#262E1D"
+            android:descendantFocusability="beforeDescendants"
+            android:dividerHeight="10.0sp" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="550dp"
