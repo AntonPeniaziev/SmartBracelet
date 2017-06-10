@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         btnTst.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v) {
-                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
+                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getCodeToEquipmentTable().entrySet()) {
                     String key = entry.getKey();
                     Treatment value = entry.getValue();
 
