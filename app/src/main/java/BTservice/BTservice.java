@@ -15,6 +15,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.example.androidbtcontrol.TentActivity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,7 +32,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BTservice implements BTserviceInterface {
     private BluetoothAdapter _bluetoothAdapter;
-    NfcAdapter nfcAdapter;
     private HashMap<String, String> _supportedDeviceNames;
     private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
     private ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
@@ -83,6 +84,7 @@ public class BTservice implements BTserviceInterface {
                 bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
             } catch (IOException e) {
                 e.printStackTrace();
+                TentActivity.logger.writeToLog("\nIOException85" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
         }
 
@@ -94,6 +96,7 @@ public class BTservice implements BTserviceInterface {
                 success = true;
             } catch (IOException e) {
                 e.printStackTrace();
+                TentActivity.logger.writeToLog("\nIOException97" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                 final String eMessage = e.getMessage();
 
                 runOnUiThread(new Runnable() {
@@ -109,6 +112,7 @@ public class BTservice implements BTserviceInterface {
                 try {
                     bluetoothSocket.close();
                 } catch (IOException e1) {
+                    TentActivity.logger.writeToLog("\nIOException114" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                     Toast.makeText(_context,
                             "Connection lost with " + bluetoothDevice.getName(),
                             Toast.LENGTH_LONG).show();
@@ -148,6 +152,7 @@ public class BTservice implements BTserviceInterface {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                TentActivity.logger.writeToLog("\nIOException152" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
 
         }
@@ -180,6 +185,7 @@ public class BTservice implements BTserviceInterface {
                 Toast.makeText(_context,
                         "Connection trouble with " + btDevice.getName(),
                         Toast.LENGTH_LONG).show();
+                TentActivity.logger.writeToLog("\nIOException183" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
 
             connectedInputStream = in;
@@ -197,29 +203,29 @@ public class BTservice implements BTserviceInterface {
             }
 
             while (true) {
-                long time1;
                 try {
-                    time1 = System.currentTimeMillis();
                     bytes = connectedInputStream.read(buffer);
                     if (breakLoop) {
+                        TentActivity.logger.writeToLog("\nBreaking thread loop\n");
                         break;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    TentActivity.logger.writeToLog("\nIOException212" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                     cancel();
                     break;
                 }
 
                 final String strReceived = new String(buffer, 0, bytes);
+                TentActivity.logger.writeToLog("\nstrReceived = " + strReceived + "|\n");
 
                 if (((false == receivedOldData) && strReceived.contains("]")) ||
                         ((true == receivedOldData) && strReceived.contains(">"))) {
                     sendAck();
-                    long time2 = System.currentTimeMillis();
-                    long delta = time2 - time1;
-                    Log.d("DELTA",Long.toString(delta));
+
                     _receivedMessage += strReceived;
 
+                    TentActivity.logger.writeToLog("\nfinal message = " + _receivedMessage + "|\n");
 //                        runOnUiThread(new Runnable() {
 //
 //                            @Override
@@ -232,7 +238,9 @@ public class BTservice implements BTserviceInterface {
 
                     if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
                         _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
+                        TentActivity.logger.writeToLog("\nfinal message added to = " + deviceAddr + "|\n");
                     }
+
                     _receivedMessage = "";
                     receivedOldData = true;
                 } else {
@@ -246,6 +254,7 @@ public class BTservice implements BTserviceInterface {
                 connectedOutputStream.write(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
+                TentActivity.logger.writeToLog("\nIOException251" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
         }
 
@@ -259,6 +268,7 @@ public class BTservice implements BTserviceInterface {
         }
 
         public void cancel() {
+            TentActivity.logger.writeToLog("\ncanceling thread = " + device.getAddress());
             breakLoop = true;
             _macToReceivedBraceletData.remove(device.getAddress());
             _connectionThreadsByMac.remove(device.getAddress());
@@ -267,6 +277,7 @@ public class BTservice implements BTserviceInterface {
                 connectedBluetoothSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                TentActivity.logger.writeToLog("\nIOException274" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
         }
     }
@@ -387,6 +398,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public ConcurrentHashMap<String, List<String>> getMacToReceivedDataMap() {
+        TentActivity.logger.writeToLog("\n#connected macs = " + _macToReceivedBraceletData.keySet().size());
         return _macToReceivedBraceletData;
     }
 

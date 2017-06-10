@@ -6,9 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.media.MediaScannerConnection;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -21,9 +23,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import BTservice.BTservice;
+import Logger.Logger;
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
@@ -36,6 +43,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
 
+    static public Logger logger;
     /**
      * Initiates the list of bracelets around
      */
@@ -92,6 +100,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        logger = new Logger(this);
+        logger.writeToLog("TentActivity OnCreate\n");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         initListOfBracelets();
@@ -289,6 +300,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
+                logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
@@ -315,8 +327,18 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
+        TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
+        if (data != null && data.size() > 0) {
+            TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
+            TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
+            if (data.get(0).getTreatmentsArray().size() > 0) {
+                TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
+            }
+        }
+
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
+        TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**
