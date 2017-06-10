@@ -10,9 +10,11 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -25,6 +27,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import BTservice.BTservice;
@@ -32,12 +38,12 @@ import BTservice.BTservice;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
+import Logger.Logger;
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
     static private Tent _tent;
     UpdateData _updateData;
-    //UpdateWeb _updateWeb;
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
@@ -49,9 +55,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     static final float minDistanceForGpsUpdate = 500;
     static MyCurrentLocationListener locationListener;
-//    static double latitude = 0;
-//    static double longitude = 0;
 
+    static public Logger logger;
     /**
      * Initiates the list of bracelets around
      */
@@ -108,6 +113,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        logger = new Logger(this);
+        logger.writeToLog("TentActivity OnCreate\n");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         initListOfBracelets();
@@ -117,8 +125,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
-       // _updateWeb = new UpdateWeb();
-        //_updateWeb.start();
         treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -138,17 +144,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         locationListener = new MyCurrentLocationListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
         locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
-        /*Location tempLocation = locationManager.getLastKnownLocation(GPS_PROVIDER);
-        if (tempLocation == null)
-            tempLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
-        if (tempLocation != null){
-            if (latitude != tempLocation.getLatitude() || longitude != tempLocation.getLongitude()){
-                latitude = tempLocation.getLatitude();
-                longitude = tempLocation.getLongitude();
-                Double[] coordinates = {latitude, longitude};
-                new LocationTask(TentActivity.this).execute(coordinates);
-            }
-        }*/
     }
 
     /**
@@ -323,6 +318,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
+                logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
@@ -348,36 +344,23 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-    /*private class LocationChecker extends Thread {
-        @Override
-        public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-            while (true) {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUI();
-                    }
-                });
-                //release for UI
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                webTask.cancel(true);
-            }
-        }
-    }*/
-
     /**
      * updates the list of bracelets
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
+        TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
+        if (data != null && data.size() > 0) {
+            TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
+            TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
+            if (data.get(0).getTreatmentsArray().size() > 0) {
+                TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
+            }
+        }
+
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
+        TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**

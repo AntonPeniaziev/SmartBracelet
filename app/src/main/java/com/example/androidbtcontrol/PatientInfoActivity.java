@@ -58,7 +58,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      * Initiate the patient ID got from TentActivity
      * @param patientID
      */
-    void initPatientID(String patientID){
+    void initPatientID(String patientID) {
         TextView text = (TextView) findViewById(R.id.braceletID);
         Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Army.ttf");
         text.setTypeface(army_font);
@@ -154,9 +154,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-//                _tent.updatePatientInfoFromBT(_bTservice.getMacToJsonList());
-//                _bTservice.clearBtBuffers();
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -164,7 +161,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     }
                 });
 
-                //release for UI
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

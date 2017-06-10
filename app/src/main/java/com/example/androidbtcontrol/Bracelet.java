@@ -153,7 +153,8 @@ public class Bracelet {
             return;
         }
         //ignore all types another from treatment record
-        if (!getMessageType(mes).equals("0") || mes.contains("#") || !mes.contains(">")) {
+        if (!getMessageType(mes).equals("0") || (mes.contains("#") && !mes.contains("<"))
+                || !mes.contains(">")) {
             return;
         }
 
