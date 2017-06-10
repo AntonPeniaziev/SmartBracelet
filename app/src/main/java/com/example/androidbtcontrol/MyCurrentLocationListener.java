@@ -14,6 +14,14 @@ public class MyCurrentLocationListener implements LocationListener {
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
     public void onLocationChanged(Location location) {
         if (myLocation == null)
             myLocation = location;
