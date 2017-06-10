@@ -152,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param username : the username needs to be checked
      * @return true if the username is legal one and in the database
      */
-    boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
+    /*boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
         progressDialog.setMessage(message + "\n" + "Checking Username...");
         progressDialog.show();
         Boolean valid = true;
@@ -189,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         return valid;
-    }
+    }*/
 
 
     /**

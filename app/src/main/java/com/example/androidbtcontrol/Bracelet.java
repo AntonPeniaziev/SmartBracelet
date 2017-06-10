@@ -105,6 +105,15 @@ public class Bracelet {
         return equipment.getType();
     }
 
+    private String getMessageTreatmentEquipmentID(String mes) {             //added by avizel 10/6
+        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Type";
+        }
+
+        return equipment.getEquipment_id();
+    }
+
     private long getArduinoStartTimeFromFirstData(String mes) {
         long absoluteStartTime = 0;
         long millisInUnit = 60 * 1000;
@@ -162,6 +171,7 @@ public class Bracelet {
             _treatments.put(getMessageUniqueIdentifier(mes),
                     new Treatment(getMessageTreatmentName(mes),
                             getMessageTreatmentType(mes),
+                            getMessageTreatmentEquipmentID(mes),   //added by avizel 10/6
                             getMessageFormattedTime(mes),
                             getMessageUniqueIdentifier(mes)));
         }
