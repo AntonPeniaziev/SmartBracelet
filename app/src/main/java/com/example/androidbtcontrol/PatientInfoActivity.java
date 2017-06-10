@@ -216,7 +216,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
                             String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
                             if(!result.equals("")){
-                                Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG);
+                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
                                 return;
                             }
                             _patientsAdapter.setDiseable=false;
