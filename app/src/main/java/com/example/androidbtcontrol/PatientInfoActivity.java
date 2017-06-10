@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -213,7 +214,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         EditText editedText = (EditText)((AlertDialog) dialog).findViewById(R.id.treatment_edited);
                         String newName = editedText.getText().toString();
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
-                            TentActivity.updateTreatment(_patientMac, treatmentName, newName);
+                            String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
+                            if(!result.equals("")){
+                                Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG);
+                                return;
+                            }
                             _patientsAdapter.setDiseable=false;
                             _patientsAdapter.notifyDataSetChanged();
                             _listView.deferNotifyDataSetChanged();
