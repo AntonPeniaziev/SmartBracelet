@@ -5,12 +5,13 @@ package com.example.androidbtcontrol;
  */
 
 public class Equipment {
-    String name,type;
+    private String name,type, equipment_id;
 
 
-    public Equipment(String name, String type) {
+    public Equipment(String name, String type, String id) {
         this.name = name;
         this.type = type;
+        this.equipment_id = id;
     }
 
     public String getName() {
@@ -20,6 +21,8 @@ public class Equipment {
     public String getType() {
         return type;
     }
+
+    public String getEquipment_id() { return equipment_id; }        //added by avizel 10/6
 
     public void setName(String newName) {
         name = newName;

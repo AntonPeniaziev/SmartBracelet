@@ -89,7 +89,7 @@ public class Bracelet {
     }
 
     private String getTreatmentNameByNumber(String number) {
-        Equipment equipment = TentActivity.treatmentUidTranslator.get(number);
+        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(number);
         if (null == equipment) {
             return "Unknown Name";
         }
@@ -97,12 +97,21 @@ public class Bracelet {
     }
 
     private String getMessageTreatmentType(String mes) {
-        Equipment equipment = TentActivity.treatmentUidTranslator.get(getMessageUID(mes));
+        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
         if (null == equipment) {
             return "Unknown Type";
         }
 
         return equipment.getType();
+    }
+
+    private String getMessageTreatmentEquipmentID(String mes) {             //added by avizel 10/6
+        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
+        if (null == equipment) {
+            return "Unknown Type";
+        }
+
+        return equipment.getEquipment_id();
     }
 
     private long getArduinoStartTimeFromFirstData(String mes) {
@@ -153,7 +162,8 @@ public class Bracelet {
             return;
         }
         //ignore all types another from treatment record
-        if (!getMessageType(mes).equals("0") || mes.contains("#") || !mes.contains(">")) {
+        if (!getMessageType(mes).equals("0") || (mes.contains("#") && !mes.contains("<"))
+                || !mes.contains(">")) {
             return;
         }
 
@@ -161,6 +171,7 @@ public class Bracelet {
             _treatments.put(getMessageUniqueIdentifier(mes),
                     new Treatment(getMessageTreatmentName(mes),
                             getMessageTreatmentType(mes),
+                            getMessageTreatmentEquipmentID(mes),   //added by avizel 10/6
                             getMessageFormattedTime(mes),
                             getMessageUniqueIdentifier(mes)));
         }

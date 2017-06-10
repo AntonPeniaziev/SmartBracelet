@@ -3,12 +3,12 @@ package com.example.androidbtcontrol;
 import java.util.ArrayList;
 
 public class Treatment extends Equipment {
-    String arduinoUid;// ts|tsid
-    String lastTime;
+    private String arduinoUid;// ts|tsid
+    private String lastTime;
     ArrayList<String> _history;
 
-    public Treatment(String name, String type, String time, String id) {
-        super(name, type);
+    public Treatment(String name, String type, String equpmentID, String time, String id) {
+        super(name, type, equpmentID);
         this.lastTime = time;
         this.arduinoUid = id;
     }

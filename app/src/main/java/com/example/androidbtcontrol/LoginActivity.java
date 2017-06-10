@@ -28,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     static Button _loginButton;
     String _errorMsg;
     String _docID = "123";
+    static String doctorName = "";
+    static String doctorNumber = "";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
@@ -156,14 +158,17 @@ public class LoginActivity extends AppCompatActivity {
      * @param username : the username needs to be checked
      * @return true if the username is legal one and in the database
      */
-    boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
+    /*boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
         progressDialog.setMessage(message + "\n" + "Checking Username...");
         progressDialog.show();
         Boolean valid = true;
 
         //check if the username is a string and its length above 2 characters
+        if (username.matches("[0-9]+")) {
+            _docID = username;
+        }
         if (username.matches("[a-zA-Z0-9]+") && username.length() > 2) {
-            _docID = username; //TODO separate ID from name (maybe we need ID only, Android team expects to get an integer)
+           // _docID = username; //TODO separate ID from name (maybe we need ID only, Arduino team expects to get an integer)
         } else {
             _errorMsg = "Enter a valid username";
             valid = false;
@@ -190,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         return valid;
-    }
+    }*/
 
 
     /**
@@ -203,11 +208,15 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.show();
         Boolean valid = true;
 
+        if (username.isEmpty()) {
+            _errorMsg = "Please enter a username";
+            valid = false;
+            return valid;
+        }
         //check that the password is not empty and its length above 4 characters
         // and below 10 characters
-        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _errorMsg = "Password between 4 and 10 characters: numbers and letters";
-
+        else if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            _errorMsg = "Please enter PASSWORD between 4 and 10 characters: numbers and letters";
             valid = false;
         } else {
             // check the correctness of the password in the database
@@ -215,6 +224,10 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 String[] userAndPass = {username, password};
                 valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
+                if (!valid) {
+                    _errorMsg = "Please enter a valid USER & PASSWORD or check your INTERNET connection";
+                    return valid;
+                }
             } catch (InterruptedException e) {
                 Toast.makeText(getBaseContext(), "something is wrong. try again soon", Toast.LENGTH_LONG).show();
                 e.printStackTrace();
@@ -247,22 +260,23 @@ public class LoginActivity extends AppCompatActivity {
         if(username.equals("master")){
             progressDialog.setMessage(message + "\n" + "Master Pass...");
             progressDialog.show();
+            doctorName = "master";
             return true;
         }
 
-        valid = validateUserName(username, progressDialog, message);
+        //valid = validateUserName(username, progressDialog, message);
 
-        if (!valid) {
+        /*if (!valid) {
             _errorMsg = "Enter a valid USER or check your INTERNET connection";
             return valid;
         }
 
         progressDialog.setMessage(message + "\n" + "Username Passed...");
-        progressDialog.show();
+        progressDialog.show();*/
         valid = validatePassword(username, password, progressDialog, message);
 
         if (!valid) {
-            _errorMsg = "Enter a valid PASSWORD or check your INTERNET connection";
+            //_errorMsg = "Enter a valid PASSWORD or check your INTERNET connection";
             return valid;
         }
 

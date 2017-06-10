@@ -1,9 +1,5 @@
 package com.example.androidbtcontrol;
 
-/**
- * Created by avizel on 17/5/2017.
- */
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,6 +16,8 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import org.bson.conversions.Bson;
+
 // mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx    ALON HEROKU
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0       WEB TEAM HEROKU
 public class LoginTask extends AsyncTask<String, Integer, Boolean> {
@@ -31,19 +29,16 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
     @Override
     protected Boolean doInBackground(String... doctor) {
 
-        //Log.e(MainActivity.class.getName(), "SendToMongodbTask");
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
 
         FindIterable<BasicDBObject> users = dbCollection.find();
-        /*int i = 1;
-        long count = dbCollection.count();*/
 
         try {
             if (doctor.length == 2) {
-                return checkUserAndPass(users, doctor);
+                return checkUserAndPass(users, dbCollection, doctor);
             } else if (doctor.length == 1) {
                 return checkUser(users, doctor[0]);
             }
@@ -55,31 +50,27 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
             return false;
         }
 
-        /*for(BasicDBObject doc : users){
-            //publishProgress((int) ((i / (long) count) * 100));
-            Object user = doc.get("user");
-            Object passw = doc.get("password");
-            //i++;
-
-            if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
-                //Log.e(TestActivity.class.getName(), doctor[0] + " is a valid user");
-                //Toast.makeText(, "valid user", Toast.LENGTH_LONG).show();
-                return true;
-            }
-        }*/
-
         return false;
     }
 
-    private boolean checkUserAndPass(FindIterable<BasicDBObject> users, String... doctor) {
+    private boolean checkUserAndPass(FindIterable<BasicDBObject> users, MongoCollection<BasicDBObject> collection, String... doctor) {
         try {
             for (BasicDBObject doc : users) {
-                //publishProgress((int) ((i / (long) count) * 100));
                 Object user = doc.get("user");
                 Object passw = doc.get("password");
-                //i++;
 
                 if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
+                    String number = doc.get("number").toString();
+                    String name = doc.get("name").toString();
+
+                    Bson searchQuery = new BasicDBObject().append("number", number);
+                    Bson newValue = new BasicDBObject().append("status", "connected");
+                    Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
+                    collection.updateOne(searchQuery, updateOperationDocument);
+
+                    LoginActivity.doctorName = name;
+                    LoginActivity.doctorNumber = number;
+
                     return true;
                 }
             }
@@ -99,7 +90,7 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         return false;
     }
 
-    private boolean checkUser(FindIterable<BasicDBObject> users, String doctor) throws MongoTimeoutException {
+    private boolean checkUser(FindIterable<BasicDBObject> users, String doctor) {
         try {
             for (BasicDBObject doc : users) {
                 Object user = doc.get("user");

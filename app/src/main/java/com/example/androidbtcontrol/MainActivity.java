@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
      */
     /*
     final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
+        MyCurrentLocationListener locationListener = new MyCurrentLocationListener();
         //locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistance, /*(LocationListener)*/ //locationListener);
     //locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, 0, /*(LocationListener)*/ locationListener);
     /*
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         btnTst.setOnClickListener(new View.OnClickListener(){
         @Override
         public void onClick(View v) {
-                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getTreatmentsTable().entrySet()) {
+                /*for (LinkedHashMap.Entry<String, Treatment> entry : tTable.getCodeToEquipmentTable().entrySet()) {
                     String key = entry.getKey();
                     Treatment value = entry.getValue();
 

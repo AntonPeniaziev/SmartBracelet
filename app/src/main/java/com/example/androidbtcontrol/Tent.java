@@ -27,15 +27,18 @@ public class Tent {
     public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList, boolean connected) {
 
         for (Map.Entry<String, List<String>> it : macToJsonList.entrySet()) {
+            TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT ===: MAC = " + it.getKey());
             synchronized(it.getValue()) {
                 Iterator i = it.getValue().iterator();
                 while (i.hasNext()) {
                     String jsonStr = new String(i.next().toString());
                     AddPatientInfo(jsonStr, it.getKey());
+                    TentActivity.logger.writeToLog("\nadded string to patient = " + jsonStr + "|\n");
                     _patients.get(it.getKey()).setConnected(connected);
+                    TentActivity.updateToWeb = true;
                 }
             }
-
+            TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT === END ___");
         }
 
         //Check there are disconnections

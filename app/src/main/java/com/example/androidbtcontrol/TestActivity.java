@@ -25,7 +25,7 @@ public class TestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
 
         final LocationManager locationManager=    (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        MyCurrentLoctionListener locationListener = new MyCurrentLoctionListener();
+        MyCurrentLocationListener locationListener = new MyCurrentLocationListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
         locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
 

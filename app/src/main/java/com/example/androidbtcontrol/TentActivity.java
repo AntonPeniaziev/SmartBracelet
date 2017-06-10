@@ -2,13 +2,19 @@ package com.example.androidbtcontrol;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.media.MediaScannerConnection;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -21,9 +27,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import BTservice.BTservice;
+
+import static android.location.LocationManager.GPS_PROVIDER;
+import static android.location.LocationManager.NETWORK_PROVIDER;
+
+import Logger.Logger;
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
@@ -36,6 +51,12 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
 
+    static boolean updateToWeb = false;
+
+    static final float minDistanceForGpsUpdate = 500;
+    static MyCurrentLocationListener locationListener;
+
+    static public Logger logger;
     /**
      * Initiates the list of bracelets around
      */
@@ -92,6 +113,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        logger = new Logger(this);
+        logger.writeToLog("TentActivity OnCreate\n");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         initListOfBracelets();
@@ -115,6 +139,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
+
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyCurrentLocationListener();
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
     }
 
     /**
@@ -289,10 +318,15 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
+                logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
-                new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+
+                if(updateToWeb) {
+                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+                    updateToWeb = false;
+                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -315,8 +349,18 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
+        TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
+        if (data != null && data.size() > 0) {
+            TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
+            TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
+            if (data.get(0).getTreatmentsArray().size() > 0) {
+                TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
+            }
+        }
+
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
+        TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**
@@ -361,6 +405,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         String title = "Smart Bracelet";
         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
                 finish();
             }
@@ -409,6 +454,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
 
         String treatmentId = "10"; //TODO : need to be a function of newTreatmentName. i.e. 'Acamol' => "10" , null => dont care
+        //TODO : now you can use treatmentUidTranslator.getCode(Object key)
 //        if (not found) {
 //            return "Specified treatment doesn't exist";
 //        }

@@ -16,37 +16,51 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import java.util.LinkedHashMap;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by avizel on 19/4/2017.
  */
 
 public class TreatmentsTable {
-    LinkedHashMap<String, Equipment> treatmentsTable;
+    private LinkedHashMap<String, Equipment> codeToEquipmentTable;
+
+    private LinkedHashMap<String, String> EquipmentNameToCodeTable;
 
     public TreatmentsTable(Context context) {
-        treatmentsTable = new LinkedHashMap<String, Equipment>();
+        codeToEquipmentTable = new LinkedHashMap<String, Equipment>();
+        EquipmentNameToCodeTable = new LinkedHashMap<String, String>();
 
         new updateActivitiesTable(context).execute();
 
     }
 
-    public LinkedHashMap<String, Equipment> getTreatmentsTable() {
-        return treatmentsTable;
+    /*public LinkedHashMap<String, Equipment> getCodeToEquipmentTable() {
+        return codeToEquipmentTable;
+    }*/
+
+    /*public boolean containsKey(Object key) {
+        return codeToEquipmentTable.containsKey(key);
+    }*/
+
+    /**
+     * for a valid code, returns the suitable equipment
+     * @param key
+     * @return Equipment
+     */
+    public Equipment getEquipment(Object key) {
+        return codeToEquipmentTable.get(key);
     }
 
-    public boolean containsKey(Object key) {
-        return treatmentsTable.containsKey(key);
-    }
+    /**
+     * for a valid name of equipment, returns its code name
+     * @param key
+     * @return String of code name
+     */
+    public String getCode(Object key) { return EquipmentNameToCodeTable.get(key); }
 
-    public Equipment get(Object key) {
-        return treatmentsTable.get(key);
-    }
-
-    public void putToTable(String s, Equipment d) {
-        treatmentsTable.put(s, d);
-    }
+    /*public void putToTable(String s, Equipment d) {
+        codeToEquipmentTable.put(s, d);
+    }*/
 
     private class updateActivitiesTable extends AsyncTask<String, Integer, Boolean> {
 
@@ -69,16 +83,14 @@ public class TreatmentsTable {
                     Object name = doc.get("name");
                     Object type = doc.get("type");
                     //TODO add time
-                    Equipment t = new Equipment(name.toString(), type.toString());
-                    treatmentsTable.put(number.toString(), t);
+                    Equipment t = new Equipment(name.toString(), type.toString(), number.toString());
+                    codeToEquipmentTable.put(number.toString(), t);
+                    EquipmentNameToCodeTable.put(name.toString(), number.toString());
 
-                    //Log.e(MainActivity.class.getName(), number.toString());
-                    //Log.e(MainActivity.class.getName(), name.toString());
                 }
             } catch (MongoTimeoutException e) {
                 e.printStackTrace();
-                treatmentsTable = null;
-                //Toast.makeText(mContext, "Something is wrong. Please check your INTERNET connection", Toast.LENGTH_LONG).show();
+                codeToEquipmentTable = null;
                 return false;
             } catch (MongoSocketReadException e) {
                 e.printStackTrace();
@@ -90,16 +102,6 @@ public class TreatmentsTable {
                 e.printStackTrace();
                 return false;
             }
-            //activitiesTable
-            /*for (LinkedHashMap.Entry<String, Details> entry : treatmentsTable.entrySet()) {
-                String key = entry.getKey();
-                Details value = entry.getValue();
-
-                Log.e(MainActivity.class.getName(), key);
-                Log.e(MainActivity.class.getName(), value.getName());
-                Log.e(MainActivity.class.getName(), value.getType());
-            }*/
-
 
             return true;
         }
