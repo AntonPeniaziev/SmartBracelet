@@ -200,6 +200,7 @@ public class BTservice implements BTserviceInterface {
             String deviceAddr = device.getAddress();
             if (_connectionThreadsByMac.containsKey(deviceAddr)) {
                 _connectionThreadsByMac.get(deviceAddr).writeString(_startMessage);
+                TentActivity.logger.writeToLog("\nwriting start message = " + _startMessage + "|\n");
             }
 
             while (true) {
@@ -409,6 +410,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void addDataToBeSentByMac(String mac, String data) {
+        TentActivity.logger.writeToLog("\nadding data" + data + "| + to be sent to " + mac + "\n");
         _macToDataForBracelet.putIfAbsent(mac, Collections.synchronizedList(new ArrayList<String>()));
         if (_macToReceivedBraceletData.containsKey(mac)) {
             _macToDataForBracelet.get(mac).add(data);
@@ -417,6 +419,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void addStartDataToSendToAll(String data) {
+        TentActivity.logger.writeToLog("\nAdded _startMessage = " + _startMessage + "|\n");
         _startMessage = data;
     }
 
