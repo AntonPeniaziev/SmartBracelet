@@ -134,6 +134,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _updateData = new UpdateData();
         _updateData.start();
         treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
+        locationListener = new MyCurrentLocationListener();
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -148,17 +149,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
 
-        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            int count = 5;
-            while (count > 0) {
-                Toast.makeText(TentActivity.this, "Please turn on location services!", Toast.LENGTH_LONG).show();
-                count--;
-            }
-        }
-        locationListener = new MyCurrentLocationListener();
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
-        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
     }
 
     /**
@@ -229,6 +219,17 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onStart() {
         super.onStart();
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            int count = 5;
+            while (count > 0) {
+                Toast.makeText(TentActivity.this, "Please turn on location services!", Toast.LENGTH_LONG).show();
+                count--;
+            }
+        }
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
+
     }
 
     @Override
