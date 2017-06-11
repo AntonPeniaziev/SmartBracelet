@@ -96,6 +96,12 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void login() {
         Log.d(TAG, "Login");
+        String username = _usernameText.getText().toString();
+        if(username.equals("")){
+            Toast.makeText(getBaseContext(), "User Name is Empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         _loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
@@ -263,6 +269,12 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.show();
             doctorName = "master";
             return true;
+        }
+
+        if(username.equals("")){
+            progressDialog.setMessage(message + "\n" + "User Name is Empty...");
+            progressDialog.show();
+            return false;
         }
 
         //valid = validateUserName(username, progressDialog, message);

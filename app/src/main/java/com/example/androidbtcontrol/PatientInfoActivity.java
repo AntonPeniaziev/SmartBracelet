@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +36,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _urgentButton;
     ImageButton _backButton;
     PatientInfoActivity instance;
+
 
 
 
@@ -99,6 +101,13 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
         _urgentButton.setTypeface(army_font);
         _urgentButton.setClickable(true);
+        _urgentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUrgant();
+                TentActivity._evacuationSent=true;
+            }
+        });
     }
 
     /**
@@ -143,6 +152,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         initHeartRate(patientID);
         initBackButton();
         instance = this;
+        if(TentActivity._evacuationSent){
+            changeUrgant();
+        }
 
     }
 
@@ -242,7 +254,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
 
     public void changeUrgant(){
         _urgentButton.setText("Evacuation Sent");
+        _urgentButton.setTextColor(Color.parseColor("#D74C43"));
         _urgentButton.setEnabled(false);
+        _urgentButton.setClickable(false);
     }
 
 

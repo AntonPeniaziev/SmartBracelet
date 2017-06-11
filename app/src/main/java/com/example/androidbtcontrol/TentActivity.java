@@ -49,14 +49,12 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     Button _refreshButton, _logoutButton;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
-
     static boolean updateToWeb = false;
-
     static final float minDistanceForGpsUpdate = 500;
     static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
-
     static public Logger logger;
+    static Boolean _evacuationSent;
 
 
     static public TentActivity getInstance(){
@@ -133,6 +131,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _updateData = new UpdateData();
         _updateData.start();
         locationListener = new MyCurrentLocationListener();
+        _evacuationSent = false;
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
