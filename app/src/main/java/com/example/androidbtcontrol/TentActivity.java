@@ -47,7 +47,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
-    static public TreatmentsTable treatmentUidTranslator;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
 
@@ -133,7 +132,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
-        treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
         locationListener = new MyCurrentLocationListener();
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -468,7 +466,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         in case of successful update an empty string will be returned
      **/
     static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
-        String treatmentId = treatmentUidTranslator.getCode(newTreatmentName);
+        String treatmentId = LoginActivity.treatmentUidTranslator.getCode(newTreatmentName);
                if (treatmentId == null && newTreatmentName != null) {
                         return "Specified treatment doesn't exist";
                }

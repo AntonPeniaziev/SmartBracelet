@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
+    static public TreatmentsTable treatmentUidTranslator;
 
     /**
      *  Function which initiating the Bluetooth Adapter
@@ -78,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         _passwordText.setTypeface(army_font);
         _loginButton.setTypeface(army_font);
         _errorMsg="";
-
+        treatmentUidTranslator = new TreatmentsTable(this);
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
