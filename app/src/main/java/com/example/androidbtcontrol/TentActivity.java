@@ -420,6 +420,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(DialogInterface dialog, int which) {
                 new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
+                ArrayList<Patient> listOfPatientsConnected = _tent.getPatientsArray();
+                for(int i=0; i < listOfPatientsConnected.size(); ++i){
+                    _bTservice.disconnectByMac(listOfPatientsConnected.get(i).getBtMac());
+                }
                 finish();
             }
         };
@@ -524,6 +528,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         adapter.disableForegroundDispatch(activity);
+    }
+
+    static public void editPatientEvacuation(boolean value, String patientID){
+        _tent.setUrgantEvacuation(patientID, value);
+    }
+
+    static public boolean getPatientUrgantEvacuation(String patientID){
+       return _tent.getUrgantEvacuation(patientID);
     }
 }
 

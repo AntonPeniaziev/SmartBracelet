@@ -7,11 +7,13 @@ public class Patient {
     Bracelet _bracelet;
     String id;
     boolean _isConnected;
+    boolean _urgantEvacuation;
 
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
         _isConnected = false;
+        _urgantEvacuation = false;
     }
 
 //region random dummy functions
@@ -64,5 +66,8 @@ public class Patient {
         _bracelet.updateTreatment(treatmentUid, newName);
     }
     //endregion public methods
+    public void setUrgantEvacuation(boolean value){ _urgantEvacuation = value; }
+
+    public boolean getUrgantEvacuationState(){ return _urgantEvacuation; }
 }
 

@@ -69,5 +69,18 @@ public class Tent {
             _patients.get(mac).updateTreatment(treatment.getUid(), newTreatmentName);
         }
     }
+
+    public void setUrgantEvacuation(String mac, boolean value){
+        if(_patients.containsKey(mac)){
+            _patients.get(mac).setUrgantEvacuation(value);
+        }
+    }
+
+    public boolean getUrgantEvacuation(String mac){
+        if(_patients.containsKey(mac)){
+            return _patients.get(mac).getUrgantEvacuationState();
+        }
+        return false;
+    }
 //endregion public methods
 }
