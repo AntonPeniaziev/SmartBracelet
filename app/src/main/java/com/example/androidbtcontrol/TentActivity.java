@@ -47,16 +47,20 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
-    static public TreatmentsTable treatmentUidTranslator;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
-
     static boolean updateToWeb = false;
-
     static final float minDistanceForGpsUpdate = 500;
     static MyCurrentLocationListener locationListener;
-
+    static TentActivity _instance;
     static public Logger logger;
+    static Boolean _evacuationSent;
+
+
+    static public TentActivity getInstance(){
+        return _instance;
+    }
+
     /**
      * Initiates the list of bracelets around
      */
@@ -74,7 +78,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * Initiates the refresh Button located on the right top of the screen
      */
     void initRefreshButton() {
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
         _refreshButton = (Button) findViewById(R.id.refreshBracelet);
         _refreshButton.setTypeface(army_font);
         setOnClickRefresh(_refreshButton);
@@ -87,7 +91,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      *
      */
     void initLogOutButton() {
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
         _logoutButton = (Button) findViewById(R.id.logOut);
         setOnClickLogOut(_logoutButton);
         _logoutButton = (Button) findViewById(R.id.logOut);
@@ -118,6 +122,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
+        _instance = this;
         LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyCurrentLocationListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
@@ -130,7 +135,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
-        treatmentUidTranslator = new TreatmentsTable(TentActivity.this);
+        locationListener = new MyCurrentLocationListener();
+        _evacuationSent = false;
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -144,6 +150,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     /**
@@ -214,6 +221,17 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onStart() {
         super.onStart();
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            int count = 5;
+            while (count > 0) {
+                Toast.makeText(TentActivity.this, "Please turn on location services!", Toast.LENGTH_LONG).show();
+                count--;
+            }
+        }
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
+
     }
 
     @Override
@@ -407,6 +425,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(DialogInterface dialog, int which) {
                 new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
+                ArrayList<Patient> listOfPatientsConnected = _tent.getPatientsArray();
+                for(int i=0; i < listOfPatientsConnected.size(); ++i){
+                    _bTservice.disconnectByMac(listOfPatientsConnected.get(i).getBtMac());
+                }
                 finish();
             }
         };
@@ -452,10 +474,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         in case of successful update an empty string will be returned
      **/
     static public String updateTreatment(String mac, Treatment treatment, String newTreatmentName) {
-        String treatmentId = treatmentUidTranslator.getCode(newTreatmentName);
-        if (treatmentId == null && newTreatmentName != null) {
-            return "Specified treatment doesn't exist";
-        }
+        String treatmentId = LoginActivity.treatmentUidTranslator.getCode(newTreatmentName);
+               if (treatmentId == null && newTreatmentName != null) {
+                        return "Specified treatment doesn't exist";
+               }
         _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId, newTreatmentName));
         _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
         return "";
@@ -516,6 +538,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     public static void updateAllBraceletsWithLocation(double latitude, double longitude) {
         _bTservice.broadcastToAll("<10," + latitude + ">");
         _bTservice.broadcastToAll("<11," + longitude + ">");
+    }
+
+    static public void editPatientEvacuation(boolean value, String patientID){
+        _tent.setUrgantEvacuation(patientID, value);
+    }
+
+    static public boolean getPatientUrgantEvacuation(String patientID){
+       return _tent.getUrgantEvacuation(patientID);
     }
 }
 

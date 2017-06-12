@@ -2,6 +2,7 @@ package com.example.androidbtcontrol;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
+    static public TreatmentsTable treatmentUidTranslator;
 
     /**
      *  Function which initiating the Bluetooth Adapter
@@ -68,11 +70,16 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_login);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+
         _usernameText = (EditText) findViewById(R.id.input_username);
         _passwordText = (EditText) findViewById(R.id.input_password);
         _loginButton = (Button) findViewById(R.id.btn_login);
+        _usernameText.setTypeface(army_font);
+        _passwordText.setTypeface(army_font);
+        _loginButton.setTypeface(army_font);
         _errorMsg="";
-
+        treatmentUidTranslator = new TreatmentsTable(this);
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -89,6 +96,12 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void login() {
         Log.d(TAG, "Login");
+        String username = _usernameText.getText().toString();
+        if(username.equals("")){
+            Toast.makeText(getBaseContext(), "User Name is Empty", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         _loginButton.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
@@ -256,6 +269,12 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.show();
             doctorName = "master";
             return true;
+        }
+
+        if(username.equals("")){
+            progressDialog.setMessage(message + "\n" + "User Name is Empty...");
+            progressDialog.show();
+            return false;
         }
 
         //valid = validateUserName(username, progressDialog, message);

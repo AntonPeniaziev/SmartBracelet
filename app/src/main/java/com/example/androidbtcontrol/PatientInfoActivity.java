@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -20,8 +21,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PatientInfoActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
@@ -34,6 +38,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _urgentButton;
     ImageButton _backButton;
     PatientInfoActivity instance;
+    long _evacuationLimitTime;
+    static final long TIME_LIMIT = 30000;
 
 
 
@@ -51,7 +57,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _patientsAdapter.setDiseable=true;
         _listView.setAdapter(_patientsAdapter);
         _listView.setOnItemClickListener(this);
-
     }
 
     /**
@@ -60,7 +65,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initPatientID(String patientID) {
         TextView text = (TextView) findViewById(R.id.braceletID);
-        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Army.ttf");
+        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
         text.setTypeface(army_font);
         text.setText(patientID);
 
@@ -71,6 +76,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initSaveButton(){
         _saveButton = (Button)findViewById(R.id.saveFile);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
+        _saveButton.setTypeface(army_font);
         _saveButton.setClickable(true);
         _saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +100,57 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
      */
     void initUrgentButton(){
         _urgentButton = (Button) findViewById(R.id.button4);
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Bold.ttf");
+        _urgentButton.setTypeface(army_font);
         _urgentButton.setClickable(true);
+        _urgentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(_urgentButton.getText().equals("Urgent Evacuation")){
+                    String[] valAndMac = {String.valueOf(true), _patientMac};
+                    new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
+                    _evacuationLimitTime = new Date().getTime();
+                    changeUrgant();
+                    TentActivity.editPatientEvacuation(true, _patientMac);
+                    return;
+                } else{
+                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT){
+                        String message = "Cancel Evacuation?";
+                        String title = "Smart Bracelet";
+                        DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String[] valAndMac = {String.valueOf(false), _patientMac};
+                                new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
+                                returnUrgant();
+                                TentActivity.editPatientEvacuation(false, _patientMac);
+                            }
+                        };
+
+                        DialogInterface.OnClickListener clickNo = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        };
+
+                        android.support.v7.app.AlertDialog.Builder dlgAlert  = new android.support.v7.app.AlertDialog.Builder(PatientInfoActivity.this);
+                        dlgAlert.setMessage(message);
+                        dlgAlert.setTitle(title);
+                        dlgAlert.setPositiveButton("Yes",clickYes);
+                        dlgAlert.setNegativeButton("No", clickNo);
+                        dlgAlert.show();
+
+                        return;
+
+
+                    }
+
+                    _urgentButton.setEnabled(false);
+                    _urgentButton.setClickable(false);
+                }
+
+
+            }
+        });
     }
 
     /**
@@ -138,6 +195,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         initHeartRate(patientID);
         initBackButton();
         instance = this;
+        if(TentActivity.getPatientUrgantEvacuation(_patientMac)){
+            changeUrgant();
+        }
 
     }
 
@@ -209,7 +269,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         EditText editedText = (EditText)((AlertDialog) dialog).findViewById(R.id.treatment_edited);
                         String newName = editedText.getText().toString();
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
-                            TentActivity.updateTreatment(_patientMac, treatmentName, newName);
+                            String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
+                            if(!result.equals("")){
+                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
+                                return;
+                            }
                             _patientsAdapter.setDiseable=false;
                             _patientsAdapter.notifyDataSetChanged();
                             _listView.deferNotifyDataSetChanged();
@@ -233,7 +297,13 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
 
     public void changeUrgant(){
         _urgentButton.setText("Evacuation Sent");
-        _urgentButton.setEnabled(false);
+        _urgentButton.setTextColor(Color.parseColor("#D74C43"));
+
+    }
+
+    public void returnUrgant(){
+        _urgentButton.setText("Urgent Evacuation");
+        _urgentButton.setTextColor(Color.WHITE);
     }
 
 

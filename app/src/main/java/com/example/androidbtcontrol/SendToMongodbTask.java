@@ -63,6 +63,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             document.put("Breathe_Rate", patient.getBreatheRate());
             document.put("Blood_Pressure", patient.getBloodPressure());
             document.put("Body_Temp", patient.getBodyTemp());
+            document.put("evacuation_request", String.valueOf(patient.is_urgantEvacuation()));
             document.put("treatments", treatList);
             document.put("doctor", doctorList);
 

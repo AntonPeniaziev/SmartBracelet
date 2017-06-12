@@ -92,7 +92,7 @@ public class Bracelet {
     }
 
     private String getTreatmentNameByNumber(String number) {
-        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(number);
+        Equipment equipment = LoginActivity.treatmentUidTranslator.getEquipment(number);
         if (null == equipment) {
             return "Unknown Name";
         }
@@ -100,7 +100,7 @@ public class Bracelet {
     }
 
     private String getMessageTreatmentType(String mes) {
-        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
+        Equipment equipment = LoginActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
         if (null == equipment) {
             return "Unknown Type";
         }
@@ -109,7 +109,7 @@ public class Bracelet {
     }
 
     private String getMessageTreatmentEquipmentID(String mes) {             //added by avizel 10/6
-        Equipment equipment = TentActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
+        Equipment equipment = LoginActivity.treatmentUidTranslator.getEquipment(getMessageUID(mes));
         if (null == equipment) {
             return "Unknown Type";
         }
