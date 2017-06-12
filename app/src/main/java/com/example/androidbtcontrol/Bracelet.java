@@ -9,7 +9,7 @@ import java.util.Map;
 public class Bracelet {
     String _mac_address;
     Map<String, Treatment> _treatments;
-    TimeUnit _timeUnit = TimeUnit.SECOND;
+    TimeUnit _timeUnit = TimeUnit.MINUTE;
     long _absoluteBraceletStartTime = 0;
 
     public enum TimeUnit {
@@ -42,6 +42,9 @@ public class Bracelet {
         if (_timeUnit == TimeUnit.SECOND) {
             calendar.setTimeInMillis(resultMinutes * 1000);
             sdf = new SimpleDateFormat("HH:mm:ss");
+        }
+        if (_timeUnit == TimeUnit.MINUTE) {
+            calendar.setTimeInMillis(resultMinutes * 1000 * 60);
         }
 
         return sdf.format(calendar.getTime());
@@ -126,6 +129,7 @@ public class Bracelet {
         if (mes.contains("[") && mes.contains("]")) {
             String[] firstData = mes.split("<");
 
+            long a = Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
             absoluteStartTime = mesReceivingTime - Integer.parseInt(getTimeField("<" + firstData[firstData.length - 1]));
         }
 

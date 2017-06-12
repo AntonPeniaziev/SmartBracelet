@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class BTservice implements BTserviceInterface {
     private HashMap<String, String> _supportedDeviceNames;
     private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
     private ConcurrentHashMap<String, List<String>> _macToDataForBracelet;
+    private LinkedList<String> _onConnectionBroadcastList;
     private HashMap<String, ThreadConnected> _connectionThreadsByMac;
     private Context _context;
     private Handler _handler;
@@ -43,7 +45,7 @@ public class BTservice implements BTserviceInterface {
     private ThreadConnectBTdevice _myThreadConnectBTdevice;
     private String _receivedMessage;
     private ArrayList<BluetoothDevice> _discoveredDevices;
-    private String _startMessage;
+
 //region BTservice constructor
     public BTservice(Context context) {
 
@@ -69,7 +71,7 @@ public class BTservice implements BTserviceInterface {
         _macToReceivedBraceletData = new ConcurrentHashMap<>();
         _macToDataForBracelet = new ConcurrentHashMap<>();
         _connectionThreadsByMac = new HashMap<String, ThreadConnected>();
-        _startMessage = "<1,222>";
+        _onConnectionBroadcastList = new LinkedList<>();
     }
 //endregion BTservice constructor
 
@@ -199,8 +201,11 @@ public class BTservice implements BTserviceInterface {
             boolean receivedOldData = false;
             String deviceAddr = device.getAddress();
             if (_connectionThreadsByMac.containsKey(deviceAddr)) {
-                _connectionThreadsByMac.get(deviceAddr).writeString(_startMessage);
-                TentActivity.logger.writeToLog("\nwriting start message = " + _startMessage + "|\n");
+                for (String mes : _onConnectionBroadcastList) {
+                    _connectionThreadsByMac.get(deviceAddr).writeString(mes);
+                    TentActivity.logger.writeToLog("\nwriting start message = " + mes + "|\n");
+                }
+
             }
 
             while (true) {
@@ -280,6 +285,10 @@ public class BTservice implements BTserviceInterface {
                 e.printStackTrace();
                 TentActivity.logger.writeToLog("\nIOException274" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             }
+        }
+
+        public void listenForDdata() {
+
         }
     }
 //endregion ThreadConnected
@@ -418,9 +427,15 @@ public class BTservice implements BTserviceInterface {
         writeToMac(mac);
     }
 
+    public void broadcastToAll(String data) {
+        for (String mac : _connectionThreadsByMac.keySet()) {
+            addDataToBeSentByMac(mac, data);
+        }
+    }
+
     public void addStartDataToSendToAll(String data) {
-        TentActivity.logger.writeToLog("\nAdded _startMessage = " + _startMessage + "|\n");
-        _startMessage = data;
+        TentActivity.logger.writeToLog("\nAdded _startMessage = " + data + "|\n");
+        _onConnectionBroadcastList.add(data);
     }
 
     public void disconnectByMac(String mac) {

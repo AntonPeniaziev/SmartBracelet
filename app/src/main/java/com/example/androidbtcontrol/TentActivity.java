@@ -118,8 +118,13 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
-        initListOfBracelets();
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyCurrentLocationListener();
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
+
         initBTService();
+        initListOfBracelets();
         initRefreshButton();
         initLogOutButton();
         _tent = new Tent();
@@ -139,11 +144,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
-
-        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new MyCurrentLocationListener();
-        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
-        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
     }
 
     /**
@@ -511,6 +511,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         adapter.disableForegroundDispatch(activity);
+    }
+
+    public static void updateAllBraceletsWithLocation(double latitude, double longitude) {
+        _bTservice.broadcastToAll("<10," + latitude + ">");
+        _bTservice.broadcastToAll("<11," + longitude + ">");
     }
 }
 
