@@ -68,6 +68,10 @@ public class Patient {
     //endregion public methods
     public void setUrgantEvacuation(boolean value){ _urgantEvacuation = value; }
 
+    public boolean is_urgantEvacuation() {
+        return _urgantEvacuation;
+    }
+
     public boolean getUrgantEvacuationState(){ return _urgantEvacuation; }
 }
 
