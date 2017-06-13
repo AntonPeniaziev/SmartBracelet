@@ -55,6 +55,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static TentActivity _instance;
     static public Logger logger;
     static Boolean _evacuationSent;
+    static boolean _helloDoctor;
 
 
     static public TentActivity getInstance(){
@@ -123,6 +124,20 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         _instance = this;
+
+        if(_helloDoctor){
+            _helloDoctor = false;
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+            dlgAlert.setMessage("Hello Doctor " + LoginActivity.doctorName + "!");
+            dlgAlert.setTitle("Smart Bracelet");
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+            dlgAlert.create().show();
+        }
+
         LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyCurrentLocationListener();
         locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
@@ -425,6 +440,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(DialogInterface dialog, int which) {
                 new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
+                LoginActivity._passwordText.setText("");
                 ArrayList<Patient> listOfPatientsConnected = _tent.getPatientsArray();
                 for(int i=0; i < listOfPatientsConnected.size(); ++i){
                     _bTservice.disconnectByMac(listOfPatientsConnected.get(i).getBtMac());

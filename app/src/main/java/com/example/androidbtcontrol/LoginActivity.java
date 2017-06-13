@@ -1,7 +1,9 @@
 package com.example.androidbtcontrol;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     EditText _usernameText;
-    EditText _passwordText;
+    static EditText _passwordText;
     static Button _loginButton;
     String _errorMsg;
     String _docID = "123";
@@ -142,6 +144,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         Intent tentIntent = new Intent(LoginActivity.this, TentActivity.class);
         tentIntent.putExtra("DOC_ID", _docID);
+        TentActivity._helloDoctor = true;
         startActivity(tentIntent);
     }
 
