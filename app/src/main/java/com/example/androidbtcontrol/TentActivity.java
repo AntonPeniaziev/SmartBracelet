@@ -44,6 +44,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private BTservice _bTservice;
     static private Tent _tent;
     UpdateData _updateData;
+    CheckEvacuation _checkEvacuation;
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
@@ -150,6 +151,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
+        _checkEvacuation = new CheckEvacuation();
+        _checkEvacuation.start();
         locationListener = new MyCurrentLocationListener();
         _evacuationSent = false;
 
@@ -373,6 +376,35 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private class CheckEvacuation extends Thread {
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            while (true) {
+                //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
+
+
+                CheckEvacuationTask evacuationTask = new CheckEvacuationTask(TentActivity.this);
+                evacuationTask.execute(_tent);
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUI();
+                    }
+                });
+                //release for UI
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                evacuationTask.cancel(true);
             }
         }
     }

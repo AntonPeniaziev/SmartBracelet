@@ -88,6 +88,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     return;
                 }
                 if(_saveButton.getText().equals("Save")){
+                    TentActivity.updateToWeb = true;
                     _saveButton.setText("Edit");
                     _patientsAdapter.setTextViewDisabled();
                 }

@@ -82,5 +82,12 @@ public class Tent {
         }
         return false;
     }
+
+    public boolean isContain(String mac){
+        if (_patients.containsKey(mac)) {
+            return true;
+        }
+        return false;
+    }
 //endregion public methods
 }

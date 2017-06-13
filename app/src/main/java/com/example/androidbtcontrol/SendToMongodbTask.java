@@ -19,6 +19,11 @@ import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,10 +64,10 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             doctorList.add(doctorDoc);
 
             document.put("bracelet_id", patient.getBtMac());
-            document.put("Heart_Rate", patient.getHeartRate());
-            document.put("Breathe_Rate", patient.getBreatheRate());
-            document.put("Blood_Pressure", patient.getBloodPressure());
-            document.put("Body_Temp", patient.getBodyTemp());
+            document.put("heart_rate", patient.getHeartRate());
+            document.put("breathe_rate", patient.getBreatheRate());
+            document.put("blood_pressure", patient.getBloodPressure());
+            document.put("body_temp", patient.getBodyTemp());
             document.put("evacuation_request", String.valueOf(patient.is_urgantEvacuation()));
             document.put("treatments", treatList);
             document.put("doctor", doctorList);
@@ -96,12 +101,58 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         int time = 5;
+        String text = "";
+        BufferedReader reader=null;
         if (!aBoolean) {
             while (time > 0) {
                 Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
                 time--;
             }
+        } else {
+            try
+            {
+                // Defined URL  where to send data
+                URL url = new URL("http://androidexample.com/media/webservice/httppost.php");
+
+                // Send POST data request
+                URLConnection conn = url.openConnection();
+                conn.setDoOutput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write( "dbUpdate" );
+                wr.flush();
+
+                // Get the server response
+
+                reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                // Read Server Response
+                while((line = reader.readLine()) != null)
+                {
+                    // Append server response in string
+                    sb.append(line + "\n");
+                }
+                text = sb.toString();
+            }
+            catch(Exception ex)
+            {
+
+            }
+            finally
+            {
+                try
+                {
+                    reader.close();
+                }
+                catch(Exception ex) {}
+            }
+
+            // Show response on activity
+            Toast.makeText(mContext, text, Toast.LENGTH_LONG).show();
+
         }
+
     }
 
     @Override
