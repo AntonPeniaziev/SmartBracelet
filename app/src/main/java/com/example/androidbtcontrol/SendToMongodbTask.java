@@ -2,7 +2,6 @@ package com.example.androidbtcontrol;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
@@ -25,7 +24,6 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
 
 
 //mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx
@@ -68,7 +66,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             document.put("breathe_rate", patient.getBreatheRate());
             document.put("blood_pressure", patient.getBloodPressure());
             document.put("body_temp", patient.getBodyTemp());
-            document.put("evacuation_request", String.valueOf(patient.is_urgantEvacuation()));
+            document.put("evacuation_request", String.valueOf(patient.is_urgentEvacuation()));
             document.put("treatments", treatList);
             document.put("doctor", doctorList);
 

@@ -72,13 +72,13 @@ public class Tent {
 
     public void setUrgantEvacuation(String mac, boolean value){
         if(_patients.containsKey(mac)){
-            _patients.get(mac).setUrgantEvacuation(value);
+            _patients.get(mac).setUrgentEvacuation(value);
         }
     }
 
     public boolean getUrgantEvacuation(String mac){
         if(_patients.containsKey(mac)){
-            return _patients.get(mac).getUrgantEvacuationState();
+            return _patients.get(mac).getUrgentEvacuationState();
         }
         return false;
     }
