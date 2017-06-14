@@ -359,10 +359,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
 
-                if(updateToWeb) {
-                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
-                    updateToWeb = false;
-                }
+//                if(updateToWeb) {
+//                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+//                    updateToWeb = false;
+//                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -387,7 +387,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             while (true) {
                 //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
 
-
                 CheckEvacuationTask evacuationTask = new CheckEvacuationTask(TentActivity.this);
                 evacuationTask.execute(_tent);
 
@@ -405,6 +404,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                     e.printStackTrace();
                 }
                 evacuationTask.cancel(true);
+                if(updateToWeb) {
+                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+                    updateToWeb = false;
+                }
             }
         }
     }
