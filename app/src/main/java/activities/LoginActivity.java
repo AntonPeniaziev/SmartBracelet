@@ -1,9 +1,7 @@
-package com.example.androidbtcontrol;
+package activities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,11 +11,11 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mongodb.MongoSocketException;
-import com.mongodb.MongoTimeoutException;
+import tasks.LoginTask;
+import com.android.SmartBracelet.R;
+import logic.TreatmentsTable;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,8 +28,8 @@ public class LoginActivity extends AppCompatActivity {
     static Button _loginButton;
     String _errorMsg;
     String _docID = "123";
-    static String doctorName = "";
-    static String doctorNumber = "";
+    public static String doctorName = "";
+    public static String doctorNumber = "";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
@@ -134,7 +132,6 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // disable going back to the MainActivity
         moveTaskToBack(true);
     }
 

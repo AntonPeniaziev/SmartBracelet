@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package logic;
 
 /**
  * Created by avizel on 17/5/2017.

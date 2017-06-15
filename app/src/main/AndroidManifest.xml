@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.androidbtcontrol">
+    package="com.android.SmartBracelet">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -28,7 +28,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:keepScreenOn="true">
         <activity
-            android:name=".LoginActivity"
+            android:name="activities.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:keepScreenOn="true">
@@ -38,25 +38,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".TentActivity"
+            android:name="activities.TentActivity"
             android:label="@string/title_activity_tent"
-            android:parentActivityName=".LoginActivity"
+            android:parentActivityName="activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:keepScreenOn="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.androidbtcontrol.MainActivity" />
+                android:value="activities.LoginActivity" />
         </activity>
+
         <activity
-            android:name=".PatientInfoActivity"
+            android:name="activities.PatientInfoActivity"
             android:screenOrientation="portrait"
             android:keepScreenOn="true"/>
-        <activity
-            android:name=".TestActivity"
-            android:screenOrientation="portrait"
-            android:keepScreenOn="true"></activity>
+
     </application>
 
     <uses-permission android:name="android.permission.READ_LOGS" />

@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Random;

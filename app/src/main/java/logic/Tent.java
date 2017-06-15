@@ -1,10 +1,12 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import activities.TentActivity;
 
 public class Tent {
     ConcurrentHashMap<String, Patient> _patients;

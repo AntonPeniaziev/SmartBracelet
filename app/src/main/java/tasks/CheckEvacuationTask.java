@@ -1,9 +1,9 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
+import logic.Tent;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -15,9 +15,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import java.io.BufferedReader;
-import java.util.ArrayList;
-
 /**
  * Created by user on 13/06/2017.
  */
@@ -25,7 +22,7 @@ import java.util.ArrayList;
 public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
 
     private Context mContext;
-    CheckEvacuationTask(Context context) {
+    public CheckEvacuationTask(Context context) {
         mContext = context;
     }
 

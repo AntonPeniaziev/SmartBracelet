@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import android.content.Context;
 import android.os.AsyncTask;

@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package com.example.Logic;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

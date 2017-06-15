@@ -1,9 +1,7 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -18,12 +16,14 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.conversions.Bson;
 
+import activities.LoginActivity;
+
 // mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx    ALON HEROKU
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0       WEB TEAM HEROKU
 public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
     Context mContext;
-    LoginTask(Context context) {
+    public LoginTask(Context context) {
         mContext = context;
     }
     @Override

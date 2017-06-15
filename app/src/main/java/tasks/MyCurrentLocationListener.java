@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.location.Location;
 import android.location.LocationListener;

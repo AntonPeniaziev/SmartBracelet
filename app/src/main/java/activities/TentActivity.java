@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package activities;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -7,16 +7,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaScannerConnection;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Parcelable;
-import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,10 +23,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import tasks.CheckEvacuationTask;
+import tasks.LogoutTask;
+import tasks.MyCurrentLocationListener;
+import logic.Patient;
+import com.android.SmartBracelet.R;
+import tasks.SendToMongodbTask;
+import logic.Tent;
+import logic.Treatment;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import BTservice.BTservice;
@@ -39,6 +40,8 @@ import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
 import Logger.Logger;
+
+
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
@@ -50,7 +53,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     Button _refreshButton, _logoutButton;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
-    static boolean updateToWeb = false;
+    public static boolean updateToWeb = false;
     static final float minDistanceForGpsUpdate = 500;
     static MyCurrentLocationListener locationListener;
     static TentActivity _instance;

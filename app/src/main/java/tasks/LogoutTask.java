@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -14,35 +14,45 @@ import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
+import activities.LoginActivity;
 
 /**
- * AsyncTask to notify the web to update evacuation for specific patient
- * @param params is an array contains bracelet_id and a boolean string
+ * Created by user on 05/06/2017.
  */
 
-public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
+public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
-    private Context mContext;
-    CallEvacuationTask(Context context) {
+    Context mContext;
+
+    public LogoutTask(Context context) {
         mContext = context;
     }
 
     @Override
-    protected Boolean doInBackground(String... params) {
+    protected Boolean doInBackground(Void... doctor) {
+
         MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
+
+        //FindIterable<BasicDBObject> users = dbCollection.find();
+
+        if (LoginActivity.doctorNumber.equals("") && LoginActivity.doctorName.equals(""))
+            return true;
 
         try {
-            Bson searchQuery = new Document("bracelet_id", params[1]);
-            Bson newValue = new BasicDBObject().append("evacuation_request", params[0]);
-            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
-            dbCollection.updateOne(searchQuery, updateOperationDocument);
+            Bson searchQuery = new BasicDBObject().append("number", LoginActivity.doctorNumber);
+            Bson newValue1 = new BasicDBObject().append("status", "not connected");
+            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
+
+            dbCollection.updateOne(searchQuery, updateOperationDocument1);
+
+            LoginActivity.doctorName = "";
+            LoginActivity.doctorNumber = "";
+
             return true;
         } catch (MongoTimeoutException e) {
             e.printStackTrace();
@@ -56,12 +66,14 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
             e.printStackTrace();
             return false;
         }
+
         return false;
+
     }
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
-        int time = 3;
+        int time = 5;
         if (!aBoolean) {
             while (time > 0) {
                 Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
@@ -69,4 +81,5 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
             }
         }
     }
+
 }

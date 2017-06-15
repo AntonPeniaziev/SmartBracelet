@@ -6,7 +6,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.widget.Toast;
 
-import com.example.androidbtcontrol.TentActivity;
+import activities.TentActivity;
 
 import java.io.IOException;
 import java.util.HashMap;

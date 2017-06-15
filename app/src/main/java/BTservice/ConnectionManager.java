@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import com.example.androidbtcontrol.TentActivity;
+import activities.TentActivity;
 
 public class ConnectionManager extends Thread {
     private final BluetoothSocket connectedBluetoothSocket;

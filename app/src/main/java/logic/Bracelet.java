@@ -1,4 +1,8 @@
-package com.example.androidbtcontrol;
+package logic;
+import activities.LoginActivity;
+import logic.Equipment;
+import logic.Treatment;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

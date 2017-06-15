@@ -1,10 +1,11 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
+import logic.Patient;
+import logic.Treatment;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -25,19 +26,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import activities.LoginActivity;
 
-//mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx
-// mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0
+
 public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Boolean> {
 
+    static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+    static final String myUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
+
     private Context mContext;
-    SendToMongodbTask(Context context) {
+    public SendToMongodbTask(Context context) {
         mContext = context;
     }
     @Override
+
+    /**
+     * update the DB for changes in local patients
+     * @param patients is the list of patients to update
+     */
     protected Boolean doInBackground(ArrayList<Patient> ... patients) {
 
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
@@ -109,11 +118,14 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
 
     }
 
+    /**
+     * doing http POST to refresh the website for out changes
+     */
     protected void postToWeb() {
         HttpURLConnection client = null;
         try {
             // Defined URL  where to send data
-            URL url = new URL("https://firstaidbracelet.herokuapp.com/soldiersChange");
+            URL url = new URL(myUrl);
             client = (HttpURLConnection) url.openConnection();
 
             String msg = "dbUpdate";

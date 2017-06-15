@@ -6,11 +6,10 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.widget.Toast;
-import com.example.androidbtcontrol.TentActivity;
-import java.io.IOException;
+import activities.TentActivity;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;

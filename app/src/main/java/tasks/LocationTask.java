@@ -1,8 +1,6 @@
-package com.example.androidbtcontrol;
+package tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -11,14 +9,14 @@ import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import activities.LoginActivity;
 
 /**
  * Created by user on 07/06/2017.

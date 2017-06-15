@@ -1,8 +1,7 @@
-package com.example.androidbtcontrol;
+package activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,8 +10,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import logic.Patient;
+import com.android.SmartBracelet.R;
+import logic.Treatment;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class CustomAdapter extends BaseAdapter {
 
