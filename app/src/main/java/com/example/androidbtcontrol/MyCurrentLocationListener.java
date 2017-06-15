@@ -4,7 +4,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
-
+/**
+ * MyCurrentLocationListener holds and manages the doctor's location
+ */
 public class MyCurrentLocationListener implements LocationListener {
 
     private Location myLocation = null;
@@ -21,6 +23,10 @@ public class MyCurrentLocationListener implements LocationListener {
         return longitude;
     }
 
+    /**
+     * on location change, update the current location if it is more accurate
+     * @param location the new location data
+     */
     public void onLocationChanged(Location location) {
         if (myLocation == null)
             myLocation = location;
@@ -49,6 +55,12 @@ public class MyCurrentLocationListener implements LocationListener {
 
     }
 
+    /**
+     *
+     * @param location
+     * @param currentBestLocation
+     * @return
+     */
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
             // A new location is always better than no location

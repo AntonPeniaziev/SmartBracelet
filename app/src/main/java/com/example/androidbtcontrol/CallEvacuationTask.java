@@ -20,7 +20,8 @@ import org.bson.conversions.Bson;
 import java.util.ArrayList;
 
 /**
- * Created by user on 12/06/2017.
+ * AsyncTask to notify the web to update evacuation for specific patient
+ * @param params is an array contains bracelet_id and a boolean string
  */
 
 public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
@@ -39,7 +40,7 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
 
         try {
             Bson searchQuery = new Document("bracelet_id", params[1]);
-            Bson newValue = new BasicDBObject().append("evacuation_request", params[0].toString());
+            Bson newValue = new BasicDBObject().append("evacuation_request", params[0]);
             Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
             dbCollection.updateOne(searchQuery, updateOperationDocument);
             return true;
