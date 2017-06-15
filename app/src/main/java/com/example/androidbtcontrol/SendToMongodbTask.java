@@ -60,9 +60,9 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             document.put("breathe_rate", patient.getBreatheRate());
             document.put("blood_pressure", patient.getBloodPressure());
             document.put("body_temp", patient.getBodyTemp());
-            document.put("evacuation_request", String.valueOf(patient.is_urgantEvacuation()));
+            document.put("evacuation_request", String.valueOf(patient.is_urgentEvacuation()));
             document.put("doctor_name", LoginActivity.doctorName);
-            document.put("doctor_number ", LoginActivity.doctorNumber);
+            document.put("doctor_number", LoginActivity.doctorNumber);
             document.put("treatments", treatList);
 
             Bson searchQuery = new Document("bracelet_id", patient.getBtMac());
@@ -111,20 +111,12 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
 
     protected void postToWeb() {
         HttpURLConnection client = null;
-        try
-        {
+        try {
             // Defined URL  where to send data
             URL url = new URL("https://firstaidbracelet.herokuapp.com/soldiersChange");
             client = (HttpURLConnection) url.openConnection();
 
-
             String msg = "dbUpdate";
-            // Send POST data request
-            //URLConnection conn = url.openConnection();
-                /*conn.setDoOutput(true);
-                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                wr.write( "dbUpdate" );
-                wr.flush();*/
             client.setRequestProperty("Accept","text/html;charset=utf-8");
             client.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             client.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
@@ -132,50 +124,25 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             client.setDoOutput(true);
 
             DataOutputStream printout = new DataOutputStream(client.getOutputStream());
-            //OutputStream os = new BufferedOutputStream(client.getOutputStream());
             printout.writeBytes(msg);
             printout.flush();
             printout.close();
 
-
-            Log.e("Post: ", "done post");
             String responseMsg = client.getResponseMessage();
             int responseCode = client.getResponseCode();
 
-            Log.e("Post: ", "response is " + Integer.toString(responseCode) + " " + responseMsg);
-            // Get the server response
-
-                /*reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                StringBuilder sb = new StringBuilder();
-                String line = null;*/
-
-            // Read Server Response
-                /*while((line = reader.readLine()) != null)
-                {
-                    // Append server response in string
-                    sb.append(line + "\n");
-                }
-                text = sb.toString();*/
+            //Log.e("Post: ", "response is " + Integer.toString(responseCode) + " " + responseMsg);
         }
-        catch(Exception ex)
-        {
+        catch(Exception ex) {
 
-        }
-        finally
-        {
-            try
-            {
-//                    if(client != null) // Make sure the connection is not null.
-//                        client.disconnect();
+        } finally {
+            try {
+                   if(client != null) // Make sure the connection is not null.
+                      client.disconnect();
             }
             catch(Exception ex) {}
         }
-
-        // Show response on activity
-        //Toast.makeText(mContext, response, Toast.LENGTH_LONG).show();
-
     }
-
 }
 
 
