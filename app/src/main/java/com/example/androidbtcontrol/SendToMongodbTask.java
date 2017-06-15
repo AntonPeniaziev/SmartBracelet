@@ -71,7 +71,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
 
             try {
                 dbCollection.replaceOne(searchQuery, document, upsertDoc);
-                func();
+                postToWeb();
                 if (isCancelled())
                     return true;
             } catch (MongoTimeoutException e) {
@@ -95,7 +95,6 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         int time = 5;
-        String response = "";
         BufferedReader reader=null;
         if (!aBoolean) {
             while (time > 0) {
@@ -110,7 +109,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
 
     }
 
-    protected void func() {
+    protected void postToWeb() {
         HttpURLConnection client = null;
         try
         {

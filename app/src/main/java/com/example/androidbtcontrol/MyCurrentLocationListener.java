@@ -38,7 +38,6 @@ public class MyCurrentLocationListener implements LocationListener {
             longitude = myLocation.getLongitude();
             Double[] coordinates = {latitude, longitude};
             new LocationTask().execute(coordinates);
-            TentActivity.updateAllBraceletsWithLocation(latitude, longitude);
         }
 
     }
