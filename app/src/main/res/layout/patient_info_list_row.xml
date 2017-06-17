@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#3C4631"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:id="@+id/row"
     android:clickable="false"
     android:layout_alignParentTop="true"
@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="200dp"
-            android:layout_height="133dp"
+            android:layout_height="100dp"
             android:layout_alignParentTop="true"
             android:layout_weight="0.52"
             android:gravity="start"
@@ -39,24 +39,23 @@
                     android:gravity="start"
                     android:background="@android:color/transparent"
                     android:textSize="20dp"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="35dp"
                     android:clickable="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"/>
 
 
-                    <TextView
-                        android:id="@+id/treatment_name"
-                        android:layout_height="32dp"
-                        android:layout_width="match_parent"
-                        android:textColor="#FFFFFF"
-                        android:gravity="left"
-                        android:background="@android:color/transparent"
-                        android:textSize="20dp"
-                        android:layout_marginTop="50dp"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        />
+                <TextView
+                    android:id="@+id/treatment_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="35dp"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:gravity="left"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20dp" />
 
 
         </LinearLayout>

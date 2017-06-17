@@ -8,12 +8,14 @@ public class Patient {
     String id;
     boolean _isConnected;
     boolean _urgentEvacuation;
+    String _state;
 
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
         _isConnected = false;
         _urgentEvacuation = false;
+        _state = "";
     }
 
 //region random dummy functions
@@ -73,5 +75,9 @@ public class Patient {
     }
 
     public boolean getUrgentEvacuationState(){ return _urgentEvacuation; }
+
+    public void setPatientState(String state) { _state = state;}
+
+    public String getPatientState() { return _state;}
 }
 

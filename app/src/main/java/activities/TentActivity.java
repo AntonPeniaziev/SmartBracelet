@@ -601,6 +601,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static public boolean getPatientUrgantEvacuation(String patientID){
        return _tent.getUrgantEvacuation(patientID);
     }
+
+    static public void editPatientState(String value, String patientID){
+        _tent.setPatientState(patientID, value);
+    }
+
+    static public String getPatientState(String patientID){
+        return _tent.getPatientState(patientID);
+    }
 }
 
 

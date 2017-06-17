@@ -85,6 +85,19 @@ public class Tent {
         return false;
     }
 
+    public void setPatientState(String mac, String value){
+        if(_patients.containsKey(mac)){
+            _patients.get(mac).setPatientState(value);
+        }
+    }
+
+    public String getPatientState(String mac){
+        if(_patients.containsKey(mac)){
+            return _patients.get(mac).getPatientState();
+        }
+        return "";
+    }
+
     public boolean isContain(String mac){
         if (_patients.containsKey(mac)) {
             return true;
