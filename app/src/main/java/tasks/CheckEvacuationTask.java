@@ -21,14 +21,20 @@ import com.mongodb.client.MongoDatabase;
 
 public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
 
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+
     private Context mContext;
     public CheckEvacuationTask(Context context) {
         mContext = context;
     }
 
+    /**
+     * check if for any of the connected patients, evacuation was called from the web
+     * @param params is the Tent of the local patients
+     */
     @Override
     protected Boolean doInBackground(Tent... params) {
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
@@ -39,10 +45,11 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
             for (BasicDBObject soldier : soldiers) {
                 Object mac = soldier.get("bracelet_id");
                 Object evac = soldier.get("evacuation_request");
+                if (mac == null || evac == null)
+                    continue;
                 if (params[0].isContain(mac.toString())){
                     if (evac.toString().equals("true") && !params[0].getUrgantEvacuation(mac.toString())){
                         params[0].setUrgantEvacuation(mac.toString(), true);
-                        //Toast.makeText(mContext, "Evacuation was set for " + mac.toString(), Toast.LENGTH_LONG).show();
                     }
                 }
                 if (isCancelled())
@@ -66,18 +73,8 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
     }
 
     @Override
-    protected void onPostExecute(Boolean aBoolean) {
-//        int time = 5;
-//        if (!aBoolean) {
-//            while (time > 0) {
-//                Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
-//                time--;
-//            }
-//        }
-    }
+    protected void onPostExecute(Boolean aBoolean) {}
 
     @Override
-    protected void onCancelled(){
-
-    }
+    protected void onCancelled(){}
 }

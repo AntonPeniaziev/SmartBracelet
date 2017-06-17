@@ -24,14 +24,11 @@ import activities.LoginActivity;
 
 public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
 
-//    private Context mContext;
-//    LocationTask(Context context) {
-//        mContext = context;
-//    }
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
 
     @Override
     protected Boolean doInBackground(Double... coordinates) {
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
