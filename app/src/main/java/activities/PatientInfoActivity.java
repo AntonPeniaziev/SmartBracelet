@@ -38,7 +38,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _saveButton;
     Button _urgentButton;
     ImageButton _backButton;
-    PatientInfoActivity instance;
+    static PatientInfoActivity instance;
     long _evacuationLimitTime;
     static final long TIME_LIMIT = 30000;
     Button[] _stateButtons;
@@ -59,6 +59,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _listView = (ListView) findViewById(R.id.listView);
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _patientsAdapter.setDiseable=true;
+        _patientsAdapter.setMac(_patientMac);
         _listView.setAdapter(_patientsAdapter);
         _listView.setOnItemClickListener(this);
     }
@@ -325,7 +326,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
 
 
 
-    public PatientInfoActivity getInstance() {
+    static public PatientInfoActivity getInstance() {
         return instance;
     }
 
@@ -349,7 +350,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
                             String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
                             if(!result.equals("")){
-                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
+                                Toast.makeText(PatientInfoActivity.this, result, Toast.LENGTH_LONG).show();
                                 return;
                             }
                             _patientsAdapter.setDiseable=false;
