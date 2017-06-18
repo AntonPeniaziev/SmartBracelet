@@ -1,6 +1,7 @@
 package activities;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -17,10 +18,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import logic.Patient;
 import tasks.CallEvacuationTask;
 import com.android.SmartBracelet.R;
 import logic.Treatment;
+import tasks.LogoutTask;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -34,9 +38,12 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _saveButton;
     Button _urgentButton;
     ImageButton _backButton;
-    PatientInfoActivity instance;
+    static PatientInfoActivity instance;
     long _evacuationLimitTime;
     static final long TIME_LIMIT = 30000;
+    Button[] _stateButtons;
+    static final int NUMBER_OF_STATES = 5;
+    String _currentState;
 
 
 
@@ -52,6 +59,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _listView = (ListView) findViewById(R.id.listView);
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _patientsAdapter.setDiseable=true;
+        _patientsAdapter.setMac(_patientMac);
         _listView.setAdapter(_patientsAdapter);
         _listView.setOnItemClickListener(this);
     }
@@ -174,6 +182,77 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
+    void loadState(String state){
+        _currentState = state;
+        switch (state){
+            case "Minor": _stateButtons[0].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Moderate": _stateButtons[1].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Severe": _stateButtons[2].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Critical": _stateButtons[3].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Dead": _stateButtons[4].setBackgroundColor(Color.BLACK);
+        }
+    }
+    void initStateButtons(){
+        _stateButtons = new Button[NUMBER_OF_STATES];
+        _stateButtons[0] = (Button) findViewById(R.id.minorMode);
+        _stateButtons[1] = (Button) findViewById(R.id.moderateMode);
+        _stateButtons[2] = (Button) findViewById(R.id.severeMode);
+        _stateButtons[3] = (Button) findViewById(R.id.criticalMode);
+        _stateButtons[4] = (Button) findViewById(R.id.deadMode);
+
+        for(int i=0; i< _stateButtons.length ; ++i){
+            setOnClickState(_stateButtons[i]);
+        }
+
+        loadState(TentActivity.getPatientState(_patientMac));
+
+    }
+
+    void changePatientStateButton(String state){
+        for(int i=0; i< _stateButtons.length ; ++i){
+            if(!_stateButtons[i].getText().toString().equals(_currentState)){
+                _stateButtons[i].setBackgroundColor(Color.parseColor("#4E5944"));
+            }
+        }
+    }
+
+    void setOnClickState(final Button stateButton){
+        stateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = "Change Patient State to: " + stateButton.getText() + "?";
+                String title = "Smart Bracelet";
+                DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String state = stateButton.getText().toString();
+                        //TODO:: update web with the change
+                        TentActivity.editPatientState(state, _patientMac);
+                        loadState(state);
+                        changePatientStateButton(state);
+                    }
+                };
+
+                DialogInterface.OnClickListener clickNo = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                };
+
+                android.support.v7.app.AlertDialog.Builder dlgAlert  = new android.support.v7.app.AlertDialog.Builder(PatientInfoActivity.this);
+                dlgAlert.setMessage(message);
+                dlgAlert.setTitle(title);
+                dlgAlert.setPositiveButton("Yes",clickYes);
+                dlgAlert.setNegativeButton("No", clickNo);
+                dlgAlert.show();
+
+            }
+        });
+    }
+
     /**
      * main OnCreate function. initiates the views on the activity and the background services
      * @param savedInstanceState
@@ -196,6 +275,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         if(TentActivity.getPatientUrgantEvacuation(_patientMac)){
             changeUrgant();
         }
+
+        initStateButtons();
 
     }
 
@@ -245,7 +326,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
 
 
 
-    public PatientInfoActivity getInstance() {
+    static public PatientInfoActivity getInstance() {
         return instance;
     }
 
@@ -269,7 +350,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
                             String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
                             if(!result.equals("")){
-                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
+                                Toast.makeText(PatientInfoActivity.this, result, Toast.LENGTH_LONG).show();
                                 return;
                             }
                             _patientsAdapter.setDiseable=false;

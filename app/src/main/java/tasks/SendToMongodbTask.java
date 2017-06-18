@@ -32,7 +32,7 @@ import activities.LoginActivity;
 public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Boolean> {
 
     static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
-    static final String myUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
+    static final String webUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
 
     private Context mContext;
     public SendToMongodbTask(Context context) {
@@ -101,6 +101,10 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
         return true;
     }
 
+    /**
+     * if update to web doesn't succeed, it alerts the user for connection problems
+     * @param aBoolean the result of the update
+     */
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         int time = 5;
@@ -125,7 +129,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
         HttpURLConnection client = null;
         try {
             // Defined URL  where to send data
-            URL url = new URL(myUrl);
+            URL url = new URL(webUrl);
             client = (HttpURLConnection) url.openConnection();
 
             String msg = "dbUpdate";

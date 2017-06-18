@@ -42,17 +42,11 @@ public class MyCurrentLocationListener implements LocationListener {
 
     }
 
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public void onStatusChanged(String s, int i, Bundle bundle) {}
 
-    }
+    public void onProviderEnabled(String s) {}
 
-    public void onProviderEnabled(String s) {
-
-    }
-
-    public void onProviderDisabled(String s) {
-
-    }
+    public void onProviderDisabled(String s) {}
 
     /**
      *
