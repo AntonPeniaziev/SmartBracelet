@@ -74,7 +74,6 @@ public class Patient {
         return _bracelet.getEvacStatus();
     }
 
-
     public void setPatientState(String state) { _bracelet.setSeverity(state);}
 
     public String getPatientState() { return _bracelet.getSeverity();}

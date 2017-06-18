@@ -18,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import logic.Bracelet;
 import logic.Patient;
+import logic.Tent;
 import tasks.CallEvacuationTask;
 import com.android.SmartBracelet.R;
 import logic.Treatment;
@@ -117,10 +119,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                     _evacuationLimitTime = new Date().getTime();
                     changeUrgant();
+                    TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_SENT_RECORD);
                     TentActivity.editPatientEvacuation(true, _patientMac);
                     return;
                 } else{
-                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT){
+                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT) {
                         String message = "Cancel Evacuation?";
                         String title = "Smart Bracelet";
                         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
@@ -128,6 +131,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                                 String[] valAndMac = {String.valueOf(false), _patientMac};
                                 new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                                 returnUrgant();
+                                TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_CANCELED_RECORD);
                                 TentActivity.editPatientEvacuation(false, _patientMac);
                             }
                         };
@@ -146,8 +150,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         dlgAlert.show();
 
                         return;
-
-
                     }
 
                     _urgentButton.setEnabled(false);
@@ -182,9 +184,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
-    void loadState(String state){
+    void loadState(String state) {
         _currentState = state;
-        switch (state){
+        switch (state) {
             case "Minor": _stateButtons[0].setBackgroundColor(Color.BLACK);
                             break;
             case "Moderate": _stateButtons[1].setBackgroundColor(Color.BLACK);
@@ -196,6 +198,22 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
             case "Dead": _stateButtons[4].setBackgroundColor(Color.BLACK);
         }
     }
+
+    void sendStateToBracelet(String state) {
+
+        switch (state){
+            case "Minor": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MINOR_RECORD);
+                break;
+            case "Moderate": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MODERATE_RECORD);
+                break;
+            case "Severe": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_SEVERE_RECORD);
+                break;
+            case "Critical": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_CRITICAL_RECORD);
+                break;
+            case "Dead": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_DEAD_RECORD);
+        }
+    }
+
     void initStateButtons(){
         _stateButtons = new Button[NUMBER_OF_STATES];
         _stateButtons[0] = (Button) findViewById(R.id.minorMode);
@@ -231,6 +249,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         String state = stateButton.getText().toString();
                         //TODO:: update web with the change
                         TentActivity.editPatientState(state, _patientMac);
+                        sendStateToBracelet(state);
                         loadState(state);
                         changePatientStateButton(state);
                     }
