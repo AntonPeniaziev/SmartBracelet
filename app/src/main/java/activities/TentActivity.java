@@ -407,7 +407,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                     e.printStackTrace();
                 }
                 evacuationTask.cancel(true);
-                if(updateToWeb) {
+                if (updateToWeb) {
                     new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
                     updateToWeb = false;
                 }
@@ -587,11 +587,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         adapter.disableForegroundDispatch(activity);
-    }
-
-    public static void updateAllBraceletsWithLocation(double latitude, double longitude) {
-        _bTservice.broadcastToAll("<10," + latitude + ">");
-        _bTservice.broadcastToAll("<11," + longitude + ">");
     }
 
     static public void editPatientEvacuation(boolean value, String patientID){
