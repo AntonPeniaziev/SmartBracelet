@@ -32,12 +32,12 @@ public class Bracelet {
 
 //region Constructor
     public Bracelet(String initialDataFromBT, String macAddress) {
+        evacuationStatus = false;
+        _severity = "";
         _mac_address = macAddress;
         _treatments = Collections.synchronizedMap(new LinkedHashMap<String, Treatment>());
         _absoluteBraceletStartTime = getArduinoStartTimeFromFirstData(initialDataFromBT);
         AddActionsToBracelet(initialDataFromBT);
-        evacuationStatus = false;
-        _severity = "";
     }
 //endregion Constructor
 
