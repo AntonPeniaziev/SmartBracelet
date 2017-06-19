@@ -592,6 +592,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
 
     static public boolean getPatientConnectionStatus(String mac){return _bTservice.isConnectedToBtMac(mac);}
 
+    static public void setEvacTime(long timeInMillis, String mac) {
+        _tent.setEvacTime(timeInMillis, mac);
+    }
+
+   static public boolean evacuationCancelTimedout(String mac) {
+        return  _tent.evacuationCancelTimedout(mac);
+    }
+
 }
 
 
