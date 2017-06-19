@@ -1,7 +1,5 @@
 package logic;
 import activities.LoginActivity;
-import logic.Equipment;
-import logic.Treatment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,10 +13,22 @@ public class Bracelet {
     Map<String, Treatment> _treatments;
     TimeUnit _timeUnit = TimeUnit.MINUTE;
     long _absoluteBraceletStartTime = 0;
+    public static final String BEEP_RECORD = "<6,0>";
+    public static final String EVAC_SENT_RECORD = "<4,1>";
+    public static final String EVAC_CANCELED_RECORD = "<4,0>";
+    public static final String SEVERITY_MINOR_RECORD = "<13,0>";
+    public static final String SEVERITY_MODERATE_RECORD = "<13,1>";
+    public static final String SEVERITY_SEVERE_RECORD = "<13,2>";
+    public static final String SEVERITY_CRITICAL_RECORD = "<13,3>";
+    public static final String SEVERITY_DEAD_RECORD = "<13,4>";
 
-    public enum TimeUnit {
+    String _severity;
+
+    public enum  TimeUnit {
         SECOND, MINUTE
     }
+
+    boolean evacuationStatus;
 
 //region Constructor
     public Bracelet(String initialDataFromBT, String macAddress) {
@@ -26,6 +36,8 @@ public class Bracelet {
         _treatments = Collections.synchronizedMap(new LinkedHashMap<String, Treatment>());
         _absoluteBraceletStartTime = getArduinoStartTimeFromFirstData(initialDataFromBT);
         AddActionsToBracelet(initialDataFromBT);
+        evacuationStatus = false;
+        _severity = "";
     }
 //endregion Constructor
 
@@ -169,6 +181,37 @@ public class Bracelet {
             }
             return;
         }
+
+        //evacuation record type
+        if (getMessageType(mes).equals("4")) {
+            if (getMessageUID(mes).equals("0")) {
+                evacuationStatus = false;
+            }
+            if (getMessageUID(mes).equals("1")) {
+                evacuationStatus = true;
+            }
+            return;
+        }
+
+        //severity record type
+        if (getMessageType(mes).equals("13")) {
+            if (getMessageUID(mes).equals("0")) {
+                _severity = "Minor";
+            }
+            if (getMessageUID(mes).equals("1")) {
+                _severity = "Moderate";
+            }
+            if (getMessageUID(mes).equals("2")) {
+                _severity = "Severe";
+            }
+            if (getMessageUID(mes).equals("3")) {
+                _severity = "Critical";
+            }
+            if (getMessageUID(mes).equals("4")) {
+                _severity = "Dead";
+            }
+            return;
+        }
         //ignore all types another from treatment record
         if (!getMessageType(mes).equals("0") || (mes.contains("#") && !mes.contains("<"))
                 || !mes.contains(">")) {
@@ -219,6 +262,22 @@ public class Bracelet {
                 }
             }
         }
+    }
+
+    public void setEvacStatus(boolean val) {
+        evacuationStatus = val;
+    }
+
+    public boolean getEvacStatus() {
+        return evacuationStatus;
+    }
+
+    public void setSeverity(String level) {
+        _severity = level;
+    }
+
+    public String  getSeverity() {
+        return _severity;
     }
 
 //endregion public methods

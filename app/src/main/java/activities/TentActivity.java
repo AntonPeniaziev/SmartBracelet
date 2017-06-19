@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import logic.Bracelet;
 import tasks.CheckEvacuationTask;
 import tasks.LogoutTask;
 import tasks.MyCurrentLocationListener;
@@ -128,24 +129,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         logger = new Logger(this);
         logger.writeToLog("TentActivity OnCreate\n");
 
-        //lock = new ReentrantLock();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         _instance = this;
-
-        if(_helloDoctor){
-            _helloDoctor = false;
-            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage("Hello Doctor " + LoginActivity.doctorName + "!");
-            dlgAlert.setTitle("Smart Bracelet");
-            dlgAlert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-            dlgAlert.create().show();
-        }
 
         LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         locationListener = new MyCurrentLocationListener();
@@ -442,14 +428,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     /**
-     * get the Bluetooth service object
-     * @return
-     */
-    BTservice getBt(){
-        return _bTservice;
-    }
-
-    /**
      * function for the back pressed behavior
      * @param keyCode
      * @param event
@@ -588,26 +566,30 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter.disableForegroundDispatch(activity);
     }
 
-    public static void updateAllBraceletsWithLocation(double latitude, double longitude) {
-        _bTservice.broadcastToAll("<10," + latitude + ">");
-        _bTservice.broadcastToAll("<11," + longitude + ">");
-    }
-
-    static public void editPatientEvacuation(boolean value, String patientID){
+    static public void editPatientEvacuation(boolean value, String patientID) {
         _tent.setUrgantEvacuation(patientID, value);
     }
 
-    static public boolean getPatientUrgantEvacuation(String patientID){
+    static public boolean getPatientUrgantEvacuation(String patientID) {
        return _tent.getUrgantEvacuation(patientID);
     }
 
-    static public void editPatientState(String value, String patientID){
+    static public void editPatientState(String value, String patientID) {
         _tent.setPatientState(patientID, value);
     }
 
-    static public String getPatientState(String patientID){
+    static public String getPatientState(String patientID) {
         return _tent.getPatientState(patientID);
     }
+
+    static public void sendRecordToBracelet(String mac, String data) {
+        _bTservice.addDataToBeSentByMac(mac, data);
+    }
+
+    static public void disconnectBracelet(String mac) {
+        _bTservice.disconnectByMac(mac);
+    }
+
 }
 
 

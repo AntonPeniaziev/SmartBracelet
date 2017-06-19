@@ -18,7 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import logic.Bracelet;
 import logic.Patient;
+import logic.Tent;
 import tasks.CallEvacuationTask;
 import com.android.SmartBracelet.R;
 import logic.Treatment;
@@ -38,7 +40,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _saveButton;
     Button _urgentButton;
     ImageButton _backButton;
-    PatientInfoActivity instance;
+    static PatientInfoActivity instance;
     long _evacuationLimitTime;
     static final long TIME_LIMIT = 30000;
     Button[] _stateButtons;
@@ -58,6 +60,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _listView = (ListView) findViewById(R.id.listView);
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _patientsAdapter.setDiseable=true;
+        _patientsAdapter.setMac(_patientMac);
         _listView.setAdapter(_patientsAdapter);
         _listView.setOnItemClickListener(this);
     }
@@ -120,10 +123,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                     _evacuationLimitTime = new Date().getTime();
                     changeUrgant();
+                    TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_SENT_RECORD);
                     TentActivity.editPatientEvacuation(true, _patientMac);
                     return;
                 } else{
-                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT){
+                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT) {
                         String message = "Cancel Evacuation?";
                         String title = "Smart Bracelet";
                         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
@@ -131,6 +135,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                                 String[] valAndMac = {String.valueOf(false), _patientMac};
                                 new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                                 returnUrgant();
+                                TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_CANCELED_RECORD);
                                 TentActivity.editPatientEvacuation(false, _patientMac);
                             }
                         };
@@ -182,9 +187,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
-    void loadState(String state){
+    void loadState(String state) {
         _currentState = state;
-        switch (state){
+        switch (state) {
             case "Minor": _stateButtons[0].setBackgroundColor(Color.BLACK);
                             break;
             case "Moderate": _stateButtons[1].setBackgroundColor(Color.BLACK);
@@ -196,6 +201,22 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
             case "Dead": _stateButtons[4].setBackgroundColor(Color.BLACK);
         }
     }
+
+    void sendStateToBracelet(String state) {
+
+        switch (state){
+            case "Minor": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MINOR_RECORD);
+                break;
+            case "Moderate": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MODERATE_RECORD);
+                break;
+            case "Severe": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_SEVERE_RECORD);
+                break;
+            case "Critical": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_CRITICAL_RECORD);
+                break;
+            case "Dead": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_DEAD_RECORD);
+        }
+    }
+
     void initStateButtons(){
         _stateButtons = new Button[NUMBER_OF_STATES];
         _stateButtons[0] = (Button) findViewById(R.id.minorMode);
@@ -231,6 +252,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         String state = stateButton.getText().toString();
                         TentActivity.editPatientState(state, _patientMac);
                         //TentActivity.updateToWeb = true;
+                        sendStateToBracelet(state);
                         loadState(state);
                         changePatientStateButton(state);
                         TentActivity.lock.lock();
@@ -326,7 +348,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
 
-    public PatientInfoActivity getInstance() {
+    static public PatientInfoActivity getInstance() {
         return instance;
     }
 
@@ -350,7 +372,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
                             String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
                             if(!result.equals("")){
-                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
+                                Toast.makeText(PatientInfoActivity.this, result, Toast.LENGTH_LONG).show();
                                 return;
                             }
                             _patientsAdapter.setDiseable=false;

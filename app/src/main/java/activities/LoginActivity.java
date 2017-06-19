@@ -27,9 +27,8 @@ public class LoginActivity extends AppCompatActivity {
     static EditText _passwordText;
     static Button _loginButton;
     String _errorMsg;
-    String _docID = "123";
     public static String doctorName = "";
-    public static String doctorNumber = "";
+    public static String doctorNumber = "0";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
@@ -140,8 +139,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     public void onLoginSuccess() {
         Intent tentIntent = new Intent(LoginActivity.this, TentActivity.class);
-        tentIntent.putExtra("DOC_ID", _docID);
-        TentActivity._helloDoctor = true;
+        tentIntent.putExtra("DOC_ID", doctorNumber);
         startActivity(tentIntent);
     }
 

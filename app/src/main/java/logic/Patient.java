@@ -67,17 +67,16 @@ public class Patient {
     public void updateTreatment(String treatmentUid, String newName) {
         _bracelet.updateTreatment(treatmentUid, newName);
     }
-    //endregion public methods
-    public void setUrgentEvacuation(boolean value){ _urgentEvacuation = value; }
 
-    public boolean is_urgentEvacuation() {
-        return _urgentEvacuation;
+    public void setUrgentEvacuation(boolean value){ _bracelet.setEvacStatus(value);}
+
+    public boolean getUrgentEvacuationState() {
+        return _bracelet.getEvacStatus();
     }
 
-    public boolean getUrgentEvacuationState(){ return _urgentEvacuation; }
+    public void setPatientState(String state) { _bracelet.setSeverity(state);}
 
-    public void setPatientState(String state) { _state = state;}
-
-    public String getPatientState() { return _state;}
+    public String getPatientState() { return _bracelet.getSeverity();}
+    //endregion public methods
 }
 

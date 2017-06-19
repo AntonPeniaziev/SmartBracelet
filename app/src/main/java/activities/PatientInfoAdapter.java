@@ -5,6 +5,7 @@ package activities;
  */
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -75,10 +77,15 @@ public class PatientInfoAdapter extends BaseAdapter {
         //EditText treatment = (EditText) vi.findViewById(R.id.treatment);
         TextView treatmentName = (TextView) vi.findViewById(R.id.treatment_name);
         TextView treatmentTime = (TextView) vi.findViewById(R.id.treatment_time);
+        Button removeTreatment = (Button) vi.findViewById(R.id.treatmentRemove);
         Typeface army_font = Typeface.createFromAsset(_context.getAssets(), "fonts/Assistant-Bold.ttf");
         //treatment.setTypeface(army_font);
         treatmentName.setTypeface(army_font);
         treatmentTime.setTypeface(army_font);
+        removeTreatment.setTypeface(army_font);
+
+        setOnclickRemoveTreatment(removeTreatment, _treatments.get(position));
+
         if (_treatments != null) {
             // treatment.setText(_treatments.get(position).getLastTime()+ " " + _treatments.get(position).getName()  + " " );
             treatmentTime.setText(_treatments.get(position).getLastTime() + " ");
@@ -129,6 +136,8 @@ public class PatientInfoAdapter extends BaseAdapter {
                 RelativeLayout layout1 = (RelativeLayout) views.get(i).findViewById(R.id.row);
                 layout1.setEnabled(false);
                 layout1.setClickable(false);
+                Button removeButton = (Button) views.get(i).findViewById(R.id.treatmentRemove);
+                removeButton.setFocusable(false);
                 //TextView treatmentName = (TextView) views.get(i).findViewById(R.id.treatment_name);
 //                treatmentName.setEnabled(true);
 //                treatmentName.setFocusable(true);
@@ -150,6 +159,8 @@ public class PatientInfoAdapter extends BaseAdapter {
                 RelativeLayout layout1 = (RelativeLayout) views.get(i).findViewById(R.id.row);
                 layout1.setEnabled(true);
                 layout1.setClickable(true);
+                Button removeButton = (Button) views.get(i).findViewById(R.id.treatmentRemove);
+                removeButton.setFocusable(true);
             }
         }
     }
@@ -157,6 +168,34 @@ public class PatientInfoAdapter extends BaseAdapter {
 
     public ArrayList<Treatment> getTreatments(){
         return _treatments;
+    }
+
+    void setOnclickRemoveTreatment(Button removeButton, final Treatment treatment){
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = "Delete treatment?";
+                String title = "Smart Bracelet";
+                DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        TentActivity.updateTreatment(_patientMac, treatment, null);
+                    }
+                };
+
+                DialogInterface.OnClickListener clickNo = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                };
+
+                android.support.v7.app.AlertDialog.Builder dlgAlert  = new android.support.v7.app.AlertDialog.Builder(PatientInfoActivity.getInstance());
+                dlgAlert.setMessage(message);
+                dlgAlert.setTitle(title);
+                dlgAlert.setPositiveButton("Yes",clickYes);
+                dlgAlert.setNegativeButton("No", clickNo);
+                dlgAlert.show();
+            }
+        });
     }
 
 

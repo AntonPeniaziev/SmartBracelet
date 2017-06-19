@@ -3,6 +3,7 @@ package activities;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import logic.Bracelet;
 import logic.Patient;
 import com.android.SmartBracelet.R;
 import logic.Treatment;
@@ -100,11 +102,6 @@ public class CustomAdapter extends BaseAdapter {
             }
         }
 
-
-
-
-
-
         return vi;
     }
 
@@ -116,7 +113,8 @@ public class CustomAdapter extends BaseAdapter {
                 Toast.makeText(currActivity,
                         "beep sent to " + patientBMac,
                         Toast.LENGTH_SHORT).show();
-                currActivity.getBt().addDataToBeSentByMac(patientBMac, "<6,0>");
+                currActivity.sendRecordToBracelet(patientBMac, Bracelet.BEEP_RECORD);
+
 
             }
         });
@@ -133,7 +131,7 @@ public class CustomAdapter extends BaseAdapter {
                 String title = "Bracelet " + itemAddress;
                 DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        TentActivity.getInstance().getBt().disconnectByMac(itemAddress);
+                        TentActivity.disconnectBracelet(itemAddress);
                     }
                 };
                 DialogInterface.OnClickListener clickNo =  new DialogInterface.OnClickListener() {
