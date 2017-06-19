@@ -48,7 +48,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     String _currentState;
 
 
-
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         Treatment item = _patientsAdapter.getItem(position);
@@ -75,7 +74,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
         text.setTypeface(army_font);
         text.setText(patientID);
-
     }
 
     /**
@@ -95,9 +93,15 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     return;
                 }
                 if(_saveButton.getText().equals("Save")){
-                    TentActivity.updateToWeb = true;
+                    //TentActivity.updateToWeb = true;
                     _saveButton.setText("Edit");
                     _patientsAdapter.setTextViewDisabled();
+                    TentActivity.lock.lock();
+                    try {
+                        TentActivity.updateToWeb = true;
+                    } finally {
+                        TentActivity.lock.unlock();
+                    }
                 }
             }
         });
@@ -150,13 +154,12 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         dlgAlert.show();
 
                         return;
+
                     }
 
                     _urgentButton.setEnabled(false);
                     _urgentButton.setClickable(false);
                 }
-
-
             }
         });
     }
@@ -247,11 +250,17 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                 DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         String state = stateButton.getText().toString();
-                        //TODO:: update web with the change
                         TentActivity.editPatientState(state, _patientMac);
+                        //TentActivity.updateToWeb = true;
                         sendStateToBracelet(state);
                         loadState(state);
                         changePatientStateButton(state);
+                        TentActivity.lock.lock();
+                        try {
+                            TentActivity.updateToWeb = true;
+                        } finally {
+                            TentActivity.lock.unlock();
+                        }
                     }
                 };
 
@@ -318,15 +327,12 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         runOnUI();
                     }
                 });
-
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
-
         }
     }
 
@@ -340,9 +346,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _patientsAdapter.setData(treatmentsArr);
         _patientsAdapter.notifyDataSetChanged();
     }
-
-
-
 
 
     static public PatientInfoActivity getInstance() {
@@ -403,7 +406,5 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _urgentButton.setText("Urgent Evacuation");
         _urgentButton.setTextColor(Color.WHITE);
     }
-
-
 
 }

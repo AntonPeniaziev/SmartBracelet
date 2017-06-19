@@ -104,5 +104,13 @@ public class Tent {
         }
         return false;
     }
+
+    public void setEvacTime(long timeInMillis, String mac) {
+        _patients.get(mac).setEvacTime(timeInMillis);
+    }
+
+    public boolean evacuationCancelTimedout(String mac) {
+        return  _patients.get(mac).evacuationCancelTimedout();
+    }
 //endregion public methods
 }

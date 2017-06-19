@@ -4,6 +4,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
+import activities.TentActivity;
+
 /**
  * MyCurrentLocationListener holds and manages the doctor's location
  */
@@ -38,6 +40,12 @@ public class MyCurrentLocationListener implements LocationListener {
             longitude = myLocation.getLongitude();
             Double[] coordinates = {latitude, longitude};
             new LocationTask().execute(coordinates);
+            TentActivity.lock.lock();
+            try {
+                TentActivity.updateToWeb = true;
+            } finally {
+                TentActivity.lock.unlock();
+            }
         }
 
     }

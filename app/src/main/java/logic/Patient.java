@@ -77,6 +77,14 @@ public class Patient {
     public void setPatientState(String state) { _bracelet.setSeverity(state);}
 
     public String getPatientState() { return _bracelet.getSeverity();}
+
+    public void setEvacTime(long timeInMillis) {
+        _bracelet.setEvacuationTime(timeInMillis);
+    }
+
+    public boolean evacuationCancelTimedout() {
+        return _bracelet.evacuationCancelTimedout();
+    }
     //endregion public methods
 }
 

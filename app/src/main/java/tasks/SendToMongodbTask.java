@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import activities.TentActivity;
 import logic.Patient;
 import logic.Treatment;
 import com.mongodb.BasicDBObject;
@@ -64,17 +65,20 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
                 treatList.add(treatDoc);
             }
 
-            document.put("bracelet_id", patient.getBtMac());
+            document.put("Bracelet_ID", patient.getBtMac());
             document.put("heart_rate", patient.getHeartRate());
             document.put("breathe_rate", patient.getBreatheRate());
             document.put("blood_pressure", patient.getBloodPressure());
             document.put("body_temp", patient.getBodyTemp());
             document.put("evacuation_request", String.valueOf(patient.getUrgentEvacuationState()));
-            document.put("doctor_name", LoginActivity.doctorName);
-            document.put("doctor_number", LoginActivity.doctorNumber);
+            document.put("Status", patient.getPatientState());
+            document.put("Dr_Name", LoginActivity.doctorName);
+            document.put("Dr_number", LoginActivity.doctorNumber);
+            document.put("Longitude", TentActivity.locationListener.getLongitude());
+            document.put("Latitude", TentActivity.locationListener.getLatitude());
             document.put("treatments", treatList);
 
-            Bson searchQuery = new Document("bracelet_id", patient.getBtMac());
+            Bson searchQuery = new Document("Bracelet_ID", patient.getBtMac());
             UpdateOptions upsertDoc = new UpdateOptions();
             upsertDoc.upsert(true);
 
