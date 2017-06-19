@@ -13,6 +13,7 @@ public class Bracelet {
     Map<String, Treatment> _treatments;
     TimeUnit _timeUnit = TimeUnit.MINUTE;
     long _absoluteBraceletStartTime = 0;
+    long _evacuationSentTime = 0;
     public static final String BEEP_RECORD = "<6,0>";
     public static final String EVAC_SENT_RECORD = "<4,1>";
     public static final String EVAC_CANCELED_RECORD = "<4,0>";
@@ -64,6 +65,13 @@ public class Bracelet {
         }
 
         return sdf.format(calendar.getTime());
+    }
+
+    private long getMessageRealTime(String mes) {
+        int messageTimeField = Integer.parseInt(getTimeField(mes));
+        long resultMinOrSec = _absoluteBraceletStartTime + messageTimeField;
+
+        return resultMinOrSec;
     }
 
     private String getTimeField(String mes) {
@@ -188,6 +196,7 @@ public class Bracelet {
                 evacuationStatus = false;
             }
             if (getMessageUID(mes).equals("1")) {
+                _evacuationSentTime = getMessageRealTime(mes);
                 evacuationStatus = true;
             }
             return;
@@ -278,6 +287,21 @@ public class Bracelet {
 
     public String  getSeverity() {
         return _severity;
+    }
+
+    public void setEvacuationTime (long timeInMillis) {
+        if (_timeUnit == TimeUnit.MINUTE) {
+            _evacuationSentTime = timeInMillis / (60 * 1000);
+        }
+        if (_timeUnit == TimeUnit.SECOND) {
+            _evacuationSentTime = timeInMillis / (1000);
+        }
+    }
+
+    public boolean evacuationCancelTimedout() {
+        int divider = _timeUnit == TimeUnit.MINUTE ? (60 * 1000) : 1000;
+        int trsh = _timeUnit == TimeUnit.MINUTE ? 1 : 60;
+        return System.currentTimeMillis() / divider - _evacuationSentTime > trsh;
     }
 
 //endregion public methods
