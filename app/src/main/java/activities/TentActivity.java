@@ -13,6 +13,7 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -34,6 +35,11 @@ import logic.Treatment;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import BTservice.BTservice;
 
 import static android.location.LocationManager.GPS_PROVIDER;
@@ -55,12 +61,13 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static final String MIME_TEXT_PLAIN = "text/plain";
     public static boolean updateToWeb = false;
     static final float minDistanceForGpsUpdate = 500;
-    static MyCurrentLocationListener locationListener;
+    public static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
     static public Logger logger;
     static Boolean _evacuationSent;
     static boolean _helloDoctor;
 
+    static public final Lock lock = new ReentrantLock();
 
     static public TentActivity getInstance(){
         return _instance;
@@ -78,7 +85,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _listView.setOnItemLongClickListener(this);
     }
 
-
     /**
      * Initiates the refresh Button located on the right top of the screen
      */
@@ -89,7 +95,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         setOnClickRefresh(_refreshButton);
         _refreshButton.setTypeface(army_font);
     }
-
 
     /**
      * Initiates the Log out Button located on the left top of the screen
@@ -103,7 +108,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _logoutButton.setTypeface(army_font);
     }
 
-
     /**
      * Initiates the Bluetooth service
      */
@@ -114,7 +118,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _bTservice.startBT();
     }
 
-
     /**
      * The main OnCreate function. Initiates all the views on the screen
      * and the services running in the background.
@@ -124,6 +127,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onCreate(Bundle savedInstanceState) {
         logger = new Logger(this);
         logger.writeToLog("TentActivity OnCreate\n");
+
+        //lock = new ReentrantLock();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
@@ -171,7 +176,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     /**
@@ -180,7 +184,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param view
      * @param position
      * @param l
-     *
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -283,7 +286,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
          * This method gets called, when a new Intent gets associated with the current activity instance.
          * Instead of creating a new activity, onNewIntent will be called. For more information have a look
          * at the documentation.
-         *
          * In our case this method gets called, when the user attaches a Tag to the device.
          */
         handleNFCIntent(intent);
@@ -362,11 +364,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
 
-//                if(updateToWeb) {
-//                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
-//                    updateToWeb = false;
-//                }
-
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -388,11 +385,9 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
 
                 CheckEvacuationTask evacuationTask = new CheckEvacuationTask(TentActivity.this);
                 evacuationTask.execute(_tent);
-
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -407,9 +402,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                     e.printStackTrace();
                 }
                 evacuationTask.cancel(true);
-                if(updateToWeb) {
-                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
-                    updateToWeb = false;
+                lock.lock();
+                try {
+                    if(updateToWeb) {
+                        new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+                        updateToWeb = false;
+                    }
+                } finally {
+                    lock.unlock();
                 }
             }
         }
@@ -465,7 +465,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         return super.onKeyDown(keyCode, event);
     }
-
 
     /**
      * when back pressed, shows a dialog alert

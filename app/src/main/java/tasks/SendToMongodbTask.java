@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import activities.TentActivity;
 import logic.Patient;
 import logic.Treatment;
 import com.mongodb.BasicDBObject;
@@ -70,8 +71,11 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             document.put("blood_pressure", patient.getBloodPressure());
             document.put("body_temp", patient.getBodyTemp());
             document.put("evacuation_request", String.valueOf(patient.is_urgentEvacuation()));
+            document.put("injury_stat", patient.getPatientState());
             document.put("doctor_name", LoginActivity.doctorName);
             document.put("doctor_number", LoginActivity.doctorNumber);
+            document.put("longitude", TentActivity.locationListener.getLongitude());
+            document.put("latitude", TentActivity.locationListener.getLatitude());
             document.put("treatments", treatList);
 
             Bson searchQuery = new Document("bracelet_id", patient.getBtMac());
