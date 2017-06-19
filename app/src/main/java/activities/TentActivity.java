@@ -590,6 +590,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _bTservice.disconnectByMac(mac);
     }
 
+    static public boolean getPatientConnectionStatus(String mac){return _bTservice.isConnectedToBtMac(mac);}
+
 }
 
 

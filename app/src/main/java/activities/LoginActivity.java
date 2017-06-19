@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         String message = "Authenticating...";
         progressDialog.setMessage(message);
         progressDialog.show();
+
         final Boolean valid = validate(progressDialog, message);
 
         new android.os.Handler().postDelayed(
