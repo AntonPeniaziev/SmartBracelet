@@ -37,17 +37,20 @@ public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
         try {
             Bson searchQuery = new BasicDBObject().append("number", LoginActivity.doctorNumber);
 
-            ArrayList<BasicDBObject> locationList = new ArrayList<>();
-            BasicDBObject locationDoc = new BasicDBObject();
+            //ArrayList<BasicDBObject> locationList = new ArrayList<>();
+            //BasicDBObject locationDoc = new BasicDBObject();
 
-            locationDoc.put("longitude", coordinates[0].toString());
-            locationDoc.put("latitude", coordinates[1].toString());
-            locationList.add(locationDoc);
+            //locationDoc.put("longitude", coordinates[0].toString());
+            //locationDoc.put("latitude", coordinates[1].toString());
+            //locationList.add(locationDoc);
 
-            Bson newValue = new BasicDBObject().append("location", locationList);
-            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
+            Bson newValue1 = new BasicDBObject().append("longitude", coordinates[0].toString());
+            Bson newValue2 = new BasicDBObject().append("latitude", coordinates[1].toString());
+            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
+            Bson updateOperationDocument2 = new BasicDBObject().append("$set", newValue2);
 
-            dbCollection.updateOne(searchQuery, updateOperationDocument);
+            dbCollection.updateOne(searchQuery, updateOperationDocument1);
+            dbCollection.updateOne(searchQuery, updateOperationDocument2);
 
             return true;
         } catch (MongoTimeoutException e) {
