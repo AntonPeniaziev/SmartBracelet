@@ -3,6 +3,7 @@ package tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import ArduinoParsingUtils.ArduinoParsingUtils;
 import activities.TentActivity;
 import logic.Bracelet;
 import logic.Tent;
@@ -52,7 +53,7 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
                 if (params[0].isContain(mac.toString())){
                     if (evac.toString().equals("true") && !params[0].getUrgantEvacuation(mac.toString())){
                         params[0].setUrgantEvacuation(mac.toString(), true);
-                        TentActivity.sendRecordToBracelet(mac.toString(), Bracelet.EVAC_SENT_RECORD);
+                        TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
                     }
                 }
                 if (isCancelled())

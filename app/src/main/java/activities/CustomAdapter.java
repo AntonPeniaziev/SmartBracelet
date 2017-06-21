@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ArduinoParsingUtils.ArduinoParsingUtils;
 import logic.Bracelet;
 import logic.Patient;
 import com.android.SmartBracelet.R;
@@ -113,7 +114,7 @@ public class CustomAdapter extends BaseAdapter {
 //                Toast.makeText(currActivity,
 //                        "beep sent to " + patientBMac,
 //                        Toast.LENGTH_SHORT).show();
-                currActivity.sendRecordToBracelet(patientBMac, Bracelet.BEEP_RECORD);
+                currActivity.sendRecordToBracelet(patientBMac, ArduinoParsingUtils.BEEP_RECORD);
 
 
             }

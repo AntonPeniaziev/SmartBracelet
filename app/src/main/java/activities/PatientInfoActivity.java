@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ArduinoParsingUtils.ArduinoParsingUtils;
 import logic.Bracelet;
 import logic.Patient;
 import logic.Tent;
@@ -121,7 +122,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                     TentActivity.setEvacTime(System.currentTimeMillis(), _patientMac);
                     changeUrgant();
-                    TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_SENT_RECORD);
+                    TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_SENT_RECORD);
                     TentActivity.editPatientEvacuation(true, _patientMac);
                     return;
                 } else{
@@ -133,7 +134,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                                 String[] valAndMac = {String.valueOf(false), _patientMac};
                                 new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                                 returnUrgant();
-                                TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_CANCELED_RECORD);
+                                TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_CANCELED_RECORD);
                                 TentActivity.editPatientEvacuation(false, _patientMac);
                             }
                         };
@@ -203,15 +204,15 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     void sendStateToBracelet(String state) {
 
         switch (state){
-            case "Minor": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MINOR_RECORD);
+            case "Minor": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_MINOR_RECORD);
                 break;
-            case "Moderate": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_MODERATE_RECORD);
+            case "Moderate": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_MODERATE_RECORD);
                 break;
-            case "Severe": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_SEVERE_RECORD);
+            case "Severe": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_SEVERE_RECORD);
                 break;
-            case "Critical": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_CRITICAL_RECORD);
+            case "Critical": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_CRITICAL_RECORD);
                 break;
-            case "Dead": TentActivity.sendRecordToBracelet(_patientMac, Bracelet.SEVERITY_DEAD_RECORD);
+            case "Dead": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_DEAD_RECORD);
         }
     }
 
