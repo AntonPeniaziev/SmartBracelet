@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import logic.Bracelet;
@@ -61,7 +62,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
     public static boolean updateToWeb = false;
-    static final float minDistanceForGpsUpdate = 500;
+    static final float minDistanceForGpsUpdate = 10;
     public static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
     static public Logger logger;
@@ -119,6 +120,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _bTservice.startBT();
     }
 
+    void initDoctorName(){
+        TextView doctorName = (TextView) findViewById(R.id.doctorName);
+        doctorName.setText("Dr." + LoginActivity.doctorName);
+    }
+
     /**
      * The main OnCreate function. Initiates all the views on the screen
      * and the services running in the background.
@@ -142,6 +148,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         initListOfBracelets();
         initRefreshButton();
         initLogOutButton();
+        initDoctorName();
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
@@ -149,6 +156,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _checkEvacuation.start();
         locationListener = new MyCurrentLocationListener();
         _evacuationSent = false;
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 

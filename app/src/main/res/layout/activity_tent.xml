@@ -60,6 +60,16 @@
             android:src="@drawable/main"
             android:scaleType="fitXY"/>
 
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="110dp"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:id="@+id/doctorName"/>
+
+
         <Button
             android:id="@+id/logOut"
             android:layout_width="100dp"
