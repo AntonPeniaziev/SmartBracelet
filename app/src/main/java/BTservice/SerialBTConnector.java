@@ -5,9 +5,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
 import android.widget.Toast;
-
-import activities.TentActivity;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,23 +12,22 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SerialBTConnector extends Thread {
+class SerialBTConnector extends Thread {
     private BluetoothSocket bluetoothSocket = null;
     private final BluetoothDevice bluetoothDevice;
-    private UUID myUUID;
-    private final String UUID_STRING_WELL_KNOWN_SPP = "00001101-0000-1000-8000-00805F9B34FB";
     private Handler _handler;
     private Context _context;
     private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
     private LinkedList<String> _onConnectionBroadcastList;
     private HashMap<String, ConnectionManager> _connectionThreadsByMac;
 
-    public SerialBTConnector(BluetoothDevice device, Context context,
-                             HashMap<String, ConnectionManager> connectionThreadsByMac,
-                             ConcurrentHashMap<String, List<String>> macTotData,
-                             LinkedList<String> onConnectionBroadcastList) {
+    SerialBTConnector(BluetoothDevice device, Context context,
+                      HashMap<String, ConnectionManager> connectionThreadsByMac,
+                      ConcurrentHashMap<String, List<String>> macTotData,
+                      LinkedList<String> onConnectionBroadcastList) {
         bluetoothDevice = device;
-        myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
+        String UUID_STRING_WELL_KNOWN_SPP = "00001101-0000-1000-8000-00805F9B34FB";
+        UUID myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
         try {
             bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
         } catch (IOException e) {
@@ -47,14 +43,13 @@ public class SerialBTConnector extends Thread {
 
     @Override
     public void run() {
-        boolean success = false;
+        boolean success;
         try {
             bluetoothSocket.connect();
             success = true;
         } catch (IOException e) {
             success = false;
             e.printStackTrace();
-            //TentActivity.logger.writeToLog("\nIOException97" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             final String eMessage = e.getMessage();
 
             runOnUiThread(new Runnable() {
@@ -94,13 +89,10 @@ public class SerialBTConnector extends Thread {
 
             startThreadConnected(bluetoothSocket, bluetoothDevice);
 
-        }else{
-            //fail
         }
     }
 
-    public void cancel() {
-
+    void cancel() {
         Toast.makeText(_context,
                 "close bluetoothSocket",
                 Toast.LENGTH_LONG).show();
@@ -108,9 +100,7 @@ public class SerialBTConnector extends Thread {
         try {
             bluetoothSocket.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            //TentActivity.logger.writeToLog("\nIOException152" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
 
     }

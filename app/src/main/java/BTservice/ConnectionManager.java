@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import activities.TentActivity;
 
-public class ConnectionManager extends Thread {
+class ConnectionManager extends Thread {
     private final BluetoothSocket connectedBluetoothSocket;
     private final InputStream connectedInputStream;
     private final OutputStream connectedOutputStream;
@@ -23,16 +23,16 @@ public class ConnectionManager extends Thread {
     private LinkedList<String> _onConnectionBroadcastList;
     private Context _context;
     private boolean breakLoop = false;
-    boolean receivedOldData = false;
+    private boolean receivedOldData = false;
     private Handler _handler;
     private static final int ANSWER_THRESHOLD = 1000;
     private long firstMessageTrTime;
     private String deviceAddr;
 
     //region constructor
-    public ConnectionManager(BluetoothSocket socket, BluetoothDevice btDevice,
-                             ConcurrentHashMap<String, List<String>> macTotData,
-                             Context context) {
+    ConnectionManager(BluetoothSocket socket, BluetoothDevice btDevice,
+                      ConcurrentHashMap<String, List<String>> macTotData,
+                      Context context) {
         connectedBluetoothSocket = socket;
         InputStream in = null;
         OutputStream out = null;
@@ -51,7 +51,6 @@ public class ConnectionManager extends Thread {
             Toast.makeText(_context,
                     "Connection trouble with " + device.getName(),
                     Toast.LENGTH_LONG).show();
-            //TentActivity.logger.writeToLog("\nIOException183" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
 
         connectedInputStream = in;
@@ -60,14 +59,12 @@ public class ConnectionManager extends Thread {
     //endregion constructor
     @Override
     public void run() {
-        //TentActivity.logger.writeToLog("\nbeginning thread con run. breakLoop = " + breakLoop + "recOld = " + receivedOldData);
         byte[] buffer = new byte[1024];
         int bytes;
         sendInitialData();
 
         while (true) {
-            if (receivedOldData == false && answerTimeout()) {
-                //TentActivity.logger.writeToLog("\nTIMEOUT!!!\n");
+            if (!receivedOldData && answerTimeout()) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -86,7 +83,6 @@ public class ConnectionManager extends Thread {
                 bytes = connectedInputStream.read(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
-                //TentActivity.logger.writeToLog("\nIOException212" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                 if (!breakLoop) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -102,21 +98,18 @@ public class ConnectionManager extends Thread {
             }
 
             final String strReceived = new String(buffer, 0, bytes);
-            //TentActivity.logger.writeToLog("\nstrReceived = " + strReceived + "|\n");
             handleBraceletMessage(strReceived);
 
         }
     }
     //region private
     private void handleBraceletMessage(String mes) {
-        if (((false == receivedOldData) && mes.contains("]")) ||
-                ((true == receivedOldData) && mes.contains(">"))) {
+        if (((!receivedOldData) && mes.contains("]")) ||
+                ((receivedOldData) && mes.contains(">"))) {
             sendAck();
             _receivedMessage += mes;
-            //TentActivity.logger.writeToLog("\nfinal message = " + _receivedMessage + "|\n");
             if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
                 _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
-                //TentActivity.logger.writeToLog("\nfinal message added to = " + deviceAddr + "|\n");
             }
             _receivedMessage = "";
             receivedOldData = true;
@@ -130,7 +123,6 @@ public class ConnectionManager extends Thread {
             connectedOutputStream.write(buffer);
         } catch (IOException e) {
             e.printStackTrace();
-            //TentActivity.logger.writeToLog("\nIOException251" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
     }
 
@@ -150,13 +142,11 @@ public class ConnectionManager extends Thread {
         for (String mes : _onConnectionBroadcastList) {
             writeString(mes);
             firstMessageTrTime = System.currentTimeMillis();
-            //TentActivity.logger.writeToLog("\nwriting start message = " + mes + "|\n");
         }
     }
     //endregion private
     //region public
-    public void cancel() {
-        //TentActivity.logger.writeToLog("\ncanceling thread = " + device.getAddress());
+    void cancel() {
         if (breakLoop) {
             return;
         }
@@ -166,20 +156,19 @@ public class ConnectionManager extends Thread {
             _macToReceivedBraceletData.remove(device.getAddress());
         } catch (IOException e) {
             e.printStackTrace();
-            //TentActivity.logger.writeToLog("\nIOException274" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
     }
 
-    public void addInitialDataToSend(String data) {
+    void addInitialDataToSend(String data) {
         _onConnectionBroadcastList.add(data);
     }
 
-    public void writeString(String str) {
+    void writeString(String str) {
         byte[] bytesToSend = str.getBytes();
         write(bytesToSend);
     }
 
-    public boolean isWorking() {
+    boolean isWorking() {
         return !breakLoop;
     }
     //endregion public

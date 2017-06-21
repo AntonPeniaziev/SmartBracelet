@@ -3,20 +3,16 @@ package BTservice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.widget.Toast;
-import activities.TentActivity;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BTservice implements BTserviceInterface {
@@ -26,9 +22,6 @@ public class BTservice implements BTserviceInterface {
     private LinkedList<String> _onConnectionBroadcastList;
     private HashMap<String, ConnectionManager> _connectionThreadsByMac;
     private Context _context;
-    private Handler _handler;
-    private UUID myUUID;
-    private final String UUID_STRING_WELL_KNOWN_SPP = "00001101-0000-1000-8000-00805F9B34FB";
     private SerialBTConnector _myThreadConnectBTdevice;
     private ArrayList<BluetoothDevice> _discoveredDevices;
 
@@ -50,9 +43,6 @@ public class BTservice implements BTserviceInterface {
         _supportedDeviceNames.put("11", "");
         _supportedDeviceNames.put("gun1", "");
 
-        myUUID = UUID.fromString(UUID_STRING_WELL_KNOWN_SPP);
-
-        _handler = new Handler(context.getMainLooper());
         _discoveredDevices = new ArrayList<>();
         _macToReceivedBraceletData = new ConcurrentHashMap<>();
         _connectionThreadsByMac = new HashMap<String, ConnectionManager>();
@@ -78,12 +68,7 @@ public class BTservice implements BTserviceInterface {
                             Toast.LENGTH_SHORT).show();
                 }
             }
-            else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-//                Toast.makeText(_context,
-//                        "Scanned devices number = " + _discoveredDevices.size(),
-//                        Toast.LENGTH_LONG).show();
-                //setup();
-            }
+            //can add else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
             else if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
                 try {
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -105,7 +90,7 @@ public class BTservice implements BTserviceInterface {
     private void cleanupNonWorkingThreads () {
         for (String mac : _connectionThreadsByMac.keySet()
                 ) {
-            if (_connectionThreadsByMac.get(mac).isWorking() == false) {
+            if (!_connectionThreadsByMac.get(mac).isWorking()) {
                 _connectionThreadsByMac.remove(mac);
             }
         }
@@ -131,8 +116,6 @@ public class BTservice implements BTserviceInterface {
     }
 
     public ConcurrentHashMap<String, List<String>> getMacToReceivedDataMap() {
-        //TentActivity.logger.writeToLog("\n#connected macs ,_macToReceivedBraceletData= " + _macToReceivedBraceletData.keySet().size());
-        //TentActivity.logger.writeToLog("\n#connected macs ,_connectionThreadsByMac= " + _connectionThreadsByMac.keySet().size());
         cleanupNonWorkingThreads();
         return _macToReceivedBraceletData;
     }
@@ -144,20 +127,12 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void addDataToBeSentByMac(String mac, String data) {
-        //TentActivity.logger.writeToLog("\nadding data" + data + "| + to be sent to " + mac + "\n");
         if (_connectionThreadsByMac.containsKey(mac)) {
             _connectionThreadsByMac.get(mac).writeString(data);
         }
     }
 
-    public void broadcastToAll(String data) {
-        for (String mac : _connectionThreadsByMac.keySet()) {
-            addDataToBeSentByMac(mac, data);
-        }
-    }
-
     public void addStartDataToSendToAll(String data) {
-        //TentActivity.logger.writeToLog("\nAdded _startMessage = " + data + "|\n");
         _onConnectionBroadcastList.add(data);
     }
 
@@ -186,9 +161,8 @@ public class BTservice implements BTserviceInterface {
             }
         }
     }
-    //TODO : change design!
-    public ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap() {
 
+    public ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap() {
         ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<>();
         for (BluetoothDevice device : _discoveredDevices) {
             map.put(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
