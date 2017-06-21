@@ -124,6 +124,12 @@ public class BTservice implements BTserviceInterface {
     public ConcurrentHashMap<String, List<String>> getMacToReceivedDataMap() {
         TentActivity.logger.writeToLog("\n#connected macs ,_macToReceivedBraceletData= " + _macToReceivedBraceletData.keySet().size());
         TentActivity.logger.writeToLog("\n#connected macs ,_connectionThreadsByMac= " + _connectionThreadsByMac.keySet().size());
+        for (String mac : _connectionThreadsByMac.keySet()
+             ) {
+            if (_connectionThreadsByMac.get(mac).isWorking() == false) {
+                _connectionThreadsByMac.remove(mac);
+            }
+        }
         return _macToReceivedBraceletData;
     }
 

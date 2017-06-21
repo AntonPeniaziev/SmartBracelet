@@ -168,5 +168,9 @@ public class ConnectionManager extends Thread {
         byte[] bytesToSend = str.getBytes();
         write(bytesToSend);
     }
+
+    public boolean isWorking() {
+        return !breakLoop;
+    }
     //endregion public
 }

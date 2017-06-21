@@ -41,8 +41,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _urgentButton;
     ImageButton _backButton;
     static PatientInfoActivity instance;
-    long _evacuationLimitTime;
-    static final long TIME_LIMIT = 30000;
     Button[] _stateButtons;
     static final int NUMBER_OF_STATES = 5;
     String _currentState;
@@ -121,13 +119,13 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                 if(_urgentButton.getText().equals("Urgent Evacuation")){
                     String[] valAndMac = {String.valueOf(true), _patientMac};
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
-                    _evacuationLimitTime = new Date().getTime();
+                    TentActivity.setEvacTime(System.currentTimeMillis(), _patientMac);
                     changeUrgant();
                     TentActivity.sendRecordToBracelet(_patientMac, Bracelet.EVAC_SENT_RECORD);
                     TentActivity.editPatientEvacuation(true, _patientMac);
                     return;
                 } else{
-                    if((new Date().getTime()) - _evacuationLimitTime <= TIME_LIMIT) {
+                    if(!TentActivity.evacuationCancelTimedout(_patientMac)) {
                         String message = "Cancel Evacuation?";
                         String title = "Smart Bracelet";
                         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {

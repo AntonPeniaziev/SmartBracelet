@@ -94,10 +94,15 @@ public class PatientInfoAdapter extends BaseAdapter {
         if(setDiseable){
             setTextViewDisabled();
         }
+
+
         return vi;
     }
 
     public void setData(ArrayList<Treatment> treatments) {
+        if(!TentActivity.getPatientConnectionStatus(_patientMac)){
+            PatientInfoActivity.getInstance().finish();
+        }
         this._treatments = treatments;
     }
 
