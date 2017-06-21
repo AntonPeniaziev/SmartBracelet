@@ -126,8 +126,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        logger = new Logger(this);
-        logger.writeToLog("TentActivity OnCreate\n");
+       // logger = new Logger(this);
+       // logger.writeToLog("TentActivity OnCreate\n");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
@@ -345,7 +345,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
+                //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
@@ -406,18 +406,18 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
-        TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
+        //TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
         if (data != null && data.size() > 0) {
-            TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
-            TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
+            //TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
+            //TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
             if (data.get(0).getTreatmentsArray().size() > 0) {
-                TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
+                //TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
             }
         }
 
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
-        TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
+        //TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**

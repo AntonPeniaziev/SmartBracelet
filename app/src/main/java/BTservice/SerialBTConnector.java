@@ -36,7 +36,7 @@ public class SerialBTConnector extends Thread {
             bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
         } catch (IOException e) {
             e.printStackTrace();
-            TentActivity.logger.writeToLog("\nIOException85" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException85" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
         _handler = new Handler(context.getMainLooper());
         _context = context;
@@ -52,8 +52,9 @@ public class SerialBTConnector extends Thread {
             bluetoothSocket.connect();
             success = true;
         } catch (IOException e) {
+            success = false;
             e.printStackTrace();
-            TentActivity.logger.writeToLog("\nIOException97" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException97" + e.getMessage() + "STACK = \n" + e.getStackTrace());
             final String eMessage = e.getMessage();
 
             runOnUiThread(new Runnable() {
@@ -69,7 +70,7 @@ public class SerialBTConnector extends Thread {
             try {
                 bluetoothSocket.close();
             } catch (IOException e1) {
-                TentActivity.logger.writeToLog("\nIOException114" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+                //TentActivity.logger.writeToLog("\nIOException114" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                 Toast.makeText(_context,
                         "Connection lost with " + bluetoothDevice.getName(),
                         Toast.LENGTH_LONG).show();
@@ -78,15 +79,15 @@ public class SerialBTConnector extends Thread {
 
         if(success){
             //connect successful
-            final String msgconnected = "connect successful:\n"
-                    + "BluetoothSocket: " + bluetoothSocket + "\n"
-                    + "BluetoothDevice: " + bluetoothDevice;
+            final String msgconnected = "Establishing connection:\n"
+                    + "Bluetooth: " + bluetoothDevice.getName() + "\n"
+                    + "MAC " + bluetoothDevice.getAddress();
 
             runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
-                    Toast.makeText(_context, msgconnected, Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context, msgconnected, Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -109,7 +110,7 @@ public class SerialBTConnector extends Thread {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            TentActivity.logger.writeToLog("\nIOException152" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException152" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
 
     }
@@ -125,7 +126,7 @@ public class SerialBTConnector extends Thread {
                 ) {
             _connectionThreadsByMac.get(device.getAddress()).addInitialDataToSend(dt);
         }
-        TentActivity.logger.writeToLog("\nStarting connection with " + device.getAddress() + "\n");
+        //TentActivity.logger.writeToLog("\nStarting connection with " + device.getAddress() + "\n");
         _connectionThreadsByMac.get(device.getAddress()).start();
     }
 }

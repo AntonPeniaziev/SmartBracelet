@@ -75,13 +75,13 @@ public class BTservice implements BTserviceInterface {
                     _discoveredDevices.add(device);
                     Toast.makeText(_context,
                             "Found supported device " + device.getName(),
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                 }
             }
             else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Toast.makeText(_context,
-                        "Scanned devices number = " + _discoveredDevices.size(),
-                        Toast.LENGTH_LONG).show();
+//                Toast.makeText(_context,
+//                        "Scanned devices number = " + _discoveredDevices.size(),
+//                        Toast.LENGTH_LONG).show();
                 //setup();
             }
             else if (action.equals(BluetoothDevice.ACTION_PAIRING_REQUEST)) {
@@ -101,6 +101,15 @@ public class BTservice implements BTserviceInterface {
             }
         }
     };
+
+    private void cleanupNonWorkingThreads () {
+        for (String mac : _connectionThreadsByMac.keySet()
+                ) {
+            if (_connectionThreadsByMac.get(mac).isWorking() == false) {
+                _connectionThreadsByMac.remove(mac);
+            }
+        }
+    }
 
 //endregion private internal
 
@@ -122,14 +131,9 @@ public class BTservice implements BTserviceInterface {
     }
 
     public ConcurrentHashMap<String, List<String>> getMacToReceivedDataMap() {
-        TentActivity.logger.writeToLog("\n#connected macs ,_macToReceivedBraceletData= " + _macToReceivedBraceletData.keySet().size());
-        TentActivity.logger.writeToLog("\n#connected macs ,_connectionThreadsByMac= " + _connectionThreadsByMac.keySet().size());
-        for (String mac : _connectionThreadsByMac.keySet()
-             ) {
-            if (_connectionThreadsByMac.get(mac).isWorking() == false) {
-                _connectionThreadsByMac.remove(mac);
-            }
-        }
+        //TentActivity.logger.writeToLog("\n#connected macs ,_macToReceivedBraceletData= " + _macToReceivedBraceletData.keySet().size());
+        //TentActivity.logger.writeToLog("\n#connected macs ,_connectionThreadsByMac= " + _connectionThreadsByMac.keySet().size());
+        cleanupNonWorkingThreads();
         return _macToReceivedBraceletData;
     }
 
@@ -140,7 +144,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void addDataToBeSentByMac(String mac, String data) {
-        TentActivity.logger.writeToLog("\nadding data" + data + "| + to be sent to " + mac + "\n");
+        //TentActivity.logger.writeToLog("\nadding data" + data + "| + to be sent to " + mac + "\n");
         if (_connectionThreadsByMac.containsKey(mac)) {
             _connectionThreadsByMac.get(mac).writeString(data);
         }
@@ -153,7 +157,7 @@ public class BTservice implements BTserviceInterface {
     }
 
     public void addStartDataToSendToAll(String data) {
-        TentActivity.logger.writeToLog("\nAdded _startMessage = " + data + "|\n");
+        //TentActivity.logger.writeToLog("\nAdded _startMessage = " + data + "|\n");
         _onConnectionBroadcastList.add(data);
     }
 

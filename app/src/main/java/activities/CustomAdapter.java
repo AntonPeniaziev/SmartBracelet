@@ -110,9 +110,9 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 String patientBMac = data.get(position).getBtMac().toString();
-                Toast.makeText(currActivity,
-                        "beep sent to " + patientBMac,
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(currActivity,
+//                        "beep sent to " + patientBMac,
+//                        Toast.LENGTH_SHORT).show();
                 currActivity.sendRecordToBracelet(patientBMac, Bracelet.BEEP_RECORD);
 
 

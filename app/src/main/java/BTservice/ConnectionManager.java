@@ -51,7 +51,7 @@ public class ConnectionManager extends Thread {
             Toast.makeText(_context,
                     "Connection trouble with " + device.getName(),
                     Toast.LENGTH_LONG).show();
-            TentActivity.logger.writeToLog("\nIOException183" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException183" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
 
         connectedInputStream = in;
@@ -60,14 +60,14 @@ public class ConnectionManager extends Thread {
     //endregion constructor
     @Override
     public void run() {
-        TentActivity.logger.writeToLog("\nbeginning thread con run. breakLoop = " + breakLoop + "recOld = " + receivedOldData);
+        //TentActivity.logger.writeToLog("\nbeginning thread con run. breakLoop = " + breakLoop + "recOld = " + receivedOldData);
         byte[] buffer = new byte[1024];
         int bytes;
         sendInitialData();
 
         while (true) {
             if (receivedOldData == false && answerTimeout()) {
-                TentActivity.logger.writeToLog("\nTIMEOUT!!!\n");
+                //TentActivity.logger.writeToLog("\nTIMEOUT!!!\n");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -86,13 +86,23 @@ public class ConnectionManager extends Thread {
                 bytes = connectedInputStream.read(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
-                TentActivity.logger.writeToLog("\nIOException212" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+                //TentActivity.logger.writeToLog("\nIOException212" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+                if (!breakLoop) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(_context,
+                                    "Lost connection with " + device.getAddress(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
                 cancel();
                 break;
             }
 
             final String strReceived = new String(buffer, 0, bytes);
-            TentActivity.logger.writeToLog("\nstrReceived = " + strReceived + "|\n");
+            //TentActivity.logger.writeToLog("\nstrReceived = " + strReceived + "|\n");
             handleBraceletMessage(strReceived);
 
         }
@@ -103,10 +113,10 @@ public class ConnectionManager extends Thread {
                 ((true == receivedOldData) && mes.contains(">"))) {
             sendAck();
             _receivedMessage += mes;
-            TentActivity.logger.writeToLog("\nfinal message = " + _receivedMessage + "|\n");
+            //TentActivity.logger.writeToLog("\nfinal message = " + _receivedMessage + "|\n");
             if (_macToReceivedBraceletData.containsKey(deviceAddr)) {
                 _macToReceivedBraceletData.get(deviceAddr).add(_receivedMessage);
-                TentActivity.logger.writeToLog("\nfinal message added to = " + deviceAddr + "|\n");
+                //TentActivity.logger.writeToLog("\nfinal message added to = " + deviceAddr + "|\n");
             }
             _receivedMessage = "";
             receivedOldData = true;
@@ -120,7 +130,7 @@ public class ConnectionManager extends Thread {
             connectedOutputStream.write(buffer);
         } catch (IOException e) {
             e.printStackTrace();
-            TentActivity.logger.writeToLog("\nIOException251" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException251" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
     }
 
@@ -140,13 +150,13 @@ public class ConnectionManager extends Thread {
         for (String mes : _onConnectionBroadcastList) {
             writeString(mes);
             firstMessageTrTime = System.currentTimeMillis();
-            TentActivity.logger.writeToLog("\nwriting start message = " + mes + "|\n");
+            //TentActivity.logger.writeToLog("\nwriting start message = " + mes + "|\n");
         }
     }
     //endregion private
     //region public
     public void cancel() {
-        TentActivity.logger.writeToLog("\ncanceling thread = " + device.getAddress());
+        //TentActivity.logger.writeToLog("\ncanceling thread = " + device.getAddress());
         if (breakLoop) {
             return;
         }
@@ -156,7 +166,7 @@ public class ConnectionManager extends Thread {
             _macToReceivedBraceletData.remove(device.getAddress());
         } catch (IOException e) {
             e.printStackTrace();
-            TentActivity.logger.writeToLog("\nIOException274" + e.getMessage() + "STACK = \n" + e.getStackTrace());
+            //TentActivity.logger.writeToLog("\nIOException274" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
     }
 
