@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     String _errorMsg;
     public static String doctorName = "";
     public static String doctorNumber = "0";
+    public static String doctorDivision = "";
 
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;

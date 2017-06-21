@@ -511,6 +511,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                }
         _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId, newTreatmentName));
         _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
+        if(newTreatmentName == null) {
+            lock.lock();
+            try {
+                updateToWeb = true;
+            } finally {
+                lock.unlock();
+            }
+        }
         return "";
     }
 

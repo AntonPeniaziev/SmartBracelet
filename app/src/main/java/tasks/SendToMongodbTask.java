@@ -74,6 +74,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             document.put("Status", patient.getPatientState());
             document.put("Dr_Name", LoginActivity.doctorName);
             document.put("Dr_number", LoginActivity.doctorNumber);
+            document.put("Division", LoginActivity.doctorDivision);
             document.put("Longitude", TentActivity.locationListener.getLongitude());
             document.put("Latitude", TentActivity.locationListener.getLatitude());
             document.put("treatments", treatList);

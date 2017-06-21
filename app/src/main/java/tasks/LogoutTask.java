@@ -56,6 +56,7 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
             LoginActivity.doctorName = "";
             LoginActivity.doctorNumber = "";
+            LoginActivity.doctorDivision = "";
 
             return true;
         } catch (MongoTimeoutException e) {
