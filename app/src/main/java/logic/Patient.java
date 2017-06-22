@@ -78,6 +78,8 @@ public class Patient {
 
     public String getPatientState() { return _bracelet.getSeverity();}
 
+    public String getPatientPersonalNumber() {return _bracelet.getPatientId();}
+
     public void setEvacTime(long timeInMillis) {
         _bracelet.setEvacuationTime(timeInMillis);
     }

@@ -92,7 +92,9 @@ public class CustomAdapter extends BaseAdapter {
                 bodyTemp.setVisibility(View.VISIBLE);
                 bloodPressure.setVisibility(View.VISIBLE);
 
-                text.setText("Bracelet: " + data.get(position).getBtMac());
+                text.setText("Bracelet: " + data.get(position).getBtMac() +
+                        ((data.get(position).getPatientPersonalNumber().equals("")) ? "" : "\nID: " +
+                        data.get(position).getPatientPersonalNumber()));
                 bodyTemp.setText(data.get(position).getBodyTemp());
                 bloodPressure.setText(data.get(position).getBloodPressure());
                 String treatInfo = "";

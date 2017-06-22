@@ -11,7 +11,7 @@ public class Bracelet {
     private TimeUnit _timeUnit = TimeUnit.MINUTE;
     private long _absoluteBraceletStartTime = 0;
     private long _evacuationSentTime = 0;
-
+    private String _id;
     private String _severity;
 
     public enum  TimeUnit {
@@ -24,6 +24,7 @@ public class Bracelet {
     public Bracelet(String initialDataFromBT, String macAddress) {
         evacuationStatus = false;
         _severity = "";
+        _id = "";
         _mac_address = macAddress;
         _treatments = Collections.synchronizedMap(new LinkedHashMap<String, Treatment>());
         _absoluteBraceletStartTime = ArduinoParsingUtils.getArduinoStartTimeFromFirstData(initialDataFromBT, _timeUnit);
@@ -84,11 +85,18 @@ public class Bracelet {
         }
     }
 
+    private void handlePatientId(String mes) {
+        if (ArduinoParsingUtils.isPatientIdRecord(mes)) {
+            _id = ArduinoParsingUtils.getMessageUID(mes);
+        }
+    }
+
     private void dispatchMessage(String mes) {
         handleTreatmentUpdate(mes);
         handleTreatmentDeletion(mes);
         handleEvacuation(mes);
         handleSeverityLevel(mes);
+        handlePatientId(mes);
     }
     // adds new Treatment instance to _treatments
     private void addTreatmentFromDiamond(String mes) {
@@ -155,6 +163,8 @@ public class Bracelet {
     public String  getSeverity() {
         return _severity;
     }
+
+    public String getPatientId() {return _id;}
 
     public void setEvacuationTime (long timeInMillis) {
         if (_timeUnit == TimeUnit.MINUTE) {

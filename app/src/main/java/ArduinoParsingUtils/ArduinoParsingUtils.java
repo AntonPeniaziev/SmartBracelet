@@ -188,6 +188,10 @@ public class ArduinoParsingUtils {
         return getMessageType(mes).equals("7");
     }
 
+    public static boolean isPatientIdRecord(String mes) {
+        return getMessageType(mes).equals("8");
+    }
+
     public static boolean isEvacuationRecord(String mes) {
         return getMessageType(mes).equals("4");
     }
