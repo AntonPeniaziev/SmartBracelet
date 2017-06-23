@@ -1,9 +1,13 @@
 package activities;
 
+import android.app.IntentService;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -34,6 +38,9 @@ public class LoginActivity extends AppCompatActivity {
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
     static public TreatmentsTable treatmentUidTranslator;
+    boolean _valid;
+    ProgressDialog _progressDialog;
+    boolean _updated;
 
     /**
      *  Function which initiating the Bluetooth Adapter
@@ -101,34 +108,42 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), "User Name is Empty", Toast.LENGTH_LONG).show();
             return;
         }
-
         _loginButton.setEnabled(false);
-
-        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
+        _progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.Base_Theme_AppCompat_Light_DarkActionBar);
-        progressDialog.setIndeterminate(true);
+        _progressDialog.setIndeterminate(true);
         final String message = "Authenticating...";
-        progressDialog.setMessage(message);
-        progressDialog.show();
-        final Boolean valid = validate(progressDialog, message);
+        _progressDialog.setMessage(message);
+        _progressDialog.show();
+        _updated = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                _valid = validate(_progressDialog, message);
+                _updated = true;
+                return;
+            }
+        }).start();
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        if (!valid) {
+                        while(!_updated){
+                        }
+                        _updated = false;
+                        if (!_valid) {
+                            _progressDialog.dismiss();
                             onLoginFailed();
                             //System.exit(0);
-                            progressDialog.dismiss();
                             return;
                         }
-                        progressDialog.dismiss();
+                        _progressDialog.dismiss();
                         onLoginSuccess();
-                        // onLoginFailed();
-
+                        return;
                     }
                 }, 3000);
-
 
     }
 
@@ -206,29 +221,53 @@ public class LoginActivity extends AppCompatActivity {
     }*/
 
 
+    boolean userNameAndPasswordAreValid(String username,String password,final ProgressDialog progressDialog,final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.setMessage(message + "\n" + "Checking Password...");
+                progressDialog.show();
+                return;
+            }
+        });
+
+
+        if (username.isEmpty()) {
+            _errorMsg = "Please enter a username";
+            return false;
+        }
+
+        if(password.isEmpty()){
+            _errorMsg = "Please enter a password";
+            return false;
+        }
+        //check that the password is not empty and its length above 4 characters
+        // and below 10 characters
+        if(password.length() < 4 || password.length() > 10) {
+            _errorMsg = "Please enter PASSWORD between 4 and 10 characters: numbers and letters";
+            return false;
+        }
+        return true;
+
+    }
+
     /**
      * @param username: the username connected to the password
      * @param password : the password needs to be checked
      * @return true if the password is legal one and according to the password in database
      */
-    boolean validatePassword(String username,String password,ProgressDialog progressDialog, String message) {
-        progressDialog.setMessage(message + "\n" + "Checking Password...");
-        progressDialog.show();
+    boolean validatePassword(String username,String password, final ProgressDialog progressDialog, final String message) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.setMessage(message + "\n" + "Connecting Web...");
+                progressDialog.show();
+                return;
+            }
+        });
         Boolean valid = true;
 
-        if (username.isEmpty()) {
-            _errorMsg = "Please enter a username";
-            valid = false;
-            return valid;
-        }
-        //check that the password is not empty and its length above 4 characters
-        // and below 10 characters
-        else if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-            _errorMsg = "Please enter PASSWORD between 4 and 10 characters: numbers and letters";
-            valid = false;
-        } else {
-            // check the correctness of the password in the database
-            _passwordText.setError(null);
             try {
                 String[] userAndPass = {username, password};
                 valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
@@ -244,7 +283,6 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-        }
         return valid;
     }
 
@@ -260,44 +298,33 @@ public class LoginActivity extends AppCompatActivity {
      * 6. password must be matched to the password connected to the username in the database in  web
      * @return
      */
-    public boolean validate(ProgressDialog progressDialog, String message) {
-        Boolean valid = true;
+    public boolean validate(final ProgressDialog progressDialog,final String message) {
+
         String username = _usernameText.getText().toString();
         String password = _passwordText.getText().toString();
 
         if(username.equals("master")){
-            progressDialog.setMessage(message + "\n" + "Master Pass...");
-            progressDialog.show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                        progressDialog.setMessage(message + "\n" + "Master Pass...");
+                        progressDialog.show();
+                        return;
+                }
+            });
             doctorName = "master";
             return true;
         }
 
-        if(username.equals("")){
-            progressDialog.setMessage(message + "\n" + "User Name is Empty...");
-            progressDialog.show();
+        if (!userNameAndPasswordAreValid(username, password, progressDialog, message)){
             return false;
         }
 
-        //valid = validateUserName(username, progressDialog, message);
-
-        /*if (!valid) {
-            _errorMsg = "Enter a valid USER or check your INTERNET connection";
-            return valid;
+        if(!validatePassword(username, password, progressDialog, message)){
+            return false;
         }
 
-        progressDialog.setMessage(message + "\n" + "Username Passed...");
-        progressDialog.show();*/
-        valid = validatePassword(username, password, progressDialog, message);
-
-        if (!valid) {
-            //_errorMsg = "Enter a valid PASSWORD or check your INTERNET connection";
-            return valid;
-        }
-
-
-        progressDialog.setMessage(message + "\n" + "Starting Scanning Bracelets...");
-        progressDialog.show();
-        return valid;
+        return true;
     }
 
     void runOnUI(final ProgressDialog progressDialog, String message){
