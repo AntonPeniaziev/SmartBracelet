@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText _usernameText;
     static EditText _passwordText;
     static Button _loginButton;
-    String _errorMsg;
+    static public String _errorMsg;
     public static String doctorName = "";
     public static String doctorNumber = "0";
     public static String doctorDivision = "";
@@ -38,9 +38,11 @@ public class LoginActivity extends AppCompatActivity {
     private final static int REQUEST_ENABLE_BT = 1;
     BluetoothAdapter bluetoothAdapter;
     static public TreatmentsTable treatmentUidTranslator;
-    boolean _valid;
-    ProgressDialog _progressDialog;
+    static public boolean _valid;
+    static public ProgressDialog _progressDialog;
     boolean _updated;
+    static private LoginActivity _instance;
+
 
     /**
      *  Function which initiating the Bluetooth Adapter
@@ -94,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                 login();
             }
         });
+        _instance = this;
     }
 
 
@@ -115,30 +118,36 @@ public class LoginActivity extends AppCompatActivity {
         final String message = "Authenticating...";
         _progressDialog.setMessage(message);
         _progressDialog.show();
-        _updated = false;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                _valid = validate(_progressDialog, message);
-                _updated = true;
-                return;
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Looper.prepare();
+//                _valid = validate(_progressDialog, message);
+//                _updated = true;
+//                return;
+//            }
+//        }).start();
 
-
+        _valid = validate(_progressDialog, message);
+        if(_valid && !username.equals("master")){
+            String userName = _usernameText.getText().toString();
+            String password = _passwordText.getText().toString();
+            validatePassword(userName, password, _progressDialog, message);
+            return;
+        }
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        while(!_updated){
-                        }
-                        _updated = false;
+//                        while(!_updated){
+//                        }
+//                        _updated = false;
                         if (!_valid) {
                             _progressDialog.dismiss();
                             onLoginFailed();
                             //System.exit(0);
                             return;
                         }
+
                         _progressDialog.dismiss();
                         onLoginSuccess();
                         return;
@@ -256,7 +265,7 @@ public class LoginActivity extends AppCompatActivity {
      * @param password : the password needs to be checked
      * @return true if the password is legal one and according to the password in database
      */
-    boolean validatePassword(String username,String password, final ProgressDialog progressDialog, final String message) {
+    void validatePassword(String username,String password, final ProgressDialog progressDialog, final String message) {
 
         runOnUiThread(new Runnable() {
             @Override
@@ -266,24 +275,11 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
         });
-        Boolean valid = true;
 
-            try {
+
                 String[] userAndPass = {username, password};
-                valid = new LoginTask(getBaseContext()).execute(userAndPass).get();
-                if (!valid) {
-                    _errorMsg = "Please enter a valid USER & PASSWORD or check your INTERNET connection";
-                    return valid;
-                }
-            } catch (InterruptedException e) {
-                Toast.makeText(getBaseContext(), "something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                Toast.makeText(getBaseContext(), "something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            }
+                 new LoginTask(getBaseContext()).execute(userAndPass);
 
-        return valid;
     }
 
 
@@ -320,14 +316,18 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
 
-        if(!validatePassword(username, password, progressDialog, message)){
-            return false;
-        }
+//        if(!validatePassword(username, password, progressDialog, message)){
+//            return false;
+//        }
 
         return true;
     }
 
     void runOnUI(final ProgressDialog progressDialog, String message){
 
+    }
+
+    static public LoginActivity getInstance(){
+        return _instance;
     }
 }

@@ -25,9 +25,12 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
 
     private Context mContext;
+    private boolean _value;
 
     public LoginTask(Context context) {
+
         mContext = context;
+        _value = true;
     }
 
     /**
@@ -47,19 +50,23 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
         try {
             if (doctor.length == 2) {
-                return checkUserAndPass(users, dbCollection, doctor);
+                _value = checkUserAndPass(users, dbCollection, doctor);
+                return _value;
             } else if (doctor.length == 1) {
                 //return checkUser(users, doctor[0]);
             }
         } catch (MongoTimeoutException e) {
             e.printStackTrace();
-            return false;
+            _value = false;
+            return _value;
         } catch (MongoSocketReadException e) {
             e.printStackTrace();
-            return false;
+            _value = false;
+            return _value;
         }
 
-        return false;
+        _value = false;
+        return _value;
     }
 
     /**
@@ -133,6 +140,20 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         }
         return false;
     }*/
+    @Override
+    public void onPostExecute(Boolean value){
+        super.onPostExecute(value);
+        if (!_value) {
+            LoginActivity._errorMsg = "Please enter a valid USER & PASSWORD or check your INTERNET connection";
+            LoginActivity._progressDialog.dismiss();
+            LoginActivity.getInstance().onLoginFailed();
+            //System.exit(0);
+            return;
+        }
 
+        LoginActivity._progressDialog.dismiss();
+        LoginActivity.getInstance().onLoginSuccess();
+        return;
+    }
 
 }
