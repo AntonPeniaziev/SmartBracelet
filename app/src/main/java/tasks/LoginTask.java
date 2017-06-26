@@ -112,6 +112,8 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         super.onPostExecute(value);
         if (!_value) {
             LoginActivity._errorMsg = "Please enter a valid USER & PASSWORD or check your INTERNET connection";
+            LoginActivity._loginButton.setEnabled(true);
+            LoginActivity._passwordText.setText("");
             LoginActivity._progressDialog.dismiss();
             LoginActivity.getInstance().onLoginFailed();
             //System.exit(0);

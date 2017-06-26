@@ -100,6 +100,9 @@ public class ArduinoParsingUtils {
     }
 
     public static String getTreatmentNameByNumber(String number) {
+        if (LoginActivity.treatmentUidTranslator == null) {
+            return "Unknown Name";
+        }
         Equipment equipment = LoginActivity.treatmentUidTranslator.getEquipment(number);
         if (null == equipment) {
             return "Unknown Name";

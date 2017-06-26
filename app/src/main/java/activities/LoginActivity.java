@@ -4,7 +4,9 @@ import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -12,9 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import tasks.LoginTask;
@@ -28,8 +33,8 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     EditText _usernameText;
-    static EditText _passwordText;
-    static Button _loginButton;
+    public static EditText _passwordText;
+    public static Button _loginButton;
     static public String _errorMsg;
     public static String doctorName = "";
     public static String doctorNumber = "0";
@@ -65,6 +70,35 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Function which initiates the text views: user name and password and their Font.
+     *
+     */
+    void initTextViews(){
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+        _usernameText = (EditText) findViewById(R.id.input_username);
+        _usernameText.setTypeface(army_font);
+        _passwordText = (EditText) findViewById(R.id.input_password);
+        _passwordText.setTypeface(army_font);
+
+    }
+
+    /**
+     * Function which initiates the login button and it's 'On click' behavior.
+     */
+    void initLoginButton(){
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+        _loginButton = (Button) findViewById(R.id.btn_login);
+        _loginButton.setTypeface(army_font);
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+    }
+
 
     /**
      * OnCreate function initiates the screen and all the views in it
@@ -73,30 +107,52 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_login);
         if(!initBluetooth()){
             return;
         }
-
-        setContentView(R.layout.activity_login);
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
-
-        _usernameText = (EditText) findViewById(R.id.input_username);
-        _passwordText = (EditText) findViewById(R.id.input_password);
-        _loginButton = (Button) findViewById(R.id.btn_login);
-        _usernameText.setTypeface(army_font);
-        _passwordText.setTypeface(army_font);
-        _loginButton.setTypeface(army_font);
+        initTextViews();
+        initLoginButton();
         _errorMsg="";
         treatmentUidTranslator = new TreatmentsTable(this);
-        _loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
         _instance = this;
+    }
+
+    /**
+     * Initiates the progressDialog after clicking on login button.
+     * @return the initial message of the progressDialog
+     */
+    String initiateProgressDialog(){
+        _progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.MyProgressDialogStyle);
+        String message = "Authenticating...";
+        _progressDialog.setMessage(message);
+        _progressDialog.setCancelable(false);
+        _progressDialog.setIndeterminate(true);
+        _progressDialog.show();
+        Window windowProgress = _progressDialog.getWindow();
+        windowProgress.setLayout(500, 200);
+        windowProgress.setGravity(Gravity.TOP);
+        windowProgress.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#262E1E")));
+        return message;
+    }
+
+    /**
+     * The post delay thread behavior:
+     * 1. if the login succeeded calls onLoginSuccess.
+     * 2. if the login failed calls onLoginFailed.
+     */
+    void runOnPostDelayed(){
+                        if (!_valid) {
+                            _progressDialog.dismiss();
+                            onLoginFailed();
+                            //System.exit(0);
+                            return;
+                        }
+
+                        _progressDialog.dismiss();
+                        onLoginSuccess();
+                        return;
     }
 
 
@@ -112,45 +168,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         _loginButton.setEnabled(false);
-        _progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.Base_Theme_AppCompat_Light_DarkActionBar);
-        _progressDialog.setIndeterminate(true);
-        final String message = "Authenticating...";
-        _progressDialog.setMessage(message);
-        _progressDialog.show();
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//                _valid = validate(_progressDialog, message);
-//                _updated = true;
-//                return;
-//            }
-//        }).start();
-
+        String message = initiateProgressDialog();
         _valid = validate(_progressDialog, message);
+
         if(_valid && !username.equals("master")){
-            String userName = _usernameText.getText().toString();
             String password = _passwordText.getText().toString();
-            validatePassword(userName, password, _progressDialog, message);
+            validatePassword(username, password, _progressDialog, message);
             return;
         }
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-//                        while(!_updated){
-//                        }
-//                        _updated = false;
-                        if (!_valid) {
-                            _progressDialog.dismiss();
-                            onLoginFailed();
-                            //System.exit(0);
-                            return;
-                        }
-
-                        _progressDialog.dismiss();
-                        onLoginSuccess();
-                        return;
+                        runOnPostDelayed();
                     }
                 }, 3000);
 
@@ -184,13 +213,14 @@ public class LoginActivity extends AppCompatActivity {
         _loginButton.setEnabled(true);
     }
 
+
     /**
      *
-     * @param username the username field to check
-     * @param password the password field to check
-     * @param progressDialog dialog to run
-     * @param message message to present on dialog
-     * @return check if username and password fields are not empty, and the length of the password
+     * @param username : the userName of the user
+     * @param password : the password of the user
+     * @param progressDialog : the progress dialog working on the UI thread
+     * @param message : the message will be shown in the progress dialog
+     * @return flag whhich indicates whether the userName and password are valid or not.
      */
     boolean userNameAndPasswordAreValid(String username,String password,final ProgressDialog progressDialog,final String message) {
         runOnUiThread(new Runnable() {
@@ -202,6 +232,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
         if (username.isEmpty()) {
             _errorMsg = "Please enter a username";
             return false;
@@ -211,11 +242,6 @@ public class LoginActivity extends AppCompatActivity {
             _errorMsg = "Please enter a password";
             return false;
         }
-
-        if (!username.matches("[a-zA-Z0-9]+") || username.length() <= 2) {
-            _errorMsg = "Please enter USERNAME between 3 and 10 characters: numbers and letters";
-            return false;
-        }
         //check that the password is not empty and its length above 4 characters
         // and below 10 characters
         if(password.length() < 4 || password.length() > 10) {
@@ -223,6 +249,7 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
         return true;
+
     }
 
     /**
@@ -281,16 +308,9 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
 
-//        if(!validatePassword(username, password, progressDialog, message)){
-//            return false;
-//        }
-
         return true;
     }
 
-    void runOnUI(final ProgressDialog progressDialog, String message){
-
-    }
 
     static public LoginActivity getInstance(){
         return _instance;
