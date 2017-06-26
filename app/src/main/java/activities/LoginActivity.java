@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -47,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     static public ProgressDialog _progressDialog;
     boolean _updated;
     static private LoginActivity _instance;
-
+    LoginTask _loginThread;
 
     /**
      *  Function which initiating the Bluetooth Adapter
@@ -127,8 +128,17 @@ public class LoginActivity extends AppCompatActivity {
                 R.style.MyProgressDialogStyle);
         String message = "Authenticating...";
         _progressDialog.setMessage(message);
-        _progressDialog.setCancelable(false);
         _progressDialog.setIndeterminate(true);
+        _progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                if(_loginThread != null) {
+                    _loginThread.cancel(true);
+                }
+                _loginButton.setEnabled(true);
+                _passwordText.setText("");
+            }
+        });
         _progressDialog.show();
         Window windowProgress = _progressDialog.getWindow();
         windowProgress.setLayout(500, 200);
@@ -270,7 +280,8 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 String[] userAndPass = {username, password};
-                 new LoginTask(getBaseContext()).execute(userAndPass);
+                _loginThread =  new LoginTask(getBaseContext());
+                _loginThread.execute(userAndPass);
 
     }
 
