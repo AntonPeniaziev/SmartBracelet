@@ -184,52 +184,14 @@ public class LoginActivity extends AppCompatActivity {
         _loginButton.setEnabled(true);
     }
 
-
     /**
      *
-     * @param username : the username needs to be checked
-     * @return true if the username is legal one and in the database
+     * @param username the username field to check
+     * @param password the password field to check
+     * @param progressDialog dialog to run
+     * @param message message to present on dialog
+     * @return check if username and password fields are not empty, and the length of the password
      */
-    /*boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
-        progressDialog.setMessage(message + "\n" + "Checking Username...");
-        progressDialog.show();
-        Boolean valid = true;
-
-        //check if the username is a string and its length above 2 characters
-        if (username.matches("[0-9]+")) {
-            _docID = username;
-        }
-        if (username.matches("[a-zA-Z0-9]+") && username.length() > 2) {
-           // _docID = username; //TODO separate ID from name (maybe we need ID only, Arduino team expects to get an integer)
-        } else {
-            _errorMsg = "Enter a valid username";
-            valid = false;
-            return valid;
-        }
-
-        // check if the username is not empty
-        if (username.isEmpty()) {
-            _errorMsg = "Enter a valid username";
-            valid = false;
-            return valid;
-        } else {
-            _usernameText.setError(null);
-            //check if the username exist in the database in web
-            try {
-                valid = new LoginTask(getBaseContext()).execute(username).get();
-
-            } catch (InterruptedException e) {
-                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            }
-        }
-        return valid;
-    }*/
-
-
     boolean userNameAndPasswordAreValid(String username,String password,final ProgressDialog progressDialog,final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -240,7 +202,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
         if (username.isEmpty()) {
             _errorMsg = "Please enter a username";
             return false;
@@ -250,6 +211,11 @@ public class LoginActivity extends AppCompatActivity {
             _errorMsg = "Please enter a password";
             return false;
         }
+
+        if (!username.matches("[a-zA-Z0-9]+") || username.length() <= 2) {
+            _errorMsg = "Please enter USERNAME between 3 and 10 characters: numbers and letters";
+            return false;
+        }
         //check that the password is not empty and its length above 4 characters
         // and below 10 characters
         if(password.length() < 4 || password.length() > 10) {
@@ -257,7 +223,6 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
         return true;
-
     }
 
     /**
