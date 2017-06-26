@@ -614,6 +614,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         return  _tent.evacuationCancelTimedout(mac);
     }
 
+    static public String getPatientPersonalNumber(String patientMac){
+        return _tent.getPatientPersonalNumberByMac(patientMac);
+    }
+
 }
 
 

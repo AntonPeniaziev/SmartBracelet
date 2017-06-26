@@ -90,7 +90,7 @@
 
     <LinearLayout
         android:id="@+id/logo"
-        android:layout_width="120dp"
+        android:layout_width="70dp"
         android:layout_height="76dp"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
@@ -110,6 +110,29 @@
             android:src="@drawable/main" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/idBracelet"
+        android:layout_width="140dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:background="#262E1D"
+        android:paddingTop="45dp"
+        android:scrollbars="vertical" >
+
+        <TextView
+            android:id="@+id/PatientID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#262E1D"
+            android:gravity="left"
+            android:layout_gravity="center"
+            android:textColor="#FFFFFF"
+            android:paddingLeft="5dp"
+            android:textSize="20dp" />
+</LinearLayout>
 
         <LinearLayout
                 android:id="@+id/backButton"

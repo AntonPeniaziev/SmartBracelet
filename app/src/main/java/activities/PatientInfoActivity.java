@@ -304,6 +304,10 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         }
 
         initStateButtons();
+        TextView idOfPatient = (TextView) findViewById(R.id.PatientID);
+        idOfPatient.setText("ID: " + TentActivity.getPatientPersonalNumber(_patientMac));
+        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
+        idOfPatient.setTypeface(army_font);
 
     }
 
