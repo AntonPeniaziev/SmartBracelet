@@ -48,6 +48,9 @@ public class TreatmentsTable {
      * @return Equipment
      */
     public Equipment getEquipment(Object key) {
+        if (codeToEquipmentTable == null) {
+            return null;
+        }
         return codeToEquipmentTable.get(key);
     }
 
