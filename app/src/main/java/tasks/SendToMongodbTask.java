@@ -32,8 +32,25 @@ import activities.LoginActivity;
 
 public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Boolean> {
 
-    static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
-    static final String webUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+    private static final String collectionName = "soldiers";
+    private static final String idTitle = "Bracelet_ID";
+    private static final String evacTitle = "evacuation_request";
+    private static final String StatusTitle = "Status";
+    private static final String heartRateTitle = "heart_rate";
+    private static final String breatheRateTitle = "breathe_rate";
+    private static final String bloodPressureTitle = "blood_pressure";
+    private static final String bodyTempTitle = "body_temp";
+    private static final String DrNameTitle = "Dr_Name";
+    private static final String DrNumberTitle = "Dr_number";
+    private static final String divisionTitle = "Division";
+    private static final String longitudeTitle = "Longitude";
+    private static final String latitudeTitle = "Latitude";
+    private static final String treatmentsTitle = "treatments";
+
+    private static final String UidTitle = "Uid";
+    private static final String typeTitle = "type";
+    private static final String timeTitle = "time";
 
     private Context mContext;
     public SendToMongodbTask(Context context) {
@@ -50,42 +67,47 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
         MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
+        boolean result = true;
 
         for (Patient patient : patients[0]) {
-            BasicDBObject document = new BasicDBObject();
+            //BasicDBObject document = new BasicDBObject();
             ArrayList<BasicDBObject> treatList = new ArrayList<>();
 
             for (Treatment obj : patient.getTreatmentsArray()) {
                 BasicDBObject treatDoc = new BasicDBObject();
-                treatDoc.put("Uid", obj.getName());
-                treatDoc.put("type", obj.getType());
-                treatDoc.put("time", obj.getLastTime());
-
+                treatDoc.put(UidTitle, obj.getName());
+                treatDoc.put(typeTitle, obj.getType());
+                treatDoc.put(timeTitle, obj.getLastTime());
                 treatList.add(treatDoc);
             }
 
-            document.put("Bracelet_ID", patient.getBtMac());
-            document.put("heart_rate", patient.getHeartRate());
-            document.put("breathe_rate", patient.getBreatheRate());
-            document.put("blood_pressure", patient.getBloodPressure());
-            document.put("body_temp", patient.getBodyTemp());
-            document.put("evacuation_request", String.valueOf(patient.getUrgentEvacuationState()));
-            document.put("Status", patient.getPatientState());
-            document.put("Dr_Name", LoginActivity.doctorName);
-            document.put("Dr_number", LoginActivity.doctorNumber);
-            document.put("Division", LoginActivity.doctorDivision);
-            document.put("Longitude", TentActivity.locationListener.getLongitude());
-            document.put("Latitude", TentActivity.locationListener.getLatitude());
-            document.put("treatments", treatList);
+            result = insertToDocAndUpdate(dbCollection, patient, treatList);
+            if (!result)
+                return false;
+            if (isCancelled())
+                return true;
+            /*document.put(idTitle, patient.getBtMac());
+            document.put(heartRateTitle, patient.getHeartRate());
+            document.put(breatheRateTitle, patient.getBreatheRate());
+            document.put(bloodPressureTitle, patient.getBloodPressure());
+            document.put(bodyTempTitle, patient.getBodyTemp());
+            document.put(evacTitle, String.valueOf(patient.getUrgentEvacuationState()));
+            document.put(StatusTitle, patient.getPatientState());
+            document.put(DrNameTitle, LoginActivity.doctorName);
+            document.put(DrNumberTitle, LoginActivity.doctorNumber);
+            document.put(divisionTitle, LoginActivity.doctorDivision);
+            document.put(longitudeTitle, TentActivity.locationListener.getLongitude());
+            document.put(latitudeTitle, TentActivity.locationListener.getLatitude());
+            document.put(treatmentsTitle, treatList);
 
-            Bson searchQuery = new Document("Bracelet_ID", patient.getBtMac());
+            Bson searchQuery = new Document(idTitle, patient.getBtMac());
             UpdateOptions upsertDoc = new UpdateOptions();
             upsertDoc.upsert(true);
 
             try {
                 dbCollection.replaceOne(searchQuery, document, upsertDoc);
-                postToWeb();
+                PostToWeb.postToWeb();
                 if (isCancelled())
                     return true;
             } catch (MongoTimeoutException e) {
@@ -100,10 +122,10 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             } catch (MongoSecurityException e) {
                 e.printStackTrace();
                 return false;
-            }
+            }*/
         }
-
-        return true;
+        PostToWeb.postToWeb();
+        return result;
     }
 
     /**
@@ -113,7 +135,6 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         int time = 5;
-        BufferedReader reader=null;
         if (!aBoolean) {
             while (time > 0) {
                 Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
@@ -123,14 +144,57 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
     }
 
     @Override
-    protected void onCancelled(){
+    protected void onCancelled(){}
 
+    /**
+     * updates the web a collection with the details of given patient
+     * @param collection a collection to update
+     * @param patient the patient to update his treatments
+     * @param treatList treatment list of the given patient
+     * @return boolean for success
+     */
+    private Boolean insertToDocAndUpdate(MongoCollection<BasicDBObject> collection, Patient patient, ArrayList<BasicDBObject> treatList) {
+        BasicDBObject document = new BasicDBObject();
+        document.put(idTitle, patient.getBtMac());
+        document.put(heartRateTitle, patient.getHeartRate());
+        document.put(breatheRateTitle, patient.getBreatheRate());
+        document.put(bloodPressureTitle, patient.getBloodPressure());
+        document.put(bodyTempTitle, patient.getBodyTemp());
+        document.put(evacTitle, String.valueOf(patient.getUrgentEvacuationState()));
+        document.put(StatusTitle, patient.getPatientState());
+        document.put(DrNameTitle, LoginActivity.doctorName);
+        document.put(DrNumberTitle, LoginActivity.doctorNumber);
+        document.put(divisionTitle, LoginActivity.doctorDivision);
+        document.put(longitudeTitle, TentActivity.locationListener.getLongitude());
+        document.put(latitudeTitle, TentActivity.locationListener.getLatitude());
+        document.put(treatmentsTitle, treatList);
+
+        Bson searchQuery = new Document(idTitle, patient.getBtMac());
+        UpdateOptions upsertDoc = new UpdateOptions();
+        upsertDoc.upsert(true);
+
+        try {
+            collection.replaceOne(searchQuery, document, upsertDoc);
+        } catch (MongoTimeoutException e) {
+            e.printStackTrace();
+            return false;
+        } catch (MongoSocketReadException e) {
+            e.printStackTrace();
+            return false;
+        } catch (MongoSocketOpenException e) {
+            e.printStackTrace();
+            return false;
+        } catch (MongoSecurityException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     /**
      * doing http POST to refresh the website for out changes
      */
-    protected void postToWeb() {
+    /*protected void postToWeb() {
         HttpURLConnection client = null;
         try {
             // Defined URL  where to send data
@@ -163,7 +227,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
             }
             catch(Exception ex) {}
         }
-    }
+    }*/
 }
 
 

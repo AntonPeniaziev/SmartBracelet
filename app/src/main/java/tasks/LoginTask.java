@@ -23,12 +23,19 @@ import activities.LoginActivity;
 public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+    private static final String collectionName = "users";
+    private static final String numberTitle = "number";
+    private static final String nameTitle = "name";
+    private static final String divisionTitle = "division";
+    private static final String statusTitle = "status";
+    private static final String userTitle = "user";
+    private static final String passwordTitle = "password";
+    private static final String connectedValue = "connected";
 
     private Context mContext;
-    private boolean _value;
+    private boolean _value = false;
 
     public LoginTask(Context context) {
-
         mContext = context;
         _value = true;
     }
@@ -40,22 +47,18 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
      */
     @Override
     protected Boolean doInBackground(String... doctor) {
-
         MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
         FindIterable<BasicDBObject> users = dbCollection.find();
-
-        try {
-            if (doctor.length == 2) {
-                _value = checkUserAndPass(users, dbCollection, doctor);
-                return _value;
-            } else if (doctor.length == 1) {
-                //return checkUser(users, doctor[0]);
-            }
-        } catch (MongoTimeoutException e) {
+        //try {
+        if (doctor.length == 2) {
+            _value = checkUserAndPass(users, dbCollection, doctor);
+            return _value;
+        }
+        /*} catch (MongoTimeoutException e) {
             e.printStackTrace();
             _value = false;
             return _value;
@@ -63,9 +66,9 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
             e.printStackTrace();
             _value = false;
             return _value;
-        }
+        }*/
 
-        _value = false;
+        //_value = false;
         return _value;
     }
 
@@ -79,41 +82,28 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
     private boolean checkUserAndPass(FindIterable<BasicDBObject> users, MongoCollection<BasicDBObject> collection, String... doctor) {
         try {
             for (BasicDBObject doc : users) {
-                Object user = doc.get("user");
-                Object passw = doc.get("password");
+                Object user = doc.get(userTitle);
+                Object passw = doc.get(passwordTitle);
                 if (user == null || passw == null)
                     continue;
 
                 if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
-                    String number = doc.get("number").toString();
-                    String name = doc.get("name").toString();
-                    String division = doc.get("division").toString();
+                    String name = doc.get(nameTitle).toString();
+                    String number = doc.get(numberTitle).toString();
+                    String division = doc.get(divisionTitle).toString();
 
-                    Bson searchQuery = new BasicDBObject().append("number", number);
-                    Bson newValue = new BasicDBObject().append("status", "connected");
+                    Bson searchQuery = new BasicDBObject().append(numberTitle, number);
+                    Bson newValue = new BasicDBObject().append(statusTitle, connectedValue);
                     Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
                     collection.updateOne(searchQuery, updateOperationDocument);
 
-                    LoginActivity.doctorName = name;
-                    LoginActivity.doctorNumber = number;
-                    LoginActivity.doctorDivision = division;
-
+                    updateLocalDoctorDetails(name, number, division);
                     return true;
                 }
             }
-        } catch (MongoTimeoutException e) {
+        } catch (MongoTimeoutException | MongoSocketReadException | MongoSocketOpenException | MongoSecurityException e) {
             e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
         }
-
         return false;
     }
 
@@ -132,7 +122,11 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
         LoginActivity._progressDialog.dismiss();
         LoginActivity.getInstance().onLoginSuccess();
-        return;
     }
 
+    private void updateLocalDoctorDetails(String name, String number, String division) {
+        LoginActivity.doctorName = name;
+        LoginActivity.doctorNumber = number;
+        LoginActivity.doctorDivision = division;
+    }
 }

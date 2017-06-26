@@ -19,10 +19,10 @@ class SerialBTConnector extends Thread {
     private Context _context;
     private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
     private LinkedList<String> _onConnectionBroadcastList;
-    private HashMap<String, ConnectionManager> _connectionThreadsByMac;
+    private ConcurrentHashMap<String, ConnectionManager> _connectionThreadsByMac;
 
     SerialBTConnector(BluetoothDevice device, Context context,
-                      HashMap<String, ConnectionManager> connectionThreadsByMac,
+                      ConcurrentHashMap<String, ConnectionManager> connectionThreadsByMac,
                       ConcurrentHashMap<String, List<String>> macTotData,
                       LinkedList<String> onConnectionBroadcastList) {
         bluetoothDevice = device;
