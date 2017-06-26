@@ -73,6 +73,7 @@ class ConnectionManager extends Thread {
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+                cancel();
                 break;
             }
             if (breakLoop) {
