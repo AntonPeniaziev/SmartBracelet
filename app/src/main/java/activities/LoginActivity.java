@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     static private LoginActivity _instance;
     LoginTask _loginThread;
 
+
     /**
      *  Function which initiating the Bluetooth Adapter
      * @return true if the bluetooth adapter initiated successfully, else false
@@ -108,10 +109,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
         if(!initBluetooth()){
             return;
         }
+        setContentView(R.layout.activity_login);
         initTextViews();
         initLoginButton();
         _errorMsg="";
