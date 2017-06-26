@@ -17,12 +17,10 @@ public class MyCurrentLocationListener implements LocationListener {
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-    public double getLatitude() {
-        return latitude;
-    }
+    public String getLatitude() { return String.valueOf(latitude); }
 
-    public double getLongitude() {
-        return longitude;
+    public String getLongitude() {
+        return String.valueOf(longitude);
     }
 
     /**

@@ -69,7 +69,7 @@ public class TreatmentsTable {
 
         private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
         private static final String collectionName = "equipment";
-        private static final String idTitle = "bracelet_id";
+        private static final String idTitle = "equipment_id";
         private static final String nameTitle = "name";
         private static final String typeTitle = "type";
 
