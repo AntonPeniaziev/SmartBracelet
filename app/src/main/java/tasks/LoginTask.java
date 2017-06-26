@@ -117,29 +117,6 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         return false;
     }
 
-    /*private boolean checkUser(FindIterable<BasicDBObject> users, String doctor) {
-        try {
-            for (BasicDBObject doc : users) {
-                Object user = doc.get("user");
-
-                if (doctor.equals(user.toString())) {
-                    return true;
-                }
-            }
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return false;
-    }*/
     @Override
     public void onPostExecute(Boolean value){
         super.onPostExecute(value);
