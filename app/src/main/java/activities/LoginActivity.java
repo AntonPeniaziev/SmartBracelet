@@ -65,6 +65,35 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Function which initiates the text views: user name and password and their Font.
+     *
+     */
+    void initTextViews(){
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+        _usernameText = (EditText) findViewById(R.id.input_username);
+        _usernameText.setTypeface(army_font);
+        _passwordText = (EditText) findViewById(R.id.input_password);
+        _passwordText.setTypeface(army_font);
+
+    }
+
+    /**
+     * Function which initiates the login button and it's 'On click' behavior.
+     */
+    void initLoginButton(){
+        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
+        _loginButton = (Button) findViewById(R.id.btn_login);
+        _loginButton.setTypeface(army_font);
+        _loginButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+    }
+
 
     /**
      * OnCreate function initiates the screen and all the views in it
@@ -73,30 +102,47 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if(!initBluetooth()){
             return;
         }
-
+        initTextViews();
+        initLoginButton();
         setContentView(R.layout.activity_login);
-        Typeface army_font = Typeface.createFromAsset(getAssets(),  "fonts/Assistant-Regular.ttf");
-
-        _usernameText = (EditText) findViewById(R.id.input_username);
-        _passwordText = (EditText) findViewById(R.id.input_password);
-        _loginButton = (Button) findViewById(R.id.btn_login);
-        _usernameText.setTypeface(army_font);
-        _passwordText.setTypeface(army_font);
-        _loginButton.setTypeface(army_font);
         _errorMsg="";
         treatmentUidTranslator = new TreatmentsTable(this);
-        _loginButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
         _instance = this;
+    }
+
+    /**
+     * Initiates the progressDialog after clicking on login button.
+     * @return the initial message of the progressDialog
+     */
+    String initiateProgressDialog(){
+        _progressDialog = new ProgressDialog(LoginActivity.this,
+                R.style.Base_Theme_AppCompat_Light_DarkActionBar);
+        _progressDialog.setIndeterminate(true);
+        String message = "Authenticating...";
+        _progressDialog.setMessage(message);
+        _progressDialog.show();
+        return message;
+    }
+
+    /**
+     * The post delay thread behavior:
+     * 1. if the login succeeded calls onLoginSuccess.
+     * 2. if the login failed calls onLoginFailed.
+     */
+    void runOnPostDelayed(){
+                        if (!_valid) {
+                            _progressDialog.dismiss();
+                            onLoginFailed();
+                            //System.exit(0);
+                            return;
+                        }
+
+                        _progressDialog.dismiss();
+                        onLoginSuccess();
+                        return;
     }
 
 
@@ -112,45 +158,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         _loginButton.setEnabled(false);
-        _progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.Base_Theme_AppCompat_Light_DarkActionBar);
-        _progressDialog.setIndeterminate(true);
-        final String message = "Authenticating...";
-        _progressDialog.setMessage(message);
-        _progressDialog.show();
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//                _valid = validate(_progressDialog, message);
-//                _updated = true;
-//                return;
-//            }
-//        }).start();
-
+        String message = initiateProgressDialog();
         _valid = validate(_progressDialog, message);
+
         if(_valid && !username.equals("master")){
-            String userName = _usernameText.getText().toString();
             String password = _passwordText.getText().toString();
-            validatePassword(userName, password, _progressDialog, message);
+            validatePassword(username, password, _progressDialog, message);
             return;
         }
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-//                        while(!_updated){
-//                        }
-//                        _updated = false;
-                        if (!_valid) {
-                            _progressDialog.dismiss();
-                            onLoginFailed();
-                            //System.exit(0);
-                            return;
-                        }
-
-                        _progressDialog.dismiss();
-                        onLoginSuccess();
-                        return;
+                        runOnPostDelayed();
                     }
                 }, 3000);
 
@@ -187,49 +206,12 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      *
-     * @param username : the username needs to be checked
-     * @return true if the username is legal one and in the database
+     * @param username : the userName of the user
+     * @param password : the password of the user
+     * @param progressDialog : the progress dialog working on the UI thread
+     * @param message : the message will be shown in the progress dialog
+     * @return flag whhich indicates whether the userName and password are valid or not.
      */
-    /*boolean validateUserName(String username, ProgressDialog progressDialog, String message) {
-        progressDialog.setMessage(message + "\n" + "Checking Username...");
-        progressDialog.show();
-        Boolean valid = true;
-
-        //check if the username is a string and its length above 2 characters
-        if (username.matches("[0-9]+")) {
-            _docID = username;
-        }
-        if (username.matches("[a-zA-Z0-9]+") && username.length() > 2) {
-           // _docID = username; //TODO separate ID from name (maybe we need ID only, Arduino team expects to get an integer)
-        } else {
-            _errorMsg = "Enter a valid username";
-            valid = false;
-            return valid;
-        }
-
-        // check if the username is not empty
-        if (username.isEmpty()) {
-            _errorMsg = "Enter a valid username";
-            valid = false;
-            return valid;
-        } else {
-            _usernameText.setError(null);
-            //check if the username exist in the database in web
-            try {
-                valid = new LoginTask(getBaseContext()).execute(username).get();
-
-            } catch (InterruptedException e) {
-                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                Toast.makeText(getBaseContext(), "Something is wrong. try again soon", Toast.LENGTH_LONG).show();
-                e.printStackTrace();
-            }
-        }
-        return valid;
-    }*/
-
-
     boolean userNameAndPasswordAreValid(String username,String password,final ProgressDialog progressDialog,final String message) {
         runOnUiThread(new Runnable() {
             @Override
@@ -316,16 +298,9 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
 
-//        if(!validatePassword(username, password, progressDialog, message)){
-//            return false;
-//        }
-
         return true;
     }
 
-    void runOnUI(final ProgressDialog progressDialog, String message){
-
-    }
 
     static public LoginActivity getInstance(){
         return _instance;
