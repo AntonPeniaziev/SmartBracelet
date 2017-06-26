@@ -4,7 +4,9 @@ import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.Nullable;
@@ -12,9 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import tasks.LoginTask;
@@ -119,11 +124,16 @@ public class LoginActivity extends AppCompatActivity {
      */
     String initiateProgressDialog(){
         _progressDialog = new ProgressDialog(LoginActivity.this,
-                android.R.attr.progressBarStyleSmall);
-        _progressDialog.setIndeterminate(true);
+                R.style.MyProgressDialogStyle);
         String message = "Authenticating...";
         _progressDialog.setMessage(message);
+        _progressDialog.setCancelable(false);
+        _progressDialog.setIndeterminate(true);
         _progressDialog.show();
+        Window windowProgress = _progressDialog.getWindow();
+        windowProgress.setLayout(500, 200);
+        windowProgress.setGravity(Gravity.TOP);
+        windowProgress.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#262E1E")));
         return message;
     }
 
