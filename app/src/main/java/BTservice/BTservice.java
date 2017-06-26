@@ -20,7 +20,7 @@ public class BTservice implements BTserviceInterface {
     private HashMap<String, String> _supportedDeviceNames;
     private ConcurrentHashMap<String, List<String>> _macToReceivedBraceletData;
     private LinkedList<String> _onConnectionBroadcastList;
-    private HashMap<String, ConnectionManager> _connectionThreadsByMac;
+    private ConcurrentHashMap<String, ConnectionManager> _connectionThreadsByMac;
     private Context _context;
     private SerialBTConnector _myThreadConnectBTdevice;
     private ArrayList<BluetoothDevice> _discoveredDevices;
@@ -45,7 +45,7 @@ public class BTservice implements BTserviceInterface {
 
         _discoveredDevices = new ArrayList<>();
         _macToReceivedBraceletData = new ConcurrentHashMap<>();
-        _connectionThreadsByMac = new HashMap<String, ConnectionManager>();
+        _connectionThreadsByMac = new ConcurrentHashMap<String, ConnectionManager>();
         _onConnectionBroadcastList = new LinkedList<>();
     }
 //endregion BTservice constructor

@@ -34,7 +34,7 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
     private static final String collectionName = "soldiers";
-    private static final String idTitle = "Bracelet_id";
+    private static final String idTitle = "Bracelet_ID";
     private static final String evacTitle = "evacuation_request";
     private static final String StatusTitle = "Status";
     private static final String heartRateTitle = "heart_rate";
