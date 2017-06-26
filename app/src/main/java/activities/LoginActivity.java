@@ -28,8 +28,8 @@ import java.util.concurrent.ExecutionException;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     EditText _usernameText;
-    static EditText _passwordText;
-    static Button _loginButton;
+    public static EditText _passwordText;
+    public static Button _loginButton;
     static public String _errorMsg;
     public static String doctorName = "";
     public static String doctorNumber = "0";
@@ -102,12 +102,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
         if(!initBluetooth()){
             return;
         }
         initTextViews();
         initLoginButton();
-        setContentView(R.layout.activity_login);
         _errorMsg="";
         treatmentUidTranslator = new TreatmentsTable(this);
         _instance = this;
@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     String initiateProgressDialog(){
         _progressDialog = new ProgressDialog(LoginActivity.this,
-                R.style.Base_Theme_AppCompat_Light_DarkActionBar);
+                android.R.attr.progressBarStyleSmall);
         _progressDialog.setIndeterminate(true);
         String message = "Authenticating...";
         _progressDialog.setMessage(message);
