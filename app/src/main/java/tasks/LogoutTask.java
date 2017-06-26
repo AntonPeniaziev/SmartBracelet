@@ -25,6 +25,10 @@ import activities.LoginActivity;
 public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+    private static final String collectionName = "users";
+    private static final String numberTitle = "number";
+    private static final String statusTitle = "status";
+    private static final String connectedValue = "not connected";
 
     Context mContext;
 
@@ -42,21 +46,19 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
         MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
         if (LoginActivity.doctorNumber.equals("") && LoginActivity.doctorName.equals(""))
             return true;
 
-        try {
-            Bson searchQuery = new BasicDBObject().append("number", LoginActivity.doctorNumber);
-            Bson newValue1 = new BasicDBObject().append("status", "not connected");
+        boolean result = updateNotConnected(dbCollection);
+        /*try {
+            Bson searchQuery = new BasicDBObject().append(numberTitle, LoginActivity.doctorNumber);
+            Bson newValue1 = new BasicDBObject().append(statusTitle, connectedValue);
             Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
 
             dbCollection.updateOne(searchQuery, updateOperationDocument1);
-
-            LoginActivity.doctorName = "";
-            LoginActivity.doctorNumber = "";
-            LoginActivity.doctorDivision = "";
+            emptyLocalDoctorDetails();
 
             return true;
         } catch (MongoTimeoutException e) {
@@ -70,8 +72,8 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
         } catch (MongoSecurityException e) {
             e.printStackTrace();
             return false;
-        }
-        return false;
+        }*/
+        return result;
     }
 
     /**
@@ -87,6 +89,28 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
                 time--;
             }
         }
+    }
+
+    protected Boolean updateNotConnected(MongoCollection<BasicDBObject> collection) {
+        try {
+            Bson searchQuery = new BasicDBObject().append(numberTitle, LoginActivity.doctorNumber);
+            Bson newValue1 = new BasicDBObject().append(statusTitle, connectedValue);
+            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
+
+            collection.updateOne(searchQuery, updateOperationDocument1);
+            emptyLocalDoctorDetails();
+
+            return true;
+        } catch (MongoSocketReadException | MongoSocketOpenException | MongoSecurityException | MongoTimeoutException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void emptyLocalDoctorDetails() {
+        LoginActivity.doctorName = "";
+        LoginActivity.doctorNumber = "";
+        LoginActivity.doctorDivision = "";
     }
 
 }

@@ -25,7 +25,9 @@ import java.net.URL;
 public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
-    private static final String webUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
+    private static final String collectionName = "soldiers";
+    private static final String idTitle = "bracelet_id";
+    private static final String evacTitle = "evacuation_request";
 
     private Context mContext;
     public CallEvacuationTask(Context context) {
@@ -41,9 +43,10 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
-        try {
+        boolean result = updateEvac(dbCollection, params[1], params[0]);
+        /*try {
             Bson searchQuery = new Document("bracelet_id", params[1]);
             Bson newValue = new BasicDBObject().append("evacuation_request", params[0]);
             Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
@@ -61,8 +64,8 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         } catch (MongoSecurityException e) {
             e.printStackTrace();
             return false;
-        }
-        return false;
+        }*/
+        return result;
     }
 
     /**
@@ -81,9 +84,30 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
     }
 
     /**
+     * updates the status of the evacuation for a given patient BTmac
+     * @param collection the DB collection where to update
+     * @param id BT mac of the patient
+     * @param status the new evacuation status
+     * @return boolean for success
+     */
+    protected Boolean updateEvac(MongoCollection<BasicDBObject> collection, String id, String status) {
+        try {
+            Bson searchQuery = new Document(idTitle, id);
+            Bson newValue = new BasicDBObject().append(evacTitle, status);
+            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
+            collection.updateOne(searchQuery, updateOperationDocument);
+            PostToWeb.postToWeb();
+            return true;
+        } catch (MongoTimeoutException | MongoSocketReadException | MongoSocketOpenException | MongoSecurityException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * doing http POST to refresh the website for out changes
      */
-    protected void postToWeb() {
+    /*protected void postToWeb() {
         HttpURLConnection client = null;
         try {
             // Defined URL  where to send data
@@ -101,11 +125,6 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
             printout.writeBytes(msg);
             printout.flush();
             printout.close();
-
-            String responseMsg = client.getResponseMessage();
-            int responseCode = client.getResponseCode();
-
-            //Log.e("Post: ", "response is " + Integer.toString(responseCode) + " " + responseMsg);
         }
         catch(Exception ex) {
 
@@ -116,5 +135,5 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
             }
             catch(Exception ex) {}
         }
-    }
+    }*/
 }

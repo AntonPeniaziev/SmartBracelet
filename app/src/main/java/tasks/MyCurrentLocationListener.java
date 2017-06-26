@@ -50,24 +50,17 @@ public class MyCurrentLocationListener implements LocationListener {
 
     }
 
-    public void onStatusChanged(String s, int i, Bundle bundle) {}
-
-    public void onProviderEnabled(String s) {}
-
-    public void onProviderDisabled(String s) {}
-
     /**
-     *
-     * @param location
-     * @param currentBestLocation
-     * @return
+     * checks if the new location is more accurate than the current location
+     * @param location current location
+     * @param currentBestLocation the new location to check
+     * @return boolean for if the new location is better
      */
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+    private boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
             // A new location is always better than no location
             return true;
         }
-
         // Check whether the new location fix is newer or older
         long timeDelta = location.getTime() - currentBestLocation.getTime();
         boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
@@ -111,4 +104,10 @@ public class MyCurrentLocationListener implements LocationListener {
         }
         return provider1.equals(provider2);
     }
+
+    public void onStatusChanged(String s, int i, Bundle bundle) {}
+
+    public void onProviderEnabled(String s) {}
+
+    public void onProviderDisabled(String s) {}
 }
