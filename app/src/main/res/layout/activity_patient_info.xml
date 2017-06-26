@@ -98,7 +98,8 @@
         android:layout_gravity="left"
         android:scrollbars="vertical"
         android:paddingTop="39dp"
-        android:layout_weight="0.28">
+        android:layout_weight="0.28"
+        android:paddingLeft="20dp">
 
         <ImageView
             android:id="@+id/imageView2"
