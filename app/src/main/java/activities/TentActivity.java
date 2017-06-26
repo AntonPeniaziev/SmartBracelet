@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package activities;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -7,16 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.MediaScannerConnection;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Parcelable;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,37 +22,52 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import logic.Bracelet;
+import tasks.CheckEvacuationTask;
+import tasks.LogoutTask;
+import tasks.MyCurrentLocationListener;
+import logic.Patient;
+import com.android.SmartBracelet.R;
+import tasks.SendToMongodbTask;
+import logic.Tent;
+import logic.Treatment;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import BTservice.BTservice;
 
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
 import Logger.Logger;
+
+
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
     static private Tent _tent;
     UpdateData _updateData;
+    CheckEvacuation _checkEvacuation;
     CustomAdapter _adapter;
     ListView _listView;
     Button _refreshButton, _logoutButton;
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
-    static boolean updateToWeb = false;
-    static final float minDistanceForGpsUpdate = 500;
-    static MyCurrentLocationListener locationListener;
+    public static boolean updateToWeb = false;
+    static final float minDistanceForGpsUpdate = 10;
+    public static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
     static public Logger logger;
     static Boolean _evacuationSent;
+    static boolean _helloDoctor;
 
+    static public final Lock lock = new ReentrantLock();
 
     static public TentActivity getInstance(){
         return _instance;
@@ -73,7 +85,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _listView.setOnItemLongClickListener(this);
     }
 
-
     /**
      * Initiates the refresh Button located on the right top of the screen
      */
@@ -84,7 +95,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         setOnClickRefresh(_refreshButton);
         _refreshButton.setTypeface(army_font);
     }
-
 
     /**
      * Initiates the Log out Button located on the left top of the screen
@@ -98,7 +108,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _logoutButton.setTypeface(army_font);
     }
 
-
     /**
      * Initiates the Bluetooth service
      */
@@ -109,6 +118,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         _bTservice.startBT();
     }
 
+    void initDoctorName(){
+        TextView doctorName = (TextView) findViewById(R.id.doctorName);
+        doctorName.setText("Dr." + LoginActivity.doctorName);
+    }
 
     /**
      * The main OnCreate function. Initiates all the views on the screen
@@ -117,21 +130,31 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        logger = new Logger(this);
-        logger.writeToLog("TentActivity OnCreate\n");
+       // logger = new Logger(this);
+       // logger.writeToLog("TentActivity OnCreate\n");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         _instance = this;
-        initListOfBracelets();
+
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyCurrentLocationListener();
+        locationManager.requestLocationUpdates(GPS_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener)locationListener);
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, 0, minDistanceForGpsUpdate, (LocationListener) locationListener);
+
         initBTService();
+        initListOfBracelets();
         initRefreshButton();
         initLogOutButton();
+        initDoctorName();
         _tent = new Tent();
         _updateData = new UpdateData();
         _updateData.start();
+        _checkEvacuation = new CheckEvacuation();
+        _checkEvacuation.start();
         locationListener = new MyCurrentLocationListener();
         _evacuationSent = false;
+
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -145,7 +168,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "Please enable NFC", Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     /**
@@ -154,7 +176,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param view
      * @param position
      * @param l
-     *
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -257,7 +278,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
          * This method gets called, when a new Intent gets associated with the current activity instance.
          * Instead of creating a new activity, onNewIntent will be called. For more information have a look
          * at the documentation.
-         *
          * In our case this method gets called, when the user attaches a Tag to the device.
          */
         handleNFCIntent(intent);
@@ -331,15 +351,10 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
+                //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
                 _bTservice.clearBtBuffers();
-
-                if(updateToWeb) {
-                    new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
-                    updateToWeb = false;
-                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -357,23 +372,58 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    private class CheckEvacuation extends Thread {
+        @Override
+        public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            while (true) {
+
+                CheckEvacuationTask evacuationTask = new CheckEvacuationTask(TentActivity.this);
+                evacuationTask.execute(_tent);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUI();
+                    }
+                });
+                //release for UI
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                evacuationTask.cancel(true);
+                lock.lock();
+                try {
+                    if(updateToWeb) {
+                        new SendToMongodbTask(TentActivity.this).execute(_tent.getPatientsArray());
+                        updateToWeb = false;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            }
+        }
+    }
+
     /**
      * updates the list of bracelets
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
-        TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
+        //TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
         if (data != null && data.size() > 0) {
-            TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
-            TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
+            //TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
+            //TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
             if (data.get(0).getTreatmentsArray().size() > 0) {
-                TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
+                //TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
             }
         }
 
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
-        TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
+        //TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**
@@ -381,14 +431,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     void runOnUI() {
         updateListView(_tent.getPatientsArray());
-    }
-
-    /**
-     * get the Bluetooth service object
-     * @return
-     */
-    BTservice getBt(){
-        return _bTservice;
     }
 
     /**
@@ -408,7 +450,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         return super.onKeyDown(keyCode, event);
     }
 
-
     /**
      * when back pressed, shows a dialog alert
      */
@@ -420,6 +461,11 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(DialogInterface dialog, int which) {
                 new LogoutTask(TentActivity.this).execute();
                 LoginActivity._loginButton.setEnabled(true);
+                LoginActivity._passwordText.setText("");
+                ArrayList<Patient> listOfPatientsConnected = _tent.getPatientsArray();
+                for(int i=0; i < listOfPatientsConnected.size(); ++i){
+                    _bTservice.disconnectByMac(listOfPatientsConnected.get(i).getBtMac());
+                }
                 finish();
             }
         };
@@ -471,6 +517,14 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
                }
         _bTservice.addDataToBeSentByMac(mac, treatment.generateUpdateRecord(treatmentId, newTreatmentName));
         _tent.updatePatientsTreatment(mac, treatment, newTreatmentName);
+        if(newTreatmentName == null) {
+            lock.lock();
+            try {
+                updateToWeb = true;
+            } finally {
+                lock.unlock();
+            }
+        }
         return "";
     }
 
@@ -525,6 +579,41 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     public static void stopForegroundDispatch(final Activity activity, NfcAdapter adapter) {
         adapter.disableForegroundDispatch(activity);
     }
+
+    static public void editPatientEvacuation(boolean value, String patientID) {
+        _tent.setUrgantEvacuation(patientID, value);
+    }
+
+    static public boolean getPatientUrgantEvacuation(String patientID) {
+       return _tent.getUrgantEvacuation(patientID);
+    }
+
+    static public void editPatientState(String value, String patientID) {
+        _tent.setPatientState(patientID, value);
+    }
+
+    static public String getPatientState(String patientID) {
+        return _tent.getPatientState(patientID);
+    }
+
+    static public void sendRecordToBracelet(String mac, String data) {
+        _bTservice.addDataToBeSentByMac(mac, data);
+    }
+
+    static public void disconnectBracelet(String mac) {
+        _bTservice.disconnectByMac(mac);
+    }
+
+    static public boolean getPatientConnectionStatus(String mac){return _bTservice.isConnectedToBtMac(mac);}
+
+    static public void setEvacTime(long timeInMillis, String mac) {
+        _tent.setEvacTime(timeInMillis, mac);
+    }
+
+   static public boolean evacuationCancelTimedout(String mac) {
+        return  _tent.evacuationCancelTimedout(mac);
+    }
+
 }
 
 

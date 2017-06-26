@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -48,6 +48,9 @@ public class TreatmentsTable {
      * @return Equipment
      */
     public Equipment getEquipment(Object key) {
+        if (codeToEquipmentTable == null) {
+            return null;
+        }
         return codeToEquipmentTable.get(key);
     }
 
@@ -78,15 +81,13 @@ public class TreatmentsTable {
             FindIterable<BasicDBObject> treatments = dbCollection.find();
             try {
                 for (BasicDBObject doc : treatments) {
-                    //access documents e.g. doc.get()
                     Object number = doc.get("equipment_id");
                     Object name = doc.get("name");
                     Object type = doc.get("type");
-                    //TODO add time
+
                     Equipment t = new Equipment(name.toString(), type.toString(), number.toString());
                     codeToEquipmentTable.put(number.toString(), t);
                     EquipmentNameToCodeTable.put(name.toString(), number.toString());
-
                 }
             } catch (MongoTimeoutException e) {
                 e.printStackTrace();

@@ -1,10 +1,12 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import activities.TentActivity;
 
 public class Tent {
     ConcurrentHashMap<String, Patient> _patients;
@@ -27,18 +29,18 @@ public class Tent {
     public void updatePatientInfoFromBT(ConcurrentHashMap<String, List<String>> macToJsonList, boolean connected) {
 
         for (Map.Entry<String, List<String>> it : macToJsonList.entrySet()) {
-            TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT ===: MAC = " + it.getKey());
+           // TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT ===: MAC = " + it.getKey());
             synchronized(it.getValue()) {
                 Iterator i = it.getValue().iterator();
                 while (i.hasNext()) {
                     String jsonStr = new String(i.next().toString());
                     AddPatientInfo(jsonStr, it.getKey());
-                    TentActivity.logger.writeToLog("\nadded string to patient = " + jsonStr + "|\n");
+                    //TentActivity.logger.writeToLog("\nadded string to patient = " + jsonStr + "|\n");
                     _patients.get(it.getKey()).setConnected(connected);
                     TentActivity.updateToWeb = true;
                 }
             }
-            TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT === END ___");
+            //TentActivity.logger.writeToLog("\n=== updatePatientInfoFromBT === END ___");
         }
 
         //Check there are disconnections
@@ -60,6 +62,10 @@ public class Tent {
         return _patients.containsKey(mac) ? _patients.get(mac).getHeartRate() : "";
     }
 
+    public String getPatientPersonalNumberByMac(String mac) {
+        return _patients.containsKey(mac) ? _patients.get(mac).getPatientPersonalNumber() : null;
+    }
+
     public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
         return _patients.containsKey(mac) ? _patients.get(mac).getTreatmentsArray() : null;
     }
@@ -68,6 +74,47 @@ public class Tent {
         if (_patients.containsKey(mac)) {
             _patients.get(mac).updateTreatment(treatment.getUid(), newTreatmentName);
         }
+    }
+
+    public void setUrgantEvacuation(String mac, boolean value){
+        if(_patients.containsKey(mac)){
+            _patients.get(mac).setUrgentEvacuation(value);
+        }
+    }
+
+    public boolean getUrgantEvacuation(String mac){
+        if(_patients.containsKey(mac)){
+            return _patients.get(mac).getUrgentEvacuationState();
+        }
+        return false;
+    }
+
+    public void setPatientState(String mac, String value){
+        if(_patients.containsKey(mac)){
+            _patients.get(mac).setPatientState(value);
+        }
+    }
+
+    public String getPatientState(String mac){
+        if(_patients.containsKey(mac)){
+            return _patients.get(mac).getPatientState();
+        }
+        return "";
+    }
+
+    public boolean isContain(String mac){
+        if (_patients.containsKey(mac)) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setEvacTime(long timeInMillis, String mac) {
+        _patients.get(mac).setEvacTime(timeInMillis);
+    }
+
+    public boolean evacuationCancelTimedout(String mac) {
+        return  _patients.get(mac).evacuationCancelTimedout();
     }
 //endregion public methods
 }

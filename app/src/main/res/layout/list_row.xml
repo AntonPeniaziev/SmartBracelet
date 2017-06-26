@@ -44,7 +44,6 @@
         android:focusable="false"
         android:focusableInTouchMode="false"/>
 
-
     <TextView
         android:id="@+id/json"
         android:layout_width="fill_parent"
@@ -55,14 +54,14 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:layout_below="@+id/beepBracelet"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/bodyTemp" />
 
     <TextView
         android:id="@+id/bodyTemp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/braceletMAC"
-        android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
         android:textColor="#FFFFFF"
         android:textSize="15dip"
@@ -84,7 +83,7 @@
         android:focusableInTouchMode="false"/>
     <Button
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="70dp"
         android:id="@+id/beepBracelet"
         android:background="@drawable/my_button_selector"
         android:clickable="true"

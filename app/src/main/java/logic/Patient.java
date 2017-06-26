@@ -1,4 +1,4 @@
-package com.example.androidbtcontrol;
+package logic;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -7,11 +7,15 @@ public class Patient {
     Bracelet _bracelet;
     String id;
     boolean _isConnected;
+    boolean _urgentEvacuation;
+    String _state;
 
     public Patient(String initialInfo, String braceletMac) {
         _bracelet = new Bracelet(initialInfo, braceletMac);
         id = braceletMac;
         _isConnected = false;
+        _urgentEvacuation = false;
+        _state = "";
     }
 
 //region random dummy functions
@@ -62,6 +66,26 @@ public class Patient {
 
     public void updateTreatment(String treatmentUid, String newName) {
         _bracelet.updateTreatment(treatmentUid, newName);
+    }
+
+    public void setUrgentEvacuation(boolean value){ _bracelet.setEvacStatus(value);}
+
+    public boolean getUrgentEvacuationState() {
+        return _bracelet.getEvacStatus();
+    }
+
+    public void setPatientState(String state) { _bracelet.setSeverity(state);}
+
+    public String getPatientState() { return _bracelet.getSeverity();}
+
+    public String getPatientPersonalNumber() {return _bracelet.getPatientId();}
+
+    public void setEvacTime(long timeInMillis) {
+        _bracelet.setEvacuationTime(timeInMillis);
+    }
+
+    public boolean evacuationCancelTimedout() {
+        return _bracelet.evacuationCancelTimedout();
     }
     //endregion public methods
 }

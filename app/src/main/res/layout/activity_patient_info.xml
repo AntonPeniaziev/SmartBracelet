@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PatientInfoActivity"
+    tools:context="activities.PatientInfoActivity"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:theme="@android:style/Theme.Holo.NoActionBar"
@@ -175,7 +175,7 @@
                     android:id="@+id/temperature_pic"
                     android:gravity="center"
                     android:src="@drawable/temperature"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="15dp"
                     android:layout_marginTop="1dp">
                 </ImageView>
 
@@ -185,9 +185,9 @@
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:id="@+id/air_picture"
+                android:layout_marginStart="56dp"
                 android:layout_alignParentTop="true"
-                android:layout_toStartOf="@+id/oxygen_picture"
-                android:layout_marginEnd="56dp">
+                android:layout_toEndOf="@+id/temperature_picture">
 
                 <ImageView
                     android:id="@+id/air_pic"
@@ -205,7 +205,6 @@
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:id="@+id/oxygen_picture"
-                android:layout_marginEnd="11dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true">
 
@@ -216,7 +215,7 @@
                     android:gravity="center"
                     android:src="@drawable/oxygen"
                     android:layout_marginLeft="5dp"
-                    android:layout_marginTop="4dp">
+                    android:layout_marginTop="3dp">
 
                 </ImageView>
             </LinearLayout>
@@ -226,7 +225,7 @@
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:weightSum="1"
-                android:layout_marginStart="63dp"
+                android:layout_marginStart="80dp"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/heartRate_picture">
 
@@ -285,7 +284,7 @@
                     android:gravity="center"
                     android:text="@string/degree"
                     android:textSize="16dp"
-                    android:layout_marginLeft="7dp"
+                    android:layout_marginLeft="12dp"
                     android:textColor="#FFFFFF">
                 </TextView>
 
@@ -297,7 +296,7 @@
                 android:id="@+id/linearLayout6"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/linearLayout7"
-                android:layout_marginEnd="50dp"
+                android:layout_marginEnd="60dp"
                 android:layout_marginTop="20dp">
 
                 <TextView
@@ -307,7 +306,7 @@
                     android:gravity="center"
                     android:text="16"
                     android:textSize="16dp"
-                    android:layout_marginLeft="17dp"
+                    android:layout_marginLeft="15dp"
                     android:layout_marginTop="1.5dp"
                     android:textColor="#FFFFFF"></TextView>
             </LinearLayout>
@@ -318,7 +317,6 @@
                 android:id="@+id/linearLayout7"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="10dp"
                 android:paddingTop="20dp">
                 <TextView
                     android:layout_width="35dp"
@@ -328,7 +326,8 @@
                     android:textColor="#FFFFFF"
                     android:gravity="center"
                     android:textSize="16dp"
-                    android:paddingTop="4dp">
+                    android:paddingTop="4dp"
+                    android:layout_marginLeft="2dp">
                 </TextView>
             </LinearLayout>
 
@@ -336,8 +335,7 @@
                 android:id="@+id/linearLayout3"
                 android:layout_width="70dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="60dp"
-                android:layout_alignParentTop="true"
+                android:layout_marginEnd="45dp"
                 android:layout_toStartOf="@+id/linearLayout4"
                 android:weightSum="1"
                 android:layout_marginTop="16dp">
@@ -346,10 +344,10 @@
                     android:id="@+id/bloodPressure"
                     android:layout_width="56dp"
                     android:layout_height="30dp"
+                    android:gravity="center"
                     android:text="128/95"
-                    android:textSize="16dp"
                     android:textColor="#FFFFFF"
-                    android:gravity="center">
+                    android:textSize="16dp">
 
                 </TextView>
             </LinearLayout>
@@ -379,24 +377,84 @@
 
 
     </RelativeLayout>
+<LinearLayout
+    android:layout_width="550dp"
+    android:layout_height="70dp"
+    android:id="@+id/statusLayout"
+    android:orientation="horizontal"
+    android:layout_below="@+id/linearLayout1"
+    android:layout_alignStart="@+id/linearLayout1">
 
+    <Button
+        android:id="@+id/minorMode"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/my_button_selector"
+        android:clickable="true"
+        android:text="Minor"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"/>
+
+    <Button
+        android:id="@+id/moderateMode"
+        android:layout_width="85dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/my_button_selector"
+        android:clickable="true"
+        android:text="Moderate"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginLeft="37dp"/>
+
+    <Button
+        android:id="@+id/severeMode"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/my_button_selector"
+        android:clickable="true"
+        android:text="Severe"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginLeft="37dp"/>
+    <Button
+        android:id="@+id/criticalMode"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/my_button_selector"
+        android:clickable="true"
+        android:text="Critical"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginLeft="37dp"/>
+    <Button
+        android:id="@+id/deadMode"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/my_button_selector"
+        android:clickable="true"
+        android:text="Dead"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginLeft="37dp"/>
+
+
+</LinearLayout>
 
     <FrameLayout
         android:layout_width="550dp"
-        android:layout_height="524dp"
+        android:layout_height="500dp"
         android:orientation="vertical"
         android:layout_gravity="bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:scrollbars="vertical"
         android:id="@+id/frameLayout"
         android:layout_above="@+id/RelativeLayout1"
-        android:layout_alignStart="@+id/RelativeLayout1"
-        android:layout_marginBottom="22dp">
+        android:layout_alignStart="@+id/RelativeLayout1">
 
         <ListView
             android:id="@+id/listView"
             android:layout_width="550dp"
-            android:layout_height="524dp"
+            android:layout_height="match_parent"
             android:layout_above="@+id/RelativeLayout1"
             android:layout_alignStart="@+id/RelativeLayout1"
             android:layout_gravity="bottom"

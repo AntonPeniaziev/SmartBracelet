@@ -1,9 +1,7 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -18,18 +16,32 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.conversions.Bson;
 
+import activities.LoginActivity;
+
 // mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx    ALON HEROKU
 // mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0       WEB TEAM HEROKU
 public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
-    Context mContext;
-    LoginTask(Context context) {
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+
+    private Context mContext;
+    private boolean _value;
+
+    public LoginTask(Context context) {
+
         mContext = context;
+        _value = true;
     }
+
+    /**
+     * for a given login details, checks for a matching user
+     * @param doctor and array with login details
+     * @return
+     */
     @Override
     protected Boolean doInBackground(String... doctor) {
 
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
@@ -38,30 +50,44 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
         try {
             if (doctor.length == 2) {
-                return checkUserAndPass(users, dbCollection, doctor);
+                _value = checkUserAndPass(users, dbCollection, doctor);
+                return _value;
             } else if (doctor.length == 1) {
-                return checkUser(users, doctor[0]);
+                //return checkUser(users, doctor[0]);
             }
         } catch (MongoTimeoutException e) {
             e.printStackTrace();
-            return false;
+            _value = false;
+            return _value;
         } catch (MongoSocketReadException e) {
             e.printStackTrace();
-            return false;
+            _value = false;
+            return _value;
         }
 
-        return false;
+        _value = false;
+        return _value;
     }
 
+    /**
+     * iterate over the users in the DB. if one match for the login details, updates his status to connected
+     * @param users iterable object of existing users
+     * @param collection DB collection of the users
+     * @param doctor login details String array
+     * @return
+     */
     private boolean checkUserAndPass(FindIterable<BasicDBObject> users, MongoCollection<BasicDBObject> collection, String... doctor) {
         try {
             for (BasicDBObject doc : users) {
                 Object user = doc.get("user");
                 Object passw = doc.get("password");
+                if (user == null || passw == null)
+                    continue;
 
                 if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
                     String number = doc.get("number").toString();
                     String name = doc.get("name").toString();
+                    String division = doc.get("division").toString();
 
                     Bson searchQuery = new BasicDBObject().append("number", number);
                     Bson newValue = new BasicDBObject().append("status", "connected");
@@ -70,6 +96,7 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
                     LoginActivity.doctorName = name;
                     LoginActivity.doctorNumber = number;
+                    LoginActivity.doctorDivision = division;
 
                     return true;
                 }
@@ -90,29 +117,22 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         return false;
     }
 
-    private boolean checkUser(FindIterable<BasicDBObject> users, String doctor) {
-        try {
-            for (BasicDBObject doc : users) {
-                Object user = doc.get("user");
-
-                if (doctor.equals(user.toString())) {
-                    return true;
-                }
-            }
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
+    @Override
+    public void onPostExecute(Boolean value){
+        super.onPostExecute(value);
+        if (!_value) {
+            LoginActivity._errorMsg = "Please enter a valid USER & PASSWORD or check your INTERNET connection";
+            LoginActivity._loginButton.setEnabled(true);
+            LoginActivity._passwordText.setText("");
+            LoginActivity._progressDialog.dismiss();
+            LoginActivity.getInstance().onLoginFailed();
+            //System.exit(0);
+            return;
         }
-        return false;
-    }
 
+        LoginActivity._progressDialog.dismiss();
+        LoginActivity.getInstance().onLoginSuccess();
+        return;
+    }
 
 }

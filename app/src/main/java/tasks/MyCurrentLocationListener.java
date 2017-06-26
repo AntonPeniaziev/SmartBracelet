@@ -1,11 +1,14 @@
-package com.example.androidbtcontrol;
+package tasks;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.util.Log;
 
+import activities.TentActivity;
 
+/**
+ * MyCurrentLocationListener holds and manages the doctor's location
+ */
 public class MyCurrentLocationListener implements LocationListener {
 
     private Location myLocation = null;
@@ -22,6 +25,10 @@ public class MyCurrentLocationListener implements LocationListener {
         return longitude;
     }
 
+    /**
+     * on location change, update the current location if it is more accurate
+     * @param location the new location data
+     */
     public void onLocationChanged(Location location) {
         if (myLocation == null)
             myLocation = location;
@@ -33,22 +40,28 @@ public class MyCurrentLocationListener implements LocationListener {
             longitude = myLocation.getLongitude();
             Double[] coordinates = {latitude, longitude};
             new LocationTask().execute(coordinates);
+            TentActivity.lock.lock();
+            try {
+                TentActivity.updateToWeb = true;
+            } finally {
+                TentActivity.lock.unlock();
+            }
         }
 
     }
 
-    public void onStatusChanged(String s, int i, Bundle bundle) {
+    public void onStatusChanged(String s, int i, Bundle bundle) {}
 
-    }
+    public void onProviderEnabled(String s) {}
 
-    public void onProviderEnabled(String s) {
+    public void onProviderDisabled(String s) {}
 
-    }
-
-    public void onProviderDisabled(String s) {
-
-    }
-
+    /**
+     *
+     * @param location
+     * @param currentBestLocation
+     * @return
+     */
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
             // A new location is always better than no location

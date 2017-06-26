@@ -1,9 +1,9 @@
-package com.example.androidbtcontrol;
+package activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +11,14 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import ArduinoParsingUtils.ArduinoParsingUtils;
+import logic.Bracelet;
+import logic.Patient;
+import com.android.SmartBracelet.R;
+import logic.Treatment;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class CustomAdapter extends BaseAdapter {
 
@@ -86,7 +92,9 @@ public class CustomAdapter extends BaseAdapter {
                 bodyTemp.setVisibility(View.VISIBLE);
                 bloodPressure.setVisibility(View.VISIBLE);
 
-                text.setText("Bracelet: " + data.get(position).getBtMac());
+                text.setText("Bracelet: " + data.get(position).getBtMac() +
+                        ((data.get(position).getPatientPersonalNumber().equals("")) ? "" : "\nID: " +
+                        data.get(position).getPatientPersonalNumber()));
                 bodyTemp.setText(data.get(position).getBodyTemp());
                 bloodPressure.setText(data.get(position).getBloodPressure());
                 String treatInfo = "";
@@ -97,11 +105,6 @@ public class CustomAdapter extends BaseAdapter {
             }
         }
 
-
-
-
-
-
         return vi;
     }
 
@@ -110,10 +113,11 @@ public class CustomAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 String patientBMac = data.get(position).getBtMac().toString();
-                Toast.makeText(currActivity,
-                        "beep sent to " + patientBMac,
-                        Toast.LENGTH_SHORT).show();
-                currActivity.getBt().addDataToBeSentByMac(patientBMac, "<6,0>");
+//                Toast.makeText(currActivity,
+//                        "beep sent to " + patientBMac,
+//                        Toast.LENGTH_SHORT).show();
+                currActivity.sendRecordToBracelet(patientBMac, ArduinoParsingUtils.BEEP_RECORD);
+
 
             }
         });
@@ -130,7 +134,7 @@ public class CustomAdapter extends BaseAdapter {
                 String title = "Bracelet " + itemAddress;
                 DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        TentActivity.getInstance().getBt().disconnectByMac(itemAddress);
+                        TentActivity.disconnectBracelet(itemAddress);
                     }
                 };
                 DialogInterface.OnClickListener clickNo =  new DialogInterface.OnClickListener() {
@@ -139,18 +143,6 @@ public class CustomAdapter extends BaseAdapter {
                     }
                 };
                 TentActivity.getInstance().dialogAlert(message, title, clickYes ,clickNo);
-//                SeList<Treatment> patientTreatments = data.get(position).getTreatmentsArray();
-//                new SendToMongodbTask().execute(patientTreatments);
-                //Patient patient = data.get(position);
-
-
-//                List<Patient> patient = new ArrayList<Patient>();
-//                patient.add(data.get(position));
-//                new SendToMongodbTask(currActivity).execute(patient);
-
-//                TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(0), "ss");
-//                TentActivity.updateTreatment(data.get(position).getBtMac(), data.get(position).getTreatmentsArray().get(1), null);
-
             }
         });
     }

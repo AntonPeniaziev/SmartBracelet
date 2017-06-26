@@ -1,6 +1,5 @@
-package com.example.androidbtcontrol;
+package tasks;
 
-import android.app.LauncherActivity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -12,11 +11,12 @@ import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.conversions.Bson;
+
+import activities.LoginActivity;
 
 /**
  * Created by user on 05/06/2017.
@@ -24,21 +24,25 @@ import org.bson.conversions.Bson;
 
 public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
+
     Context mContext;
 
-    LogoutTask(Context context) {
+    public LogoutTask(Context context) {
         mContext = context;
     }
 
+    /**
+     * for the connected user, changes his status in the DB into not connected and erase his name
+     * @param params nothing
+     */
     @Override
-    protected Boolean doInBackground(Void... doctor) {
+    protected Boolean doInBackground(Void ... params) {
 
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
-
-        //FindIterable<BasicDBObject> users = dbCollection.find();
 
         if (LoginActivity.doctorNumber.equals("") && LoginActivity.doctorName.equals(""))
             return true;
@@ -52,6 +56,7 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
             LoginActivity.doctorName = "";
             LoginActivity.doctorNumber = "";
+            LoginActivity.doctorDivision = "";
 
             return true;
         } catch (MongoTimeoutException e) {
@@ -66,11 +71,13 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
             e.printStackTrace();
             return false;
         }
-
         return false;
-
     }
 
+    /**
+     * if update to web doesn't succeed, it alerts the user for connection problems
+     * @param aBoolean the result of the update
+     */
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         int time = 5;

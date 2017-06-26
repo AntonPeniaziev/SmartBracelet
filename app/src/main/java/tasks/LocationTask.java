@@ -1,8 +1,6 @@
-package com.example.androidbtcontrol;
+package tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
@@ -11,14 +9,14 @@ import com.mongodb.MongoSecurityException;
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoSocketReadException;
 import com.mongodb.MongoTimeoutException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import activities.LoginActivity;
 
 /**
  * Created by user on 07/06/2017.
@@ -26,14 +24,11 @@ import java.util.List;
 
 public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
 
-//    private Context mContext;
-//    LocationTask(Context context) {
-//        mContext = context;
-//    }
+    private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
 
     @Override
     protected Boolean doInBackground(Double... coordinates) {
-        MongoClientURI mongoUri = new MongoClientURI("mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0");
+        MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection("users", BasicDBObject.class);
@@ -42,17 +37,20 @@ public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
         try {
             Bson searchQuery = new BasicDBObject().append("number", LoginActivity.doctorNumber);
 
-            ArrayList<BasicDBObject> locationList = new ArrayList<>();
-            BasicDBObject locationDoc = new BasicDBObject();
+            //ArrayList<BasicDBObject> locationList = new ArrayList<>();
+            //BasicDBObject locationDoc = new BasicDBObject();
 
-            locationDoc.put("longitude", coordinates[0].toString());
-            locationDoc.put("latitude", coordinates[1].toString());
-            locationList.add(locationDoc);
+            //locationDoc.put("longitude", coordinates[0].toString());
+            //locationDoc.put("latitude", coordinates[1].toString());
+            //locationList.add(locationDoc);
 
-            Bson newValue = new BasicDBObject().append("location", locationList);
-            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
+            Bson newValue1 = new BasicDBObject().append("longitude", coordinates[0].toString());
+            Bson newValue2 = new BasicDBObject().append("latitude", coordinates[1].toString());
+            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
+            Bson updateOperationDocument2 = new BasicDBObject().append("$set", newValue2);
 
-            dbCollection.updateOne(searchQuery, updateOperationDocument);
+            dbCollection.updateOne(searchQuery, updateOperationDocument1);
+            dbCollection.updateOne(searchQuery, updateOperationDocument2);
 
             return true;
         } catch (MongoTimeoutException e) {

@@ -1,17 +1,12 @@
-package com.example.androidbtcontrol;
+package activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -23,7 +18,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import ArduinoParsingUtils.ArduinoParsingUtils;
+import logic.Bracelet;
+import logic.Patient;
+import logic.Tent;
+import tasks.CallEvacuationTask;
+import com.android.SmartBracelet.R;
+import logic.Treatment;
+import tasks.LogoutTask;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class PatientInfoActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
@@ -35,9 +41,10 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button _saveButton;
     Button _urgentButton;
     ImageButton _backButton;
-    PatientInfoActivity instance;
-
-
+    static PatientInfoActivity instance;
+    Button[] _stateButtons;
+    static final int NUMBER_OF_STATES = 5;
+    String _currentState;
 
 
     @Override
@@ -52,9 +59,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _listView = (ListView) findViewById(R.id.listView);
         _patientsAdapter = new PatientInfoAdapter(this, R.layout.patient_info_list_row);
         _patientsAdapter.setDiseable=true;
+        _patientsAdapter.setMac(_patientMac);
         _listView.setAdapter(_patientsAdapter);
         _listView.setOnItemClickListener(this);
-
     }
 
     /**
@@ -66,7 +73,6 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
         text.setTypeface(army_font);
         text.setText(patientID);
-
     }
 
     /**
@@ -86,8 +92,15 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                     return;
                 }
                 if(_saveButton.getText().equals("Save")){
+                    //TentActivity.updateToWeb = true;
                     _saveButton.setText("Edit");
                     _patientsAdapter.setTextViewDisabled();
+                    TentActivity.lock.lock();
+                    try {
+                        TentActivity.updateToWeb = true;
+                    } finally {
+                        TentActivity.lock.unlock();
+                    }
                 }
             }
         });
@@ -104,8 +117,48 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _urgentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeUrgant();
-                TentActivity._evacuationSent=true;
+                if(_urgentButton.getText().equals("Urgent Evacuation")){
+                    String[] valAndMac = {String.valueOf(true), _patientMac};
+                    new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
+                    TentActivity.setEvacTime(System.currentTimeMillis(), _patientMac);
+                    changeUrgant();
+                    TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_SENT_RECORD);
+                    TentActivity.editPatientEvacuation(true, _patientMac);
+                    return;
+                } else{
+                    if(!TentActivity.evacuationCancelTimedout(_patientMac)) {
+                        String message = "Cancel Evacuation?";
+                        String title = "Smart Bracelet";
+                        DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String[] valAndMac = {String.valueOf(false), _patientMac};
+                                new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
+                                returnUrgant();
+                                TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_CANCELED_RECORD);
+                                TentActivity.editPatientEvacuation(false, _patientMac);
+                            }
+                        };
+
+                        DialogInterface.OnClickListener clickNo = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        };
+
+                        android.support.v7.app.AlertDialog.Builder dlgAlert  = new android.support.v7.app.AlertDialog.Builder(PatientInfoActivity.this);
+                        dlgAlert.setMessage(message);
+                        dlgAlert.setTitle(title);
+                        dlgAlert.setPositiveButton("Yes",clickYes);
+                        dlgAlert.setNegativeButton("No", clickNo);
+                        dlgAlert.show();
+
+                        return;
+
+                    }
+
+                    _urgentButton.setEnabled(false);
+                    _urgentButton.setClickable(false);
+                }
             }
         });
     }
@@ -133,6 +186,100 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         });
     }
 
+    void loadState(String state) {
+        _currentState = state;
+        switch (state) {
+            case "Minor": _stateButtons[0].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Moderate": _stateButtons[1].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Severe": _stateButtons[2].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Critical": _stateButtons[3].setBackgroundColor(Color.BLACK);
+                            break;
+            case "Dead": _stateButtons[4].setBackgroundColor(Color.BLACK);
+        }
+    }
+
+    void sendStateToBracelet(String state) {
+
+        switch (state){
+            case "Minor": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_MINOR_RECORD);
+                break;
+            case "Moderate": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_MODERATE_RECORD);
+                break;
+            case "Severe": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_SEVERE_RECORD);
+                break;
+            case "Critical": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_CRITICAL_RECORD);
+                break;
+            case "Dead": TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.SEVERITY_DEAD_RECORD);
+        }
+    }
+
+    void initStateButtons(){
+        _stateButtons = new Button[NUMBER_OF_STATES];
+        _stateButtons[0] = (Button) findViewById(R.id.minorMode);
+        _stateButtons[1] = (Button) findViewById(R.id.moderateMode);
+        _stateButtons[2] = (Button) findViewById(R.id.severeMode);
+        _stateButtons[3] = (Button) findViewById(R.id.criticalMode);
+        _stateButtons[4] = (Button) findViewById(R.id.deadMode);
+
+        for(int i=0; i< _stateButtons.length ; ++i){
+            setOnClickState(_stateButtons[i]);
+        }
+
+        loadState(TentActivity.getPatientState(_patientMac));
+
+    }
+
+    void changePatientStateButton(String state){
+        for(int i=0; i< _stateButtons.length ; ++i){
+            if(!_stateButtons[i].getText().toString().equals(_currentState)){
+                _stateButtons[i].setBackgroundColor(Color.parseColor("#4E5944"));
+            }
+        }
+    }
+
+    void setOnClickState(final Button stateButton){
+        stateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String message = "Change Patient State to: " + stateButton.getText() + "?";
+                String title = "Smart Bracelet";
+                DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String state = stateButton.getText().toString();
+                        TentActivity.editPatientState(state, _patientMac);
+                        //TentActivity.updateToWeb = true;
+                        sendStateToBracelet(state);
+                        loadState(state);
+                        changePatientStateButton(state);
+                        TentActivity.lock.lock();
+                        try {
+                            TentActivity.updateToWeb = true;
+                        } finally {
+                            TentActivity.lock.unlock();
+                        }
+                    }
+                };
+
+                DialogInterface.OnClickListener clickNo = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                };
+
+                android.support.v7.app.AlertDialog.Builder dlgAlert  = new android.support.v7.app.AlertDialog.Builder(PatientInfoActivity.this);
+                dlgAlert.setMessage(message);
+                dlgAlert.setTitle(title);
+                dlgAlert.setPositiveButton("Yes",clickYes);
+                dlgAlert.setNegativeButton("No", clickNo);
+                dlgAlert.show();
+
+            }
+        });
+    }
+
     /**
      * main OnCreate function. initiates the views on the activity and the background services
      * @param savedInstanceState
@@ -152,9 +299,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         initHeartRate(patientID);
         initBackButton();
         instance = this;
-        if(TentActivity._evacuationSent){
+        if(TentActivity.getPatientUrgantEvacuation(_patientMac)){
             changeUrgant();
         }
+
+        initStateButtons();
 
     }
 
@@ -177,15 +326,12 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         runOnUI();
                     }
                 });
-
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
             }
-
         }
     }
 
@@ -201,10 +347,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
 
-
-
-
-    public PatientInfoActivity getInstance() {
+    static public PatientInfoActivity getInstance() {
         return instance;
     }
 
@@ -228,7 +371,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         if(!newName.equals("") && !newName.equals(treatmentName.getName())) {
                             String result  = TentActivity.updateTreatment(_patientMac, treatmentName, newName);
                             if(!result.equals("")){
-                                Toast.makeText(getInstance(), result, Toast.LENGTH_LONG).show();
+                                Toast.makeText(PatientInfoActivity.this, result, Toast.LENGTH_LONG).show();
                                 return;
                             }
                             _patientsAdapter.setDiseable=false;
@@ -255,10 +398,12 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     public void changeUrgant(){
         _urgentButton.setText("Evacuation Sent");
         _urgentButton.setTextColor(Color.parseColor("#D74C43"));
-        _urgentButton.setEnabled(false);
-        _urgentButton.setClickable(false);
+
     }
 
-
+    public void returnUrgant(){
+        _urgentButton.setText("Urgent Evacuation");
+        _urgentButton.setTextColor(Color.WHITE);
+    }
 
 }

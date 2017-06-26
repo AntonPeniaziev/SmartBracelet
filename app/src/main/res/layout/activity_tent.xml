@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/lib/androidbtcontrol"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:app2="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    tools:context="com.example.androidbtcontrol.TentActivity"
+    tools:context="activities.TentActivity"
     android:background="#262E1E"
     android:keepScreenOn="true">
 
@@ -59,6 +59,17 @@
             android:layout_marginEnd="280dp"
             android:src="@drawable/main"
             android:scaleType="fitXY"/>
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="110dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:id="@+id/doctorName"/>
+
 
         <Button
             android:id="@+id/logOut"
