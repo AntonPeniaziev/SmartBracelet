@@ -63,7 +63,7 @@ public class Tent {
     }
 
     public String getPatientPersonalNumberByMac(String mac) {
-        return _patients.containsKey(mac) ? _patients.get(mac).getPatientPersonalNumber() : null;
+        return _patients.containsKey(mac) ? _patients.get(mac).getPatientPersonalNumber() : "";
     }
 
     public ArrayList<Treatment> getTreatmentsArrayByMac(String mac) {
