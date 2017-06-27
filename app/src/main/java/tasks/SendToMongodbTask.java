@@ -134,13 +134,18 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
      */
     @Override
     protected void onPostExecute(Boolean aBoolean) {
-        int time = 5;
+        int time = 4;
         if (!aBoolean) {
-            while (time > 0) {
-                Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
-                time--;
+            TentActivity.updateToWeb = true;
+            if (TentActivity.alertCount > 0) {
+                while (time > 0) {
+                    Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
+                    time--;
+                }
+                TentActivity.alertCount--;
             }
-        }
+        } else
+            TentActivity.alertCount = TentActivity.alertLimit;
     }
 
     @Override

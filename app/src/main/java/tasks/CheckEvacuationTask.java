@@ -97,6 +97,9 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
                     if (evac.toString().equals("true") && !tent.getUrgantEvacuation(mac.toString())){
                         tent.setUrgantEvacuation(mac.toString(), true);
                         TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
+                    } else if (evac.toString().equals("false") && tent.getUrgantEvacuation(mac.toString())) {
+                        tent.setUrgantEvacuation(mac.toString(), false);
+                        TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
                     }
                 }
                 if (isCancelled())
