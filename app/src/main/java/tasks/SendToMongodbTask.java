@@ -136,7 +136,12 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
     protected void onPostExecute(Boolean aBoolean) {
         int time = 4;
         if (!aBoolean) {
-            TentActivity.updateToWeb = true;
+            TentActivity.lock.lock();
+            try {
+                TentActivity.updateToWeb = true;
+            } finally {
+                TentActivity.lock.unlock();
+            }
             if (TentActivity.alertCount > 0) {
                 while (time > 0) {
                     Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
