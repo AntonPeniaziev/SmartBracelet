@@ -35,10 +35,6 @@ class PostToWeb {
 
             client.getResponseMessage();
             client.getResponseCode();
-//            String responseMsg = client.getResponseMessage();
-//            int responseCode = client.getResponseCode();
-//
-//            Log.e("Post: ", "response is " + Integer.toString(responseCode) + " " + responseMsg);
         }
         catch(Exception ex) {
             ex.printStackTrace();

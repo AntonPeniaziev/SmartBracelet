@@ -18,9 +18,6 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-/**
- * Created by user on 13/06/2017.
- */
 
 public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
 
@@ -48,35 +45,7 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
         FindIterable<BasicDBObject> soldiers = dbCollection.find();
 
         boolean result = checkAndUpdate(soldiers, params[0]);
-        /*try{
-            for (BasicDBObject soldier : soldiers) {
-                Object mac = soldier.get("bracelet_id");
-                Object evac = soldier.get("evacuation_request");
-                if (mac == null || evac == null)
-                    continue;
-                if (params[0].isContain(mac.toString())){
-                    if (evac.toString().equals("true") && !params[0].getUrgantEvacuation(mac.toString())){
-                        params[0].setUrgantEvacuation(mac.toString(), true);
-                        TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
-                    }
-                }
-                if (isCancelled())
-                    return true;
-            }
-            //return true;
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }*/
+
         return result;
     }
 

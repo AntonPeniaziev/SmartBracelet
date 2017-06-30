@@ -17,9 +17,6 @@ import com.mongodb.client.MongoDatabase;
 
 import java.util.LinkedHashMap;
 
-/**
- * Created by avizel on 19/4/2017.
- */
 
 public class TreatmentsTable {
     private LinkedHashMap<String, Equipment> codeToEquipmentTable;
@@ -33,14 +30,6 @@ public class TreatmentsTable {
         new updateActivitiesTable(context).execute();
 
     }
-
-    /*public LinkedHashMap<String, Equipment> getCodeToEquipmentTable() {
-        return codeToEquipmentTable;
-    }*/
-
-    /*public boolean containsKey(Object key) {
-        return codeToEquipmentTable.containsKey(key);
-    }*/
 
     /**
      * for a valid code, returns the suitable equipment
@@ -60,10 +49,6 @@ public class TreatmentsTable {
      * @return String of code name
      */
     public String getCode(Object key) { return equipmentNameToCodeTable.get(key); }
-
-    /*public void putToTable(String s, Equipment d) {
-        codeToEquipmentTable.put(s, d);
-    }*/
 
     private class updateActivitiesTable extends AsyncTask<String, Integer, Boolean> {
 
@@ -96,30 +81,6 @@ public class TreatmentsTable {
                 codeToEquipmentTable = null;
                 equipmentNameToCodeTable = null;
             }
-            /*try {
-                for (BasicDBObject doc : treatments) {
-                    Object number = doc.get(idTitle);
-                    Object name = doc.get(nameTitle);
-                    Object type = doc.get(typeTitle);
-
-                    Equipment t = new Equipment(name.toString(), type.toString(), number.toString());
-                    codeToEquipmentTable.put(number.toString(), t);
-                    EquipmentNameToCodeTable.put(name.toString(), number.toString());
-                }
-            } catch (MongoTimeoutException e) {
-                e.printStackTrace();
-                codeToEquipmentTable = null;
-                return false;
-            } catch (MongoSocketReadException e) {
-                e.printStackTrace();
-                return false;
-            } catch (MongoSocketOpenException e) {
-                e.printStackTrace();
-                return false;
-            } catch (MongoSecurityException e) {
-                e.printStackTrace();
-                return false;
-            }*/
 
             return true;
         }
