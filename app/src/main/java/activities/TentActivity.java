@@ -13,7 +13,6 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,7 +24,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import logic.Bracelet;
 import tasks.CheckEvacuationTask;
 import tasks.LogoutTask;
 import tasks.MyCurrentLocationListener;
@@ -353,7 +351,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             while (true) {
                 //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
-                _tent.updatePatientInfoFromBT(_bTservice.getDisconnecteListsdMap(), false);
+                _tent.updatePatientInfoFromBT(_bTservice.getDisconnectedListsMap(), false);
                 _bTservice.clearBtBuffers();
 
                 runOnUiThread(new Runnable() {

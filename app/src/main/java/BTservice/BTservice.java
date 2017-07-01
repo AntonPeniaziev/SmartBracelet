@@ -162,7 +162,7 @@ public class BTservice implements BTserviceInterface {
         }
     }
 
-    public ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap() {
+    public ConcurrentHashMap<String, List<String>> getDisconnectedListsMap() {
         ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<>();
         for (BluetoothDevice device : _discoveredDevices) {
             map.put(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
