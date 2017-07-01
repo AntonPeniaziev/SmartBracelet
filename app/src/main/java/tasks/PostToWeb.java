@@ -1,14 +1,13 @@
 package tasks;
 
+import android.util.Log;
+
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Created by user on 26/06/2017.
- */
 
-public class PostToWeb {
+class PostToWeb {
 
     private static final String webUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
     private static final String msg = "dbUpdate";
@@ -16,7 +15,7 @@ public class PostToWeb {
     /**
      * doing http POST to refresh the website for our changes
      */
-    public static void postToWeb() {
+    static void postToWeb() {
         HttpURLConnection client = null;
         try {
             // Defined URL  where to send data
@@ -33,6 +32,9 @@ public class PostToWeb {
             printout.writeBytes(msg);
             printout.flush();
             printout.close();
+
+            client.getResponseMessage();
+            client.getResponseCode();
         }
         catch(Exception ex) {
             ex.printStackTrace();

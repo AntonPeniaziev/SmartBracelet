@@ -18,9 +18,6 @@ import java.util.ArrayList;
 
 import activities.LoginActivity;
 
-/**
- * Created by user on 07/06/2017.
- */
 
 public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
 
@@ -44,42 +41,9 @@ public class LocationTask extends AsyncTask<Double, Integer, Boolean> {
 
         boolean result = updateLocation(dbCollection, coordinates[0], coordinates[1]);
         PostToWeb.postToWeb();
-        /*try {
-            Bson searchQuery = new BasicDBObject().append(numberTitle, LoginActivity.doctorNumber);
-            Bson newValue1 = new BasicDBObject().append(longitudeTitle, coordinates[0].toString());
-            Bson newValue2 = new BasicDBObject().append(latitudeTitle, coordinates[1].toString());
-            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
-            Bson updateOperationDocument2 = new BasicDBObject().append("$set", newValue2);
 
-            dbCollection.updateOne(searchQuery, updateOperationDocument1);
-            dbCollection.updateOne(searchQuery, updateOperationDocument2);
-
-            return true;
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }*/
         return result;
     }
-
-    /*@Override
-    protected void onPostExecute(Boolean aBoolean) {
-        int time = 5;
-        if (!aBoolean) {
-            while (time > 0) {
-                Toast.makeText(mContext, "Connection is lost! check your INTERNET and try again", Toast.LENGTH_LONG).show();
-                time--;
-            }
-        }
-    }*/
 
     /**
      * for a given collection, updates the new location of the local doctor

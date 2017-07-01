@@ -18,9 +18,6 @@ import org.bson.conversions.Bson;
 
 import activities.LoginActivity;
 
-/**
- * Created by user on 05/06/2017.
- */
 
 public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
 
@@ -52,27 +49,7 @@ public class LogoutTask extends AsyncTask<Void, Void, Boolean> {
             return true;
 
         boolean result = updateNotConnected(dbCollection);
-        /*try {
-            Bson searchQuery = new BasicDBObject().append(numberTitle, LoginActivity.doctorNumber);
-            Bson newValue1 = new BasicDBObject().append(statusTitle, connectedValue);
-            Bson updateOperationDocument1 = new BasicDBObject().append("$set", newValue1);
 
-            dbCollection.updateOne(searchQuery, updateOperationDocument1);
-            emptyLocalDoctorDetails();
-
-            return true;
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }*/
         return result;
     }
 

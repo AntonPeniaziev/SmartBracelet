@@ -46,25 +46,7 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
         boolean result = updateEvac(dbCollection, params[1], params[0]);
-        /*try {
-            Bson searchQuery = new Document("bracelet_id", params[1]);
-            Bson newValue = new BasicDBObject().append("evacuation_request", params[0]);
-            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
-            dbCollection.updateOne(searchQuery, updateOperationDocument);
-            postToWeb();
-            return true;
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }*/
+
         return result;
     }
 
@@ -103,37 +85,4 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         }
         return false;
     }
-
-    /**
-     * doing http POST to refresh the website for out changes
-     */
-    /*protected void postToWeb() {
-        HttpURLConnection client = null;
-        try {
-            // Defined URL  where to send data
-            URL url = new URL(webUrl);
-            client = (HttpURLConnection) url.openConnection();
-
-            String msg = "dbUpdate";
-            client.setRequestProperty("Accept","text/html;charset=utf-8");
-            client.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            client.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
-            client.setRequestMethod("POST");
-            client.setDoOutput(true);
-
-            DataOutputStream printout = new DataOutputStream(client.getOutputStream());
-            printout.writeBytes(msg);
-            printout.flush();
-            printout.close();
-        }
-        catch(Exception ex) {
-
-        } finally {
-            try {
-                if(client != null) // Make sure the connection is not null.
-                    client.disconnect();
-            }
-            catch(Exception ex) {}
-        }
-    }*/
 }

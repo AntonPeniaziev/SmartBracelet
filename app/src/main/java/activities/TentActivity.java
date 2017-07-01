@@ -58,12 +58,13 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
     public static boolean updateToWeb = false;
+    public static final int alertLimit = 2;
+    public static int alertCount = alertLimit;
     static final float minDistanceForGpsUpdate = 10;
     public static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
     static public Logger logger;
     static Boolean _evacuationSent;
-    static boolean _helloDoctor;
 
     static public final Lock lock = new ReentrantLock();
 
