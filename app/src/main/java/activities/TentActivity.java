@@ -43,9 +43,6 @@ import BTservice.BTservice;
 import static android.location.LocationManager.GPS_PROVIDER;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
-import Logger.Logger;
-
-
 public class TentActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     static private BTservice _bTservice;
@@ -63,7 +60,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static final float minDistanceForGpsUpdate = 10;
     public static MyCurrentLocationListener locationListener;
     static TentActivity _instance;
-    static public Logger logger;
     static Boolean _evacuationSent;
 
     static public final Lock lock = new ReentrantLock();
@@ -129,9 +125,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-       // logger = new Logger(this);
-       // logger.writeToLog("TentActivity OnCreate\n");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tent);
         _instance = this;
@@ -350,7 +343,6 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
             while (true) {
-                //logger.writeToLog("\nupdate" + System.currentTimeMillis() / 1000 + "\n");
                 _tent.updatePatientInfoFromBT(_bTservice.getMacToReceivedDataMap(), true);
                 _tent.updatePatientInfoFromBT(_bTservice.getDisconnectedListsMap(), false);
                 _bTservice.clearBtBuffers();
@@ -411,18 +403,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
      * @param data
      */
     void updateListView(ArrayList<Patient> data) {
-        //TentActivity.logger.writeToLog("\n=== updating patients GUI ===");
-        if (data != null && data.size() > 0) {
-            //TentActivity.logger.writeToLog("\n connected = " + data.get(0).isConnected());
-            //TentActivity.logger.writeToLog("\n MAC = " + data.get(0).getBtMac());
-            if (data.get(0).getTreatmentsArray().size() > 0) {
-                //TentActivity.logger.writeToLog("\n 1st TREATMENT name = " + data.get(0).getTreatmentsArray().get(0).getName());
-            }
-        }
-
         _adapter.setData(data);
         _adapter.notifyDataSetChanged();
-        //TentActivity.logger.writeToLog("\n=== updating patients GUI === END____\n");
     }
 
     /**
