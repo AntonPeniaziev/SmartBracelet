@@ -1,4 +1,9 @@
 package BTservice;
+/**
+ * ConnectionManager - a thread for maintaining a single serial Bluetooth connection.
+ * It records all messages as defined by Bracelet protocol into _macToReceivedBraceletData and
+ * provides a simple interface for sending string messages to remote Bluetooth
+ */
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -11,7 +16,6 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import activities.TentActivity;
 
 class ConnectionManager extends Thread {
     private final BluetoothSocket connectedBluetoothSocket;
