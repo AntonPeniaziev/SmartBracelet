@@ -77,7 +77,6 @@ class ConnectionManager extends Thread {
                 break;
             }
             if (breakLoop) {
-                TentActivity.logger.writeToLog("\nBreaking thread loop\n");
                 break;
             }
             try {

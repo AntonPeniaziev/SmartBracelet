@@ -45,6 +45,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     Button[] _stateButtons;
     static final int NUMBER_OF_STATES = 5;
     String _currentState;
+    TextView idOfPatient;
 
 
     @Override
@@ -304,6 +305,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         }
 
         initStateButtons();
+        idOfPatient = (TextView) findViewById(R.id.PatientID);
+        String prsonalNmb = TentActivity.getPatientPersonalNumber(_patientMac);
+        idOfPatient.setText(prsonalNmb.equals("") ? "" : "ID: " + TentActivity.getPatientPersonalNumber(_patientMac));
+        Typeface army_font = Typeface.createFromAsset(getAssets(), "fonts/Assistant-Bold.ttf");
+        idOfPatient.setTypeface(army_font);
 
     }
 
@@ -339,6 +345,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         hr.setText(TentActivity.getHeartrateByMac(_patientMac));
         //TODO : pressure, breath ..
         updateListView(TentActivity.getTreatmentsArrayByMac(_patientMac));
+        String prsonalNmb = TentActivity.getPatientPersonalNumber(_patientMac);
+        idOfPatient.setText(prsonalNmb.equals("") ? "" : "ID: " + TentActivity.getPatientPersonalNumber(_patientMac));
     }
 
     void updateListView(ArrayList<Treatment> treatmentsArr){

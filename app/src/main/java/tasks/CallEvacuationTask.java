@@ -25,7 +25,9 @@ import java.net.URL;
 public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
-    private static final String webUrl = "https://firstaidbracelet.herokuapp.com/soldiersChange";
+    private static final String collectionName = "soldiers";
+    private static final String idTitle = "Bracelet_ID";
+    private static final String evacTitle = "evacuation_request";
 
     private Context mContext;
     public CallEvacuationTask(Context context) {
@@ -41,28 +43,11 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         MongoClientURI mongoUri = new MongoClientURI(DBAdress);
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
-        MongoCollection<BasicDBObject> dbCollection = db.getCollection("soldiers", BasicDBObject.class);
+        MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
-        try {
-            Bson searchQuery = new Document("bracelet_id", params[1]);
-            Bson newValue = new BasicDBObject().append("evacuation_request", params[0]);
-            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
-            dbCollection.updateOne(searchQuery, updateOperationDocument);
-            postToWeb();
-            return true;
-        } catch (MongoTimeoutException e) {
-            e.printStackTrace();
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSocketOpenException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MongoSecurityException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return false;
+        boolean result = updateEvac(dbCollection, params[1], params[0]);
+
+        return result;
     }
 
     /**
@@ -81,40 +66,23 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
     }
 
     /**
-     * doing http POST to refresh the website for out changes
+     * updates the status of the evacuation for a given patient BTmac
+     * @param collection the DB collection where to update
+     * @param id BT mac of the patient
+     * @param status the new evacuation status
+     * @return boolean for success
      */
-    protected void postToWeb() {
-        HttpURLConnection client = null;
+    protected Boolean updateEvac(MongoCollection<BasicDBObject> collection, String id, String status) {
         try {
-            // Defined URL  where to send data
-            URL url = new URL(webUrl);
-            client = (HttpURLConnection) url.openConnection();
-
-            String msg = "dbUpdate";
-            client.setRequestProperty("Accept","text/html;charset=utf-8");
-            client.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-            client.setRequestProperty("ACCEPT-LANGUAGE", "en-US,en;0.5");
-            client.setRequestMethod("POST");
-            client.setDoOutput(true);
-
-            DataOutputStream printout = new DataOutputStream(client.getOutputStream());
-            printout.writeBytes(msg);
-            printout.flush();
-            printout.close();
-
-            String responseMsg = client.getResponseMessage();
-            int responseCode = client.getResponseCode();
-
-            //Log.e("Post: ", "response is " + Integer.toString(responseCode) + " " + responseMsg);
+            Bson searchQuery = new Document(idTitle, id);
+            Bson newValue = new BasicDBObject().append(evacTitle, status);
+            Bson updateOperationDocument = new BasicDBObject().append("$set", newValue);
+            collection.updateOne(searchQuery, updateOperationDocument);
+            PostToWeb.postToWeb();
+            return true;
+        } catch (MongoTimeoutException | MongoSocketReadException | MongoSocketOpenException | MongoSecurityException e) {
+            e.printStackTrace();
         }
-        catch(Exception ex) {
-
-        } finally {
-            try {
-                if(client != null) // Make sure the connection is not null.
-                    client.disconnect();
-            }
-            catch(Exception ex) {}
-        }
+        return false;
     }
 }
