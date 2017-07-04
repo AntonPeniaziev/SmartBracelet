@@ -23,7 +23,7 @@ public interface BTserviceInterface {
     //connects to bracelet bluetooth
     void connectByMac(String mac);
     //returns a list of disconnected bt devices
-    ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap();
+    ConcurrentHashMap<String, List<String>> getDisconnectedListsMap();
     //starts bluetooth discovery
     void discover();
     //check whether serial bluetooth with specified mac is currently connected

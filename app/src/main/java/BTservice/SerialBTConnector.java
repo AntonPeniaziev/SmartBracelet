@@ -1,4 +1,7 @@
 package BTservice;
+/**
+ * SerialBTConnector - a thread for establishing a serial Bluetooth connection by opening an RfcommSocket.
+ */
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -32,7 +35,6 @@ class SerialBTConnector extends Thread {
             bluetoothSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
         } catch (IOException e) {
             e.printStackTrace();
-            //TentActivity.logger.writeToLog("\nIOException85" + e.getMessage() + "STACK = \n" + e.getStackTrace());
         }
         _handler = new Handler(context.getMainLooper());
         _context = context;
@@ -65,7 +67,6 @@ class SerialBTConnector extends Thread {
             try {
                 bluetoothSocket.close();
             } catch (IOException e1) {
-                //TentActivity.logger.writeToLog("\nIOException114" + e.getMessage() + "STACK = \n" + e.getStackTrace());
                 Toast.makeText(_context,
                         "Connection lost with " + bluetoothDevice.getName(),
                         Toast.LENGTH_LONG).show();
@@ -116,7 +117,6 @@ class SerialBTConnector extends Thread {
                 ) {
             _connectionThreadsByMac.get(device.getAddress()).addInitialDataToSend(dt);
         }
-        //TentActivity.logger.writeToLog("\nStarting connection with " + device.getAddress() + "\n");
         _connectionThreadsByMac.get(device.getAddress()).start();
     }
 }

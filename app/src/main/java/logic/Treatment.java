@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Treatment extends Equipment {
     private String arduinoUid;// ts|tsid
     private String lastTime;
-    ArrayList<String> _history;
 
     public Treatment(String name, String type, String equpmentID, String time, String id) {
         super(name, type, equpmentID);
@@ -23,6 +22,12 @@ public class Treatment extends Equipment {
         this.setName(newValue);
     }
 
+    /**
+     * creates a message contains relevant info for bracelet about a treatment
+     * @param newNumber the treatment number
+     * @param name the treatment name
+     * @return res, the relevant message
+     */
     public String generateUpdateRecord(String newNumber, String name) {
         String res;
         if (name == null) {//delete record

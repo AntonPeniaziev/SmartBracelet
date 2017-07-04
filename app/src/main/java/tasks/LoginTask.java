@@ -18,8 +18,6 @@ import org.bson.conversions.Bson;
 
 import activities.LoginActivity;
 
-// mongodb://heroku_5zpcgjgx:j3cepqrurmjohqbftooulss265@ds145220.mlab.com:45220/heroku_5zpcgjgx    ALON HEROKU
-// mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0       WEB TEAM HEROKU
 public class LoginTask extends AsyncTask<String, Integer, Boolean> {
 
     private static final String DBAdress = "mongodb://heroku_8lwbv1x0:hlus7a54o0lnapqd2nhtlkaet7@dbh73.mlab.com:27737/heroku_8lwbv1x0";
@@ -53,22 +51,12 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
         FindIterable<BasicDBObject> users = dbCollection.find();
-        //try {
+
         if (doctor.length == 2) {
             _value = checkUserAndPass(users, dbCollection, doctor);
             return _value;
         }
-        /*} catch (MongoTimeoutException e) {
-            e.printStackTrace();
-            _value = false;
-            return _value;
-        } catch (MongoSocketReadException e) {
-            e.printStackTrace();
-            _value = false;
-            return _value;
-        }*/
 
-        //_value = false;
         return _value;
     }
 
@@ -90,7 +78,11 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
                 if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
                     String name = doc.get(nameTitle).toString();
                     String number = doc.get(numberTitle).toString();
-                    String division = doc.get(divisionTitle).toString();
+                    Object divisionObj = doc.get(divisionTitle);        // not all users belong to a division
+
+                    String division = "";
+                    if (divisionObj != null)
+                        division = divisionObj.toString();
 
                     Bson searchQuery = new BasicDBObject().append(numberTitle, number);
                     Bson newValue = new BasicDBObject().append(statusTitle, connectedValue);
@@ -116,7 +108,7 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
             LoginActivity._passwordText.setText("");
             LoginActivity._progressDialog.dismiss();
             LoginActivity.getInstance().onLoginFailed();
-            //System.exit(0);
+
             return;
         }
 
@@ -129,4 +121,5 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         LoginActivity.doctorNumber = number;
         LoginActivity.doctorDivision = division;
     }
+
 }

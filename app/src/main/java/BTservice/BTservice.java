@@ -1,4 +1,12 @@
 package BTservice;
+/**
+ * BTservice package serves for establishing connection with multiple serial bluetooth devices and
+ * defines interface for data exchange. The high-level communication protocol is defined at
+ * https://github.com/ValkA/BraceletIOT and focused for the particular project. A class registers
+ * a broadcast receiver for filtering and handling Bluetooth devices discovery, pairing and connection
+ * intents. Establishing socket connection and connection maintenance performed by SerialBTConnector and
+ * ConnectionManager respectively.
+ */
 
 import android.content.Context;
 import android.content.Intent;
@@ -162,7 +170,7 @@ public class BTservice implements BTserviceInterface {
         }
     }
 
-    public ConcurrentHashMap<String, List<String>> getDisconnecteListsdMap() {
+    public ConcurrentHashMap<String, List<String>> getDisconnectedListsMap() {
         ConcurrentHashMap<String, List<String>> map = new ConcurrentHashMap<>();
         for (BluetoothDevice device : _discoveredDevices) {
             map.put(device.getAddress(), Collections.synchronizedList(new ArrayList<String>()));
