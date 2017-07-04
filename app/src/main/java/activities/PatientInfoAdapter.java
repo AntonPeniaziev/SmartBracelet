@@ -143,6 +143,7 @@ public class PatientInfoAdapter extends BaseAdapter {
                 layout1.setClickable(false);
                 Button removeButton = (Button) views.get(i).findViewById(R.id.treatmentRemove);
                 removeButton.setFocusable(false);
+                removeButton.setVisibility(View.VISIBLE);
                 //TextView treatmentName = (TextView) views.get(i).findViewById(R.id.treatment_name);
 //                treatmentName.setEnabled(true);
 //                treatmentName.setFocusable(true);
@@ -166,6 +167,7 @@ public class PatientInfoAdapter extends BaseAdapter {
                 layout1.setClickable(true);
                 Button removeButton = (Button) views.get(i).findViewById(R.id.treatmentRemove);
                 removeButton.setFocusable(true);
+                removeButton.setVisibility(View.INVISIBLE);
             }
         }
     }
