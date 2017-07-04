@@ -78,7 +78,11 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
                 if (doctor[0].equals(user.toString()) && doctor[1].equals(passw.toString())) {
                     String name = doc.get(nameTitle).toString();
                     String number = doc.get(numberTitle).toString();
-                    String division = doc.get(divisionTitle).toString();
+                    Object divisionObj = doc.get(divisionTitle);        // not all users belong to a division
+
+                    String division = "";
+                    if (divisionObj != null)
+                        division = divisionObj.toString();
 
                     Bson searchQuery = new BasicDBObject().append(numberTitle, number);
                     Bson newValue = new BasicDBObject().append(statusTitle, connectedValue);
@@ -117,4 +121,5 @@ public class LoginTask extends AsyncTask<String, Integer, Boolean> {
         LoginActivity.doctorNumber = number;
         LoginActivity.doctorDivision = division;
     }
+
 }
