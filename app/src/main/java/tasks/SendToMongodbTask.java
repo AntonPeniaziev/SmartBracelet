@@ -72,21 +72,23 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
         boolean result = true;
 
         for (Patient patient : patients[0]) {
-            ArrayList<BasicDBObject> treatList = new ArrayList<>();
+            if (patient.isConnected()) {
+                ArrayList<BasicDBObject> treatList = new ArrayList<>();
 
-            for (Treatment obj : patient.getTreatmentsArray()) {
-                BasicDBObject treatDoc = new BasicDBObject();
-                treatDoc.put(UidTitle, obj.getName());
-                treatDoc.put(typeTitle, obj.getType());
-                treatDoc.put(timeTitle, obj.getLastTime());
-                treatList.add(treatDoc);
+                for (Treatment obj : patient.getTreatmentsArray()) {
+                    BasicDBObject treatDoc = new BasicDBObject();
+                    treatDoc.put(UidTitle, obj.getName());
+                    treatDoc.put(typeTitle, obj.getType());
+                    treatDoc.put(timeTitle, obj.getLastTime());
+                    treatList.add(treatDoc);
+                }
+
+                result = insertToDocAndUpdate(dbCollection, patient, treatList);
+                if (!result)
+                    return false;
+                if (isCancelled())
+                    return true;
             }
-
-            result = insertToDocAndUpdate(dbCollection, patient, treatList);
-            if (!result)
-                return false;
-            if (isCancelled())
-                return true;
         }
         PostToWeb.postToWeb();
         return result;
