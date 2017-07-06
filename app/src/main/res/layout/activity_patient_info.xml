@@ -512,7 +512,7 @@
                     android:background="@drawable/button_urgant"
                     android:clickable="true"
                     android:fontFamily="sans-serif-light"
-                    android:text="Urgent Evacuation"
+                    android:text="Request Evacuation"
                     android:textSize="16dp"
                     android:textStyle="bold" />
             </LinearLayout>

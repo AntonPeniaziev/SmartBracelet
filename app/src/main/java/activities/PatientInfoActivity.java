@@ -347,6 +347,9 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         updateListView(TentActivity.getTreatmentsArrayByMac(_patientMac));
         String prsonalNmb = TentActivity.getPatientPersonalNumber(_patientMac);
         idOfPatient.setText(prsonalNmb.equals("") ? "" : "ID: " + TentActivity.getPatientPersonalNumber(_patientMac));
+        if(TentActivity.getPatientUrgantEvacuation(_patientMac)){
+            changeUrgant();
+        }
     }
 
     void updateListView(ArrayList<Treatment> treatmentsArr){
