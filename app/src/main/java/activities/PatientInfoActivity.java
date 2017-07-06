@@ -118,7 +118,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         _urgentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(_urgentButton.getText().equals("Urgent Evacuation")){
+                if(_urgentButton.getText().equals("Request Evacuation")){
                     String[] valAndMac = {String.valueOf(true), _patientMac};
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                     TentActivity.setEvacTime(System.currentTimeMillis(), _patientMac);
@@ -415,7 +415,7 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
     }
 
     public void returnUrgant(){
-        _urgentButton.setText("Urgent Evacuation");
+        _urgentButton.setText("Request Evacuation");
         _urgentButton.setTextColor(Color.WHITE);
     }
 
