@@ -349,6 +349,8 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
         idOfPatient.setText(prsonalNmb.equals("") ? "" : "ID: " + TentActivity.getPatientPersonalNumber(_patientMac));
         if(TentActivity.getPatientUrgantEvacuation(_patientMac)){
             changeUrgant();
+        } else{
+            returnUrgant();
         }
     }
 
