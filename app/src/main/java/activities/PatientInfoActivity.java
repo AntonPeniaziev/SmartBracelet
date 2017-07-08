@@ -120,10 +120,11 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
             public void onClick(View view) {
                 if(_urgentButton.getText().equals("Request Evacuation")){
                     String[] valAndMac = {String.valueOf(true), _patientMac};
+                    changeUrgant();
+                    TentActivity.updateEvacFromWeb = false;
                     new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                     TentActivity.setEvacTime(System.currentTimeMillis(), _patientMac);
-                    changeUrgant();
-                    TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_SENT_RECORD);
+                    TentActivity.sendRecordToBracelet(_patientMac, ArduinoParsingUtils.EVAC_SENT_RECORD);
                     TentActivity.editPatientEvacuation(true, _patientMac);
                     return;
                 } else{
@@ -133,9 +134,10 @@ public class PatientInfoActivity extends AppCompatActivity implements AdapterVie
                         DialogInterface.OnClickListener clickYes = new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 String[] valAndMac = {String.valueOf(false), _patientMac};
-                                new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
                                 returnUrgant();
-                                TentActivity.sendRecordToBracelet(_patientMac,  ArduinoParsingUtils.EVAC_CANCELED_RECORD);
+                                TentActivity.updateEvacFromWeb = false;
+                                new CallEvacuationTask(PatientInfoActivity.this).execute(valAndMac);
+                                TentActivity.sendRecordToBracelet(_patientMac, ArduinoParsingUtils.EVAC_CANCELED_RECORD);
                                 TentActivity.editPatientEvacuation(false, _patientMac);
                             }
                         };

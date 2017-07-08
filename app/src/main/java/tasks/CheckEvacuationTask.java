@@ -41,10 +41,10 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
         MongoClient mongoClient = new MongoClient(mongoUri);
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
-
         FindIterable<BasicDBObject> soldiers = dbCollection.find();
 
-        boolean result = checkAndUpdate(soldiers, params[0]);
+        boolean result;
+        result = checkAndUpdate(soldiers, params[0]);
 
         return result;
     }
@@ -62,18 +62,18 @@ public class CheckEvacuationTask extends AsyncTask<Tent, Integer, Boolean> {
                 Object evac = soldier.get(evacTitle);
                 if (mac == null || evac == null)
                     continue;
-                if (tent.isContain(mac.toString())){
-                    if (evac.toString().equals("true") && !tent.getUrgantEvacuation(mac.toString())){
+                if (tent.isContain(mac.toString()) && TentActivity.updateEvacFromWeb){
+                    if (evac.toString().equals("true") && !tent.getUrgantEvacuation(mac.toString())) {
                         tent.setUrgantEvacuation(mac.toString(), true);
-                        TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
+                        TentActivity.sendRecordToBracelet(mac.toString(), ArduinoParsingUtils.EVAC_SENT_RECORD);
                     } else if (evac.toString().equals("false") && tent.getUrgantEvacuation(mac.toString())) {
                         tent.setUrgantEvacuation(mac.toString(), false);
-                        TentActivity.sendRecordToBracelet(mac.toString(),  ArduinoParsingUtils.EVAC_SENT_RECORD);
+                        TentActivity.sendRecordToBracelet(mac.toString(), ArduinoParsingUtils.EVAC_SENT_RECORD);
                     }
                 }
-                if (isCancelled())
-                    return true;
             }
+            if (isCancelled())
+                return true;
             return true;
         } catch (MongoTimeoutException | MongoSocketReadException | MongoSocketOpenException | MongoSecurityException e) {
             e.printStackTrace();

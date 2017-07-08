@@ -131,16 +131,17 @@ public class SendToMongodbTask extends AsyncTask<ArrayList<Patient>, Integer, Bo
      */
     private Boolean insertToDocAndUpdate(MongoCollection<BasicDBObject> collection, Patient patient, ArrayList<BasicDBObject> treatList) {
         BasicDBObject document = new BasicDBObject();
+
         document.put(idTitle, patient.getBtMac());
         document.put(soldierNumber, patient.getPatientPersonalNumber());
         document.put(heartRateTitle, patient.getHeartRate());
         document.put(breatheRateTitle, patient.getBreatheRate());
         document.put(bloodPressureTitle, patient.getBloodPressure());
         document.put(bodyTempTitle, patient.getBodyTemp());
-        document.put(evacTitle, String.valueOf(patient.getUrgentEvacuationState()));
         document.put(StatusTitle, patient.getPatientState());
         document.put(DrNameTitle, LoginActivity.doctorName);
         document.put(DrNumberTitle, LoginActivity.doctorNumber);
+        document.put(evacTitle, String.valueOf(patient.getUrgentEvacuationState()));
         document.put(divisionTitle, LoginActivity.doctorDivision);
         document.put(longitudeTitle, TentActivity.locationListener.getLongitude());
         document.put(latitudeTitle, TentActivity.locationListener.getLatitude());

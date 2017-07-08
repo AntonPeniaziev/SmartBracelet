@@ -21,6 +21,8 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import activities.TentActivity;
+
 
 public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
 
@@ -45,7 +47,8 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
         MongoDatabase db = mongoClient.getDatabase(mongoUri.getDatabase());
         MongoCollection<BasicDBObject> dbCollection = db.getCollection(collectionName, BasicDBObject.class);
 
-        boolean result = updateEvac(dbCollection, params[1], params[0]);
+        boolean result;
+        result = updateEvac(dbCollection, params[1], params[0]);
 
         return result;
     }
@@ -63,6 +66,7 @@ public class CallEvacuationTask extends AsyncTask<String, Integer, Boolean> {
                 time--;
             }
         }
+        TentActivity.updateEvacFromWeb = true;
     }
 
     /**

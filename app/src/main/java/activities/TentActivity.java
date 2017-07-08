@@ -55,6 +55,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static private NfcAdapter mNfcAdapter;
     static final String MIME_TEXT_PLAIN = "text/plain";
     public static boolean updateToWeb = false;
+    public static boolean updateEvacFromWeb = false;
     public static final int alertLimit = 2;
     public static int alertCount = alertLimit;
     static final float minDistanceForGpsUpdate = 10;
@@ -63,6 +64,7 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
     static Boolean _evacuationSent;
 
     static public final Lock lock = new ReentrantLock();
+    static public final Lock evacuationLock = new ReentrantLock();
 
     static public TentActivity getInstance(){
         return _instance;
@@ -370,7 +372,8 @@ public class TentActivity extends AppCompatActivity implements AdapterView.OnIte
             while (true) {
 
                 CheckEvacuationTask evacuationTask = new CheckEvacuationTask(TentActivity.this);
-                evacuationTask.execute(_tent);
+                if (updateEvacFromWeb)
+                    evacuationTask.execute(_tent);
 
                 runOnUiThread(new Runnable() {
                     @Override
